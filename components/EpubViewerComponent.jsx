@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import ePub from 'epubjs';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { useSwipeable } from 'react-swipeable';
 
 const EpubViewerComponent = ({ url }) => {
   const viewerRef = useRef(null);
@@ -26,7 +27,6 @@ const EpubViewerComponent = ({ url }) => {
 
       await book.ready;
       await rendition.display();
-
     };
 
     if (url) {
@@ -34,7 +34,6 @@ const EpubViewerComponent = ({ url }) => {
     }
 
     const handleKeyPress = (e) => {
-      console.log("key press");
       if (renditionRef.current) {
         if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
           handlePrevPage();
@@ -45,14 +44,10 @@ const EpubViewerComponent = ({ url }) => {
     };
     const handleWheel = (e) => {
       if (renditionRef.current) {
-        // Prevent the default scroll behavior
         e.preventDefault();
-        // Determine scroll direction
         if (e.deltaY > 0) {
-          // Scrolling down
           handleNextPage();
         } else {
-          // Scrolling up
           handlePrevPage();
         }
       }
@@ -65,8 +60,8 @@ const EpubViewerComponent = ({ url }) => {
       if (book) {
         book.destroy();
       }
-      document.addEventListener('keydown', handleKeyPress);
-      document.addEventListener('wheel', handleWheel, { passive: false });
+      document.removeEventListener('keydown', handleKeyPress);
+      document.removeEventListener('wheel', handleWheel);
     };
   }, [url]);
 
@@ -82,11 +77,19 @@ const EpubViewerComponent = ({ url }) => {
     }
   };
 
+  const handlers = useSwipeable({
+    onSwipedLeft: handleNextPage,
+    onSwipedRight: handlePrevPage,
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true
+  });
+
   return (
     <div 
       className="h-full flex flex-col relative"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
+      {...handlers}
     >
       <div ref={viewerRef} className="flex-grow"></div>
       {showControls && (
