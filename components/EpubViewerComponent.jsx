@@ -54,14 +54,14 @@ const EpubViewerComponent = ({ url }) => {
     };
 
     document.addEventListener('keydown', handleKeyPress);
-    document.addEventListener('wheel', handleWheel, { passive: false });
+    // document.addEventListener('wheel', handleWheel, { passive: false });
 
     return () => {
       if (book) {
         book.destroy();
       }
       document.removeEventListener('keydown', handleKeyPress);
-      document.removeEventListener('wheel', handleWheel);
+      // document.removeEventListener('wheel', handleWheel);
     };
   }, [url]);
 
