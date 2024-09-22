@@ -36,11 +36,15 @@ const EpubReader = () => {
       setIsLoading(true);
 
        // 调用后端服务进行格式转换，获取转换后的epub文件后再渲染
-       let formData = new FormData();
+       const formData = new FormData();
        formData.append('file', uploadedFile);
 
       // 判断是否需要进行格式转换
-      const format = uploadedFile.type;
+      let format = uploadedFile.type;
+      if(!format) {
+        // 获取文件扩展名
+        format = uploadedFile.name.split('.').pop().toLowerCase();
+      }
       if("application/epub+zip" !== format) {
         console.log(format);
         console.log("need to convert to epub");
