@@ -17,16 +17,60 @@ const EpubReader = () => {
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [chatting, setChatting] = useState(false);
+  const [chatAnswer, setChatAnswer] = useState('');
   const [epubUrl, setEpubUrl] = useState(null);
 
   const handleQuestionSubmit = (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
+    setChatting(true);
+    // 调用chat接口获取结果
+    const headers = {
+      'Content-Type': 'application/json',
+      'userId': "1234",
+    };
+    fetch('http://localhost:3001/chat/', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        'question': question,
+        'context': [],
+      })
+    }).then(response => {
+      const body = response.body;
+      if(!body) {
+        throw new Error("接口调用异常");
+      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      readAndOutput();
+
+      // 读取并输出流数据
+      function readAndOutput() {
+        reader.read().then(({ done, value }) => {
+            if (done) {
+                reader.releaseLock();
+                setChatAnswer('xxxxxxx');
+                return;
+            }
+
+            const chunk = decoder.decode(value, { stream: true });
+            console.log(chunk);
+            let existAnswer = chatAnswer;
+            let answerRet = `\n**问:** ${question}\n`;
+            answerRet += `答: ${chunk}`;
+            setChatAnswer(existAnswer + answerRet);
+            readAndOutput(); // 递归读取下一个块
+        });
+      }
+    });
   };
 
   const handleClearConversation = () => {
     console.log('Clearing conversation');
     setQuestion('');
+    setChatting(false);
   };
 
   const handleFileUpload = async (e) => {
@@ -152,6 +196,17 @@ const EpubReader = () => {
                   </div>
                 </div>
               )}
+
+              {/** 展示聊天问答内容 */}
+              { chatting && (
+                <div className="flex-grow mb-4">
+                <div className="bg-white rounded-lg shadow-md p-4 h-full">
+                  <div className="space-y-4 prose">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{chatAnswer}</ReactMarkdown>
+                  </div>
+                </div>
+              </div>
+              ) }
 
               {/* 下半部分：问答 */}
               <div className="mt-4">
