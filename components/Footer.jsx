@@ -25,8 +25,8 @@ const Footer = () => {
               </a>
             </div>
           </div>
-          <div className="mt-12 grid grid-cols-2 gap-8 xl:mt-0 xl:col-span-2">
-            <div className="md:grid md:grid-cols-2 md:gap-8">
+          <div className="mt-12 xl:mt-0 xl:col-span-2">
+            <div className="grid grid-cols-2 gap-8">
               <div>
                 <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
                   解决方案
@@ -54,7 +54,7 @@ const Footer = () => {
                   </li>
                 </ul>
               </div>
-              <div className="mt-12 md:mt-0">
+              <div>
                 <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
                   支持
                 </h3>
