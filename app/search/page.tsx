@@ -38,8 +38,8 @@ const BookSearch = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar />
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
+      <main className="flex items-center justify-center flex-grow container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto w-full">
           <form onSubmit={handleSearch} className="mb-8">
             <div className="flex items-center">
               <Input
