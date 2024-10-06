@@ -130,7 +130,7 @@ const EpubReader = () => {
       <NavBar />
       <div className="flex-grow flex flex-col lg:flex-row">
         {!file && !isLoading && (
-          <div className="w-full flex items-center justify-center p-4">
+          <div className="w-full flex flex-col items-center justify-center p-4 h-screen">
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-4">上传您的电子书</h2>
               <p className="mb-4">支持的格式：docx、pdf、epub、azw3</p>
