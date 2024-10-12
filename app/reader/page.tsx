@@ -93,7 +93,7 @@ const EpubReader = () => {
         console.log(format);
         console.log("need to convert to epub");
 
-        const response = await fetch('http://localhost:3001/parse/convert', {
+        const response = await fetch('https://tx.zhangjh.cn/parse/convert', {
           method: 'POST',
           body: formData,
         });
