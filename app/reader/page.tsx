@@ -30,7 +30,7 @@ const EpubReader = () => {
       'Content-Type': 'application/json',
       'userId': "1234",
     };
-    fetch('http://localhost:3001/chat/', {
+    fetch('https://tx.zhangjh.cn/chat/', {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({
@@ -110,7 +110,7 @@ const EpubReader = () => {
       // fetch summary
       formData.set('file', uploadedFile);
       setProcessing(true);
-      const response = await fetch('http://localhost:3001/parse/summary', {
+      const response = await fetch('https://tx.zhangjh.cn/parse/summary', {
         method: 'POST',
         body: formData
       });
