@@ -9,6 +9,9 @@ import { Send, Eraser, Upload } from 'lucide-react';
 import ReactMarkdown from 'react-markdown'; 
 import remarkGfm from 'remark-gfm';
 import './index.css';
+import util from '@/utils/util';
+
+const serviceDomain = "https://tx.zhangjh.cn";
 
 const EpubReader = () => {
   const [question, setQuestion] = useState('');
@@ -74,6 +77,7 @@ const EpubReader = () => {
   };
 
   const handleFileUpload = async (e) => {
+    let ossUrl;
     let uploadedFile = e.target.files[0];
     if (uploadedFile) {
       setFile(uploadedFile);
@@ -93,27 +97,40 @@ const EpubReader = () => {
         console.log(format);
         console.log("need to convert to epub");
 
-        const response = await fetch('https://tx.zhangjh.cn/parse/convert', {
+        const response = await fetch(serviceDomain + '/parse/convert', {
           method: 'POST',
           body: formData,
         });
         const result = await response.json();
         if (result.success) {
           console.log(result.data);
-          uploadedFile = result.data;
+          ossUrl = result.data;
         } else {
           console.error(result.errorMsg);
+          throw new Error(result.errorMsg);
         }
-      } 
+      } else {
+        // 直传oss
+        ossUrl = await util.r2Operation.putObject({
+          Bucket: 'reader-soul',
+          Key: uploadedFile.name,
+          Body: uploadedFile,
+          ContentType: "application/epub+zip",
+        });
+      }
       setIsLoading(false);
       setEpubUrl(uploadedFile);
       // fetch summary
-      formData.set('file', uploadedFile);
       setProcessing(true);
-      const response = await fetch('https://tx.zhangjh.cn/parse/summary', {
+
+      // 文件传递给服务端
+      const response = await fetch(serviceDomain + '/parse/summary', {
         method: 'POST',
-        body: formData
-      });
+        body: JSON.stringify({
+          file: ossUrl
+        })
+      })
+      
       const result = await response.json();
       console.log(result);
       if(result.success) {
