@@ -10,7 +10,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import './index.css';
 
-const serviceDomain = "http://localhost:3001";
+const serviceDomain = "https://tx.zhangjh.cn";
 
 const mimeTypeMap = {
     "application/msword": "doc",
