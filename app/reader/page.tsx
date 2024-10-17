@@ -89,13 +89,14 @@ const EpubReader = () => {
               content: curAnswer,
             });
             setChatContext(curChatContext);
+            setChatting(false);
             break;
           }
           curAnswer = decoder.decode(value, { stream: true});
           console.log(curAnswer);
           // 构建问答区显示内容
           chatAnswer[chatAnswer.length - 1].answer = curAnswer;
-          setChatAnswer(chatAnswer);
+          setChatAnswer([...chatAnswer]);
         }
       });
   };
@@ -254,6 +255,7 @@ const EpubReader = () => {
                     className={`transition-all duration-300 ease-in-out ${
                       isInputFocused ? 'h-20' : 'h-10'
                     }`}
+                    disabled={chatting}
                   />
                   <div className="mt-2 flex justify-end space-x-2">
                     <Button 
