@@ -11,6 +11,7 @@ import remarkGfm from 'remark-gfm';
 import './index.css';
 
 const serviceDomain = "https://tx.zhangjh.cn";
+// const serviceDomain = "http://localhost:3001";
 
 const mimeTypeMap = {
     "application/msword": "doc",
@@ -24,10 +25,13 @@ const EpubReader = () => {
   const [question, setQuestion] = useState('');
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [summary, setSummary] = useState('');
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [chatting, setChatting] = useState(false);
+  const [chatContext, setChatContext] = useState<{ role: string; content: string; }[]>([]);
   const [chatAnswer, setChatAnswer] = useState('');
   const [epubUrl, setEpubUrl] = useState(null);
 
@@ -35,6 +39,8 @@ const EpubReader = () => {
     e.preventDefault();
     console.log('Submitted question:', question);
     setChatting(true);
+    // 提问时清空上一轮的回复
+    setChatAnswer('');
     // 调用chat接口获取结果
     const headers = {
       'Content-Type': 'application/json',
@@ -45,36 +51,41 @@ const EpubReader = () => {
       headers: headers,
       body: JSON.stringify({
         'question': question,
-        'context': [],
+        'title': title,
+        'author': author,
+        'context': {
+          messages: chatContext
+        },
       })
-    }).then(response => {
+    }).then(async response => {
       const body = response.body;
       if(!body) {
         throw new Error("接口调用异常");
       }
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      readAndOutput();
-
-      // 读取并输出流数据
-      function readAndOutput() {
-        reader.read().then(({ done, value }) => {
-            if (done) {
-                reader.releaseLock();
-                setChatAnswer('xxxxxxx');
-                return;
-            }
-
-            const chunk = decoder.decode(value, { stream: true });
-            console.log(chunk);
-            let existAnswer = chatAnswer;
-            let answerRet = `\n**问:** ${question}\n`;
-            answerRet += `答: ${chunk}`;
-            setChatAnswer(existAnswer + answerRet);
-            readAndOutput(); // 递归读取下一个块
-        });
-      }
-    });
+      while (true) {
+        const { done, value } = await reader.read();
+          if (done) {
+            reader.releaseLock();
+            // 构建聊天上下文
+            const curChatContext = chatContext;
+            curChatContext.push({
+              role: "user",
+              content: question
+            });
+            curChatContext.push({
+              role: "assistant",
+              content: chatAnswer
+            });
+            setChatContext(curChatContext);
+            break;
+          }
+          const text = decoder.decode(value, { stream: true});
+          console.log(text);
+          setChatAnswer(text);
+        }
+      });
   };
 
   const handleClearConversation = () => {
@@ -115,15 +126,19 @@ const EpubReader = () => {
       }
       const fileUrl = summaryResult.data.fileUrl;
       const summary = summaryResult.data.summary;
+      const title = summaryResult.data.title;
+      const author = summaryResult.data.author;
       console.log("fileUrl: ", fileUrl);
       setIsLoading(false);
       setEpubUrl(fileUrl);
       // fetch summary
       setProcessing(true);
 
-      
       setSummary(summary);
       setProcessing(false);
+
+      setTitle(title);
+      setAuthor(author);
     }
   };
 
