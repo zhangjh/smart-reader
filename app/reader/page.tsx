@@ -38,9 +38,12 @@ const EpubReader = () => {
   const handleQuestionSubmit = (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
+    let curQuestion = question;
     setChatting(true);
     // 提问时清空上一轮的回复
     setChatAnswer('');
+    // 清空输入框
+    setQuestion('');
     // 调用chat接口获取结果
     const headers = {
       'Content-Type': 'application/json',
@@ -50,7 +53,7 @@ const EpubReader = () => {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({
-        'question': question,
+        'question': curQuestion,
         'title': title,
         'author': author,
         'context': {
@@ -72,7 +75,7 @@ const EpubReader = () => {
             const curChatContext = chatContext;
             curChatContext.push({
               role: "user",
-              content: question
+              content: curQuestion
             });
             curChatContext.push({
               role: "assistant",
