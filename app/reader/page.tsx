@@ -32,7 +32,7 @@ const EpubReader = () => {
   const [processing, setProcessing] = useState(false);
   const [chatting, setChatting] = useState(false);
   const [chatContext, setChatContext] = useState<{ role: string; content: string; }[]>([]);
-  const [chatAnswer, setChatAnswer] = useState<{ 问题: string; 回答: string; }[]>([]); // 指定类型为数组
+  const [chatAnswer, setChatAnswer] = useState<{ question: string; answer: string; }[]>([]); // 指定类型为数组
   const [epubUrl, setEpubUrl] = useState(null);
 
   const handleQuestionSubmit = (e) => {
@@ -43,7 +43,11 @@ const EpubReader = () => {
     // 清空输入框
     setQuestion('');
     // 问答区显示内容
-    const chatAreaContent: { 问题: string; 回答: string; }[] = [];
+    const chatAreaContent: { question: string; answer: string; }[] = [];
+    chatAreaContent.push({
+      "question": curQuestion,
+      "answer": "正在思考中...",
+    });
     // 调用chat接口获取结果
     const headers = {
       'Content-Type': 'application/json',
@@ -89,10 +93,7 @@ const EpubReader = () => {
           curAnswer = decoder.decode(value, { stream: true});
           console.log(curAnswer);
           // 构建问答区显示内容
-          chatAreaContent.push({
-            "问题": curQuestion,
-            "回答": curAnswer,
-          });
+          chatAreaContent[chatAreaContent.length - 1].answer = curAnswer;
           setChatAnswer(chatAreaContent);
         }
       });
@@ -230,11 +231,9 @@ const EpubReader = () => {
                 <div className="bg-white rounded-lg shadow-md p-4 h-full">
                   <div className="space-y-4 prose">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {
-                        chatAnswer.map(
-                        item => `<strong>问题: </strong>${item.问题}\n
-                          <strong>回答: </strong>${item.回答}`).join('\n\n')
-                      }
+                      {chatAnswer.map((item) => (
+                        `**问题:** ${item.question}  \n**回答:** ${item.answer}`
+                      )).join('\n\n')}
                     </ReactMarkdown>
                   </div>
                 </div>
