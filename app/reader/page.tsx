@@ -60,6 +60,7 @@ const EpubReader = () => {
         'question': curQuestion,
         'title': title,
         'author': author,
+        'summary': summary,
         'context': {
           messages: chatContext
         },
