@@ -43,11 +43,11 @@ const EpubReader = () => {
     // 清空输入框
     setQuestion('');
     // 问答区显示内容
-    const chatAreaContent: { question: string; answer: string; }[] = [];
-    chatAreaContent.push({
+    chatAnswer.push({
       "question": curQuestion,
       "answer": "正在思考中...",
     });
+    setChatAnswer(chatAnswer);
     // 调用chat接口获取结果
     const headers = {
       'Content-Type': 'application/json',
@@ -94,8 +94,8 @@ const EpubReader = () => {
           curAnswer = decoder.decode(value, { stream: true});
           console.log(curAnswer);
           // 构建问答区显示内容
-          chatAreaContent[chatAreaContent.length - 1].answer = curAnswer;
-          setChatAnswer(chatAreaContent);
+          chatAnswer[chatAnswer.length - 1].answer = curAnswer;
+          setChatAnswer(chatAnswer);
         }
       });
   };
