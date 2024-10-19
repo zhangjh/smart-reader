@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import NavBar from '@/components/NavBar';
@@ -34,7 +33,6 @@ const EpubReader = () => {
   const [chatContext, setChatContext] = useState<{ role: string; content: string; }[]>([]);
   const [chatAnswer, setChatAnswer] = useState<{ question: string; answer: string; }[]>([]); // 指定类型为数组
   const [epubUrl, setEpubUrl] = useState(null);
-
   const handleQuestionSubmit = (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
@@ -111,7 +109,6 @@ const EpubReader = () => {
   const handleClearConversation = () => {
     console.log('Clearing conversation');
     setQuestion('');
-    setChatting(false);
   };
 
   const handleFileUpload = async (e) => {
