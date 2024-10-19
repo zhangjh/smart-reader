@@ -46,9 +46,9 @@ const EpubReader = () => {
       "question": curQuestion,
       "answer": "正在思考中...",
     });
-    setChatAnswer(chatAnswer);
     const timer = setInterval(() => {
       chatAnswer[chatAnswer.length - 1].answer += ".";
+      setChatAnswer([...chatAnswer]);
     }, 1000);
     // 调用chat接口获取结果
     const headers = {
