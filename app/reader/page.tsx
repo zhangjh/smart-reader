@@ -7,6 +7,7 @@ import NavBar from '@/components/NavBar';
 import EpubViewerComponent from '@/components/EpubViewerComponent';
 import { Send, Eraser, Upload } from 'lucide-react';
 import ReactMarkdown from 'react-markdown'; 
+import rehypeRaw from 'rehype-raw'
 import remarkGfm from 'remark-gfm';
 import './index.css';
 
@@ -237,7 +238,10 @@ const EpubReader = () => {
                 <div className="flex-grow mb-4">
                 <div className="bg-white rounded-lg shadow-md p-4 h-full">
                   <div className="space-y-4 prose">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    <ReactMarkdown 
+                      rehypePlugins={[rehypeRaw]}
+                      remarkPlugins={[remarkGfm]}
+                    >
                       {chatAnswer.map((item) => (
                         `**问题:** ${item.question}  \n**回答:** ${item.answer}`
                       )).join('\n\n')}
