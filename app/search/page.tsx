@@ -21,7 +21,12 @@ const BookSearch = () => {
       if (!response.ok) {
         throw new Error('查找失败');
       }
-      return response.json();
+      const res = await response.json();
+      if(res.success) {
+        return res.data;
+      } else {
+        throw new Error('查找失败: ' + res.errorMsg);
+      }
     },
     enabled: false,
   });
