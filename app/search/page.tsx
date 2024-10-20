@@ -18,11 +18,11 @@ const BookSearch = () => {
     queryFn: async () => {
       // 模拟 API 调用
       const searchResults = await fetch(serviceDomain + `/books/search?keyword=${searchTerm}&limit=10`);
+      console.log(searchResults);
       if (!searchResults.ok) {
-        console.log(searchResults);
         throw new Error('查找失败');
       }
-      return searchResults.json();
+      return searchResults;
     },
     enabled: false,
   });
