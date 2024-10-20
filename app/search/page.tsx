@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 
+const serviceDomain = "https://tx.zhangjh.cn";
 const BookSearch = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -16,13 +17,12 @@ const BookSearch = () => {
     queryKey: ['bookSearch', searchTerm],
     queryFn: async () => {
       // 模拟 API 调用
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return Array(10).fill("xxxxxxxxx").map((_, i) => ({
-        id: i,
-        title: `Book ${i + 1} about ${searchTerm}`,
-        author: `Author ${i + 1}`,
-        description: `This is a book about ${searchTerm}...`
-      }));
+      const searchResults = await fetch(serviceDomain + `/books/search?keyword=${searchTerm}&limit=10`);
+      if (!searchResults.ok) {
+        console.log(searchResults);
+        throw new Error('查找失败');
+      }
+      return searchResults.json();
     },
     enabled: false,
   });
