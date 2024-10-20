@@ -16,6 +16,8 @@
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.670.0",
     "@aws-sdk/s3-request-presigner": "^3.670.0",
+    "@clerk/localizations": "^3.3.0",
+    "@clerk/nextjs": "^5.7.5",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-slot": "^1.1.0",
     "@tailwindcss/typography": "^0.5.15",

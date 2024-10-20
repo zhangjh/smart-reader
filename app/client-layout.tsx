@@ -1,7 +1,10 @@
 'use client'
 
-import { WechatLoginModal } from '@/components/wechat-login-modal';
-import { LoginProvider } from '@/contexts/login-context';
+import {
+  ClerkProvider,
+} from '@clerk/nextjs'
+import { zhCN } from '@clerk/localizations'
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import localFont from 'next/font/local';
 
@@ -25,17 +28,14 @@ export default function ClientLayout({
   const queryClient = new QueryClient()
   
   return (
-    <html lang="zh">
-      <body   
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <LoginProvider>
+    <ClerkProvider localization={zhCN}>
+      <html lang="zh">
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <QueryClientProvider client={queryClient}>
             {children}
           </QueryClientProvider>
-          <WechatLoginModal />
-        </LoginProvider>
-      </body>
-    </html>
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }
