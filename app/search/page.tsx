@@ -41,7 +41,16 @@ const BookSearch = () => {
 
   const getDownloadLink = async (bookId: string, bookHash: string) => {
     try {
-      const response = await fetch(`${serviceDomain}/books/download?bookid=${bookId}&hashid=${bookHash}`);
+      const response = await fetch(`${serviceDomain}/books/download`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bookId: bookId,
+          bookHash: bookHash,
+        }),
+      });
       if (!response.ok) {
         throw new Error('获取下载链接失败');
       }
