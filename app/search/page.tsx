@@ -39,6 +39,24 @@ const BookSearch = () => {
     }
   };
 
+  const getDownloadLink = async (bookId: string, bookHash: string) => {
+    try {
+      const response = await fetch(`${serviceDomain}/books/download?bookid=${bookId}&hashid=${bookHash}`);
+      if (!response.ok) {
+        throw new Error('获取下载链接失败');
+      }
+      const res = await response.json();
+      if (res.success && res.data) {
+        window.open(res.data, '_blank');
+      } else {
+        throw new Error('获取下载链接失败');
+      }
+    } catch (error) {
+      console.error('下载错误:', error);
+      alert('获取下载链接失败，请稍后再试。');
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar />
@@ -71,13 +89,24 @@ const BookSearch = () => {
               <h2 className="text-2xl font-bold mb-4">搜索结果</h2>
               {searchResults.map((book) => (
                 <div key={book.id} className="border p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold">{book.title}</h3>
+                  <h3 
+                    className="text-lg font-semibold cursor-pointer hover:text-blue-600"
+                    onClick={() => getDownloadLink(book.id, book.hash)}
+                  >         
+                    {book.title}
+                  </h3>
                   <img src={book.cover} alt={book.title} />
-                  <p className="text-sm text-gray-600">{book.author}</p>
-                  <p className="text-sm text-gray-600">{book.language}</p>
-                  <p className="text-sm text-gray-600">{book.publisher}</p>
-                  <p className="mt-2">{book.description}</p>
-                </div>
+                  <p className="text-sm text-gray-600">
+                    <strong>作者：</strong>{book.author}</p>
+                  <p className="text-sm text-gray-600">
+                    <strong>语种：</strong>{book.language}</p>
+                  <p className="text-sm text-gray-600">
+                    <strong>出版社：</strong>{book.publisher}</p>
+                  <div 
+                    className="mt-2"
+                    dangerouslySetInnerHTML={{ __html: book.description }}
+                  />               
+                 </div>
               ))}
             </div>
           )}
