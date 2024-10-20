@@ -16,13 +16,12 @@ const BookSearch = () => {
   const { data: searchResults, refetch, isFetching } = useQuery({
     queryKey: ['bookSearch', searchTerm],
     queryFn: async () => {
-      // 模拟 API 调用
-      const searchResults = await fetch(serviceDomain + `/books/search?keyword=${searchTerm}&limit=10`);
-      console.log(searchResults);
-      if (!searchResults.ok) {
+      const response = await fetch(serviceDomain + `/books/search?keyword=${searchTerm}&limit=10`);
+      console.log(response);
+      if (!response.ok) {
         throw new Error('查找失败');
       }
-      return searchResults;
+      return response.json();
     },
     enabled: false,
   });
