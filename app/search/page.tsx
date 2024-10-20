@@ -48,7 +48,7 @@ const BookSearch = () => {
         },
         body: JSON.stringify({
           bookId: bookId,
-          bookHash: bookHash,
+          hashId: bookHash,
         }),
       });
       if (!response.ok) {
