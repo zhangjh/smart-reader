@@ -72,7 +72,10 @@ const BookSearch = () => {
               {searchResults.map((book) => (
                 <div key={book.id} className="border p-4 rounded-lg">
                   <h3 className="text-lg font-semibold">{book.title}</h3>
+                  <img src={book.cover} alt={book.title} />
                   <p className="text-sm text-gray-600">{book.author}</p>
+                  <p className="text-sm text-gray-600">{book.language}</p>
+                  <p className="text-sm text-gray-600">{book.publisher}</p>
                   <p className="mt-2">{book.description}</p>
                 </div>
               ))}
