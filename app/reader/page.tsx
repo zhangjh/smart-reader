@@ -9,6 +9,8 @@ import { Send, Eraser, Upload } from 'lucide-react';
 import ReactMarkdown from 'react-markdown'; 
 import rehypeRaw from 'rehype-raw'
 import remarkGfm from 'remark-gfm';
+import { SignIn, useUser } from '@clerk/nextjs'
+
 import './index.css';
 
 const serviceDomain = "https://tx.zhangjh.cn";
@@ -35,6 +37,23 @@ const EpubReader = () => {
   const [chatContext, setChatContext] = useState<{ role: string; content: string; }[]>([]);
   const [chatAnswer, setChatAnswer] = useState<{ question: string; answer: string; }[]>([]); // 指定类型为数组
   const [epubUrl, setEpubUrl] = useState(null);
+
+  const { isLoaded, isSignedIn, user } = useUser();
+
+  if(!isLoaded || !isSignedIn) {
+    console.log("need login");
+    return (
+      <div>
+        <SignIn 
+          path="/sign-in" 
+          routing="path" 
+          signUpUrl="/sign-up"
+        />
+      </div>
+    ); 
+  }
+
+
   const handleQuestionSubmit = (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);

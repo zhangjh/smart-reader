@@ -26,7 +26,7 @@ const NavBar = () => {
             <div className="border-l border-gray-300 h-6 mx-4"></div>
             <SignedOut>
               <SignInButton mode="modal">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded h-8">
                   登录
                 </Button>
               </SignInButton>
@@ -35,7 +35,7 @@ const NavBar = () => {
               <UserButton 
                 appearance={{
                   elements: {
-                    avatarBox: "w-10 h-10"
+                    avatarBox: "w-8 h-8"
                   }
                 }}
               />
