@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react';
 import { LogoIcon } from './icons/logo';
 import { Button } from './ui/button';
@@ -5,10 +7,15 @@ import {
   SignInButton,
   SignedIn,
   SignedOut,
+  SignOutButton,
   UserButton
 } from '@clerk/nextjs'
 
 const NavBar = () => {
+  const handleSignOut = () => {
+    // window.location.href = '/';
+  };
+
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -32,13 +39,15 @@ const NavBar = () => {
               </SignInButton>
             </SignedOut>
             <SignedIn>
-              <UserButton 
-                appearance={{
-                  elements: {
-                    avatarBox: "w-8 h-8"
-                  }
-                }}
-              />
+              <SignOutButton signOutCallback={handleSignOut}>
+                <UserButton 
+                  appearance={{
+                    elements: {
+                      avatarBox: "w-8 h-8"
+                    }
+                  }}
+                />
+              </SignOutButton>
             </SignedIn>
           </div>
         </div>
