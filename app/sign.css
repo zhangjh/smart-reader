@@ -1,0 +1,7 @@
+/* styles.css */
+.centered-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* 使容器高度为视口高度 */
+  }
