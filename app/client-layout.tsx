@@ -28,7 +28,7 @@ export default function ClientLayout({
   const queryClient = new QueryClient()
   
   return (
-    <ClerkProvider localization={zhCN}>
+    <ClerkProvider localization={zhCN}>      
       <html lang="zh">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <QueryClientProvider client={queryClient}>

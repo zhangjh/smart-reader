@@ -8,6 +8,8 @@ import { Loader2 } from "lucide-react";
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 
+import { withAuth } from '@/components/withAuth';
+
 const serviceDomain = "https://tx.zhangjh.cn";
 const BookSearch = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -115,7 +117,7 @@ const BookSearch = () => {
                     className="mt-2"
                     dangerouslySetInnerHTML={{ __html: book.description }}
                   />               
-                 </div>
+                </div>
               ))}
             </div>
           )}
@@ -126,4 +128,4 @@ const BookSearch = () => {
   );
 };
 
-export default BookSearch;
+export default withAuth(BookSearch);

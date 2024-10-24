@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import ClientLayout from './client-layout'
+import ClientLayout from './client-layout';
 
 export const metadata: Metadata = {
   title: "智阅 - 您的智能阅读伙伴",
