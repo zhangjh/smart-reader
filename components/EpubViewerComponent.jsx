@@ -32,8 +32,9 @@ const EpubViewerComponent = ({ url }) => {
       });
       renditionRef.current = rendition;
 
-      await book.ready;
-      await rendition.display();
+      book.ready.then(() => {
+        rendition.display();
+      });
     };
 
     if (url) {
