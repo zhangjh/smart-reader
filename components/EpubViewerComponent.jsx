@@ -3,8 +3,13 @@ import ePub from 'epubjs';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useSwipeable } from 'react-swipeable';
+import './reader.css';
 
 const EpubViewerComponent = ({ url }) => {
+  const suffix = url.split(".epub")[0];
+  const bookKey = suffix.substr(suffix.lastIndexOf("/") + 1);
+  console.log(bookKey);
+
   const viewerRef = useRef(null);
   const renditionRef = useRef(null);
   const [showControls, setShowControls] = useState(false);
@@ -32,8 +37,28 @@ const EpubViewerComponent = ({ url }) => {
       });
       renditionRef.current = rendition;
 
-      book.ready.then(() => {
-        rendition.display();
+      const savedLocation = localStorage.getItem(bookKey);
+      console.log("savedLocation: " + savedLocation);
+      if(savedLocation) {
+        await rendition.display(savedLocation);
+      } else {
+        await rendition.display();
+      }
+      await book.ready;
+
+      // 检查是否已经生成了位置信息
+      if (!book.locations.__locations) {
+        try {
+          await book.locations.generate(1000);
+          console.log("位置信息生成成功");
+        } catch (err) {
+          console.warn("生成位置信息时出错:", err);
+        }
+      }
+
+       // 监听页面变化事件
+      rendition.on("locationChanged", (location) => {
+        localStorage.setItem(bookKey, JSON.stringify(location));
       });
     };
 
