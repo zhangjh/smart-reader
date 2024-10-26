@@ -5,10 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useSwipeable } from 'react-swipeable';
 import './reader.css';
 
-const EpubViewerComponent = ({ url }) => {
-  const suffix = url.split(".epub")[0];
-  const bookKey = suffix.substr(suffix.lastIndexOf("/") + 1);
-  console.log(bookKey);
+const EpubViewerComponent = ({ url, title }) => {
+  const bookKey = title;
 
   const viewerRef = useRef(null);
   const renditionRef = useRef(null);

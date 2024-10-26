@@ -5,6 +5,11 @@ import NavBar from '@/components/NavBar'
 import Footer from '@/components/Footer'
 import { BookOpen, Brain, Database, MessageSquare, FileText, Globe } from 'lucide-react'
 import './index.css';
+import { useEffect, useState } from "react"
+import { QRCodeSVG } from 'qrcode.react';
+
+// const serviceDomain = "http://localhost:3001";
+const serviceDomain = "https://tx.zhangjh.cn";
 
 const FeatureCard = ({ icon, title, description }) => (
   <div className="bg-white p-6 rounded-lg shadow-md">
@@ -18,8 +23,11 @@ const FeatureCard = ({ icon, title, description }) => (
   </div>
 );
 
-const PricingCard = ({ title, price, features, isPopular }) => (
-  <div className={`bg-white p-6 rounded-lg shadow-md ${isPopular ? 'border-2 border-blue-500' : ''}`}>
+const PricingCard = ({ title, price, features, isPopular, onClick }) => (
+  <div 
+    className={`bg-white p-6 rounded-lg shadow-md ${isPopular ? 'border-2 border-blue-500' : ''}`}
+    onClick={onClick}
+    >
     {isPopular && <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-sm font-semibold mb-2 inline-block">最受欢迎</span>}
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
     <p className="text-3xl font-bold mb-4">{price}</p>
@@ -35,7 +43,105 @@ const PricingCard = ({ title, price, features, isPopular }) => (
   </div>
 );
 
+const PaymentModal = ({ isOpen, onClose, feature, itemType }) => {
+  const [qrContent, setQrContent] = useState("");
+
+  useEffect(() => {
+    if(isOpen) {
+      console.log("PaymentModal");
+
+      fetch(`${serviceDomain}/order/getCode`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ itemType: itemType, userId: "1234" })
+      })
+        .then(res => res.json())
+        .then(res => {
+          if(res.success) {
+            setQrContent(res.data);
+          } else {
+            console.error('Error:', res.errorMsg);
+            throw new Error('Error: ' + res.errorMsg);
+          }
+        }).catch(error => {
+          console.error('Error:', error);
+          alert('获取二维码失败，请重试');
+          onClose();
+        });
+    }
+  }, [isOpen, itemType, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+        <h2 className="text-2xl font-bold mb-4">支付方案</h2>
+        <div className="mb-4">
+          <h3 className="text-xl font-semibold">方案内容：</h3>
+          <ul className="list-disc list-inside text-gray-700 text-sm pl-4"> {/* 调整字号和缩进 */}
+            {feature.map((item, index) => (
+              <li key={index} className="mb-2">{item}</li> // 将数组项映射为列表项
+            ))}
+          </ul>        
+        </div>
+        <div className="mb-4">
+          <h3 className="text-xl font-semibold">支付方式：</h3>
+          <p className="text-gray-600">使用微信扫描二维码完成支付：</p>
+        </div>
+        <div className="flex justify-center mb-4">
+            <QRCodeSVG
+              id="qr-code"
+              value={qrContent}
+              size={200}
+              level="H"
+            />
+        </div>
+        <Button onClick={onClose} className="w-full">关闭</Button>
+      </div>
+    </div>
+  );
+};
+
 export default function Home() {
+  const [isPaymentOpen, setPaymentOpen] = useState(false);
+  const [feature, setFeature] = useState([]);
+  const [itemType, setItemType] = useState("");
+  const handlePaymentOpen = (feature, itemType) => {
+    console.log("handlePaymentOpen");
+    setPaymentOpen(true);
+    setFeature(feature);
+    setItemType(itemType);
+  }
+  const handlePaymentClose = () => {
+    setPaymentOpen(false);
+    setFeature([]);
+    setItemType("");
+  }
+  const featuresArr = {
+    "single": [
+      "单篇文章解析",
+      "AI总结与评分",
+      "智能问答",
+      "文档多语种翻译"
+    ],
+    "basic": [
+      "不限次数使用",
+      "AI总结与评分",
+      "智能问答",
+      "文档多语种翻译"
+    ],
+    "senior": [
+      "不限次数使用",
+      "AI总结与评分",
+      "智能问答",
+      "文档多语种翻译",
+      "个人知识库"
+    ]
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar />
@@ -143,35 +249,25 @@ export default function Home() {
               <PricingCard
                 title="单篇文章"
                 price="¥5 / 次"
-                features={[
-                  "单篇文章解析",
-                  "AI总结与评分",
-                  "智能问答",
-                  "文档多语种翻译"
-                ]}
+                features={featuresArr.single}
+                isPopular={false}
+                onClick={() => handlePaymentOpen(featuresArr.single, "single")}
               />
               <PricingCard
                 title="基础包月"
                 price="¥29.9 / 月"
-                features={[
-                  "不限次数使用",
-                  "AI总结与评分",
-                  "智能问答",
-                  "文档多语种翻译"
-                ]}
+                features={featuresArr.basic}
                 isPopular={true}
+                onClick={() => handlePaymentOpen(featuresArr.basic, "basic")}
               />
               <PricingCard
                 title="高级包月"
                 price="¥49.9 / 月"
-                features={[
-                  "不限次数使用",
-                  "AI总结与评分",
-                  "智能问答",
-                  "文档多语种翻译",
-                  "个人知识库"
-                ]}
+                features={featuresArr.senior}
+                isPopular={false}
+                onClick={() => handlePaymentOpen(featuresArr.senior, "senior")}
               />
+              <PaymentModal feature={feature} itemType={itemType} isOpen={isPaymentOpen} onClose={handlePaymentClose} />
             </div>
           </div>
         </section>

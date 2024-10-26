@@ -207,7 +207,7 @@ const EpubReader = () => {
             {/* 左侧：Epub内容 */}
             <div className="w-full lg:w-1/2 p-4 lg:border-r lg:border-gray-200">
               <div className="bg-white rounded-lg shadow-md p-4 h-[60vh] lg:h-full">
-                <EpubViewerComponent url={epubUrl} />
+                <EpubViewerComponent url={epubUrl} title={title} />
               </div>
             </div>
 
@@ -301,3 +301,4 @@ const EpubReader = () => {
 };
 
 export default withAuth(EpubReader);
+// export default EpubReader;

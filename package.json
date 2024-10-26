@@ -32,6 +32,7 @@
     "eslint-config-next": "14.2.11",
     "lucide-react": "^0.441.0",
     "postcss": "^8",
+    "qrcode.react": "^4.1.0",
     "react-markdown": "^9.0.1",
     "react-swipeable": "^7.0.1",
     "rehype-raw": "^7.0.0",
