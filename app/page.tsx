@@ -55,7 +55,7 @@ const PaymentModal = ({ isOpen, onClose, feature, itemType }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ itemType }),
+        body: JSON.stringify({ itemType, userId: "12345" }),
       })
         .then(response => response.json())
         .then(response => {
