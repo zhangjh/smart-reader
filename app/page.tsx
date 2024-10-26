@@ -45,10 +45,12 @@ const PricingCard = ({ title, price, features, isPopular, onClick }) => (
 
 const PaymentModal = ({ isOpen, onClose, feature, itemType }) => {
   const [qrContent, setQrContent] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if(isOpen) {
       console.log("PaymentModal");
+      setLoading(true); // 开始加载
 
       fetch(`${serviceDomain}/order/genOrderUrl`, {
         method: "POST",
@@ -71,6 +73,8 @@ const PaymentModal = ({ isOpen, onClose, feature, itemType }) => {
         }).catch(error => {
           console.error("Error:", error);
           alert("生成订单失败，请稍后再试");
+        }).finally(() => {
+          setLoading(false); // 加载完成
         });
     }
   }, [isOpen, itemType, onClose]);
@@ -94,14 +98,18 @@ const PaymentModal = ({ isOpen, onClose, feature, itemType }) => {
           <p className="text-gray-600">使用微信扫描二维码完成支付：</p>
         </div>
         <div className="flex justify-center mb-4">
-          { qrContent && (
-            <QRCodeSVG
-            id="qr-code"
-            value={qrContent}
-            size={200}
-            level="H"
-          />
-          )} 
+          {loading ? ( // 根据加载状态显示内容
+            <p className="text-gray-600">生成二维码中，请稍候...</p>
+          ) : (
+            qrContent && (
+              <QRCodeSVG
+                id="qr-code"
+                value={qrContent}
+                size={200}
+                level="H"
+              />
+            )
+          )}
         </div>
         <Button onClick={onClose} className="w-full">关闭</Button>
       </div>
