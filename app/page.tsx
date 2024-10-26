@@ -50,25 +50,27 @@ const PaymentModal = ({ isOpen, onClose, feature, itemType }) => {
     if(isOpen) {
       console.log("PaymentModal");
 
-      fetch(`${serviceDomain}/order/getCode`, {
-        method: 'POST',
+      fetch(`${serviceDomain}/order/genOrderUrl`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ itemType: itemType, userId: "1234" })
+        body: JSON.stringify({ itemType }),
       })
-        .then(res => res.json())
-        .then(res => {
-          if(res.success) {
-            setQrContent(res.data);
-          } else {
-            console.error('Error:', res.errorMsg);
-            throw new Error('Error: ' + res.errorMsg);
+        .then(response => response.json())
+        .then(response => {
+          console.log(response);
+          if(!response.success) {
+            throw new Error("生成订单二维码失败:" + response.errorMessage);
           }
+          const codeUrl = response.data.code_url;
+          if(!codeUrl) {
+            throw new Error("生成订单二维码失败");
+          }
+          setQrContent(codeUrl);
         }).catch(error => {
-          console.error('Error:', error);
-          alert('获取二维码失败，请重试');
-          onClose();
+          console.error("Error:", error);
+          alert("生成订单失败，请稍后再试");
         });
     }
   }, [isOpen, itemType, onClose]);
@@ -92,12 +94,14 @@ const PaymentModal = ({ isOpen, onClose, feature, itemType }) => {
           <p className="text-gray-600">使用微信扫描二维码完成支付：</p>
         </div>
         <div className="flex justify-center mb-4">
+          { qrContent && (
             <QRCodeSVG
-              id="qr-code"
-              value={qrContent}
-              size={200}
-              level="H"
-            />
+            id="qr-code"
+            value={qrContent}
+            size={200}
+            level="H"
+          />
+          )} 
         </div>
         <Button onClick={onClose} className="w-full">关闭</Button>
       </div>
