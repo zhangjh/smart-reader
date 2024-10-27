@@ -8,9 +8,10 @@ import { Loader2 } from "lucide-react";
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import { useUser } from '@clerk/nextjs';
+import { env } from 'process';
 
-const serviceDomain = "https://tx.zhangjh.cn";
-// const serviceDomain = "http://localhost:3001";
+const debugMode = env.DEBUG_MODE;
+const serviceDomain = debugMode ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
 const BookSearch = () => {
   const [searchTerm, setSearchTerm] = useState('');

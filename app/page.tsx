@@ -8,9 +8,10 @@ import './index.css';
 import { useEffect, useState } from "react"
 import { QRCodeSVG } from 'qrcode.react';
 import { useUser } from '@clerk/clerk-react';
+import { env } from "process"
 
-// const serviceDomain = "http://localhost:3001";
-const serviceDomain = "https://tx.zhangjh.cn";
+const debugMode = env.DEBUG_MODE;
+const serviceDomain = debugMode ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
 const FeatureCard = ({ icon, title, description }) => (
   <div className="bg-white p-6 rounded-lg shadow-md">

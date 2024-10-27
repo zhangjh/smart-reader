@@ -12,9 +12,10 @@ import remarkGfm from 'remark-gfm';
 
 import './index.css';
 import { withAuth } from '@/components/withAuth';
+import { env } from 'process';
 
-const serviceDomain = "https://tx.zhangjh.cn";
-// const serviceDomain = "http://localhost:3001";
+const debugMode = env.DEBUG_MODE;
+const serviceDomain = debugMode ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
 const mimeTypeMap = {
     "application/msword": "doc",
