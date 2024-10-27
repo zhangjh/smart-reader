@@ -9,9 +9,11 @@ import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import { useUser } from '@clerk/nextjs';
 import { env } from 'process';
+import { ToastContainer, toast } from 'react-toastify'; // 引入 ToastContainer 和 toast
+import 'react-toastify/dist/ReactToastify.css'; // 引入样式
 
 const debugMode = env.DEBUG_MODE;
-const serviceDomain = debugMode ? "http://localhost:3001" : "https://tx.zhangjh.cn";
+const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
 const BookSearch = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -74,12 +76,14 @@ const BookSearch = () => {
       }
     } catch (error) {
       console.error('下载错误:', error);
-      alert('获取下载链接失败，请稍后再试。');
+      toast.error('获取下载链接失败，请稍后再试');
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <>  
+      <ToastContainer />
+      <div className="min-h-screen flex flex-col">
       <NavBar />
       <main className="flex items-center justify-center flex-grow container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto w-full">
@@ -135,6 +139,7 @@ const BookSearch = () => {
       </main>
       <Footer />
     </div>
+    </>
   );
 };
 

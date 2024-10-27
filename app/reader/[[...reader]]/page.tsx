@@ -15,7 +15,7 @@ import { withAuth } from '@/components/withAuth';
 import { env } from 'process';
 
 const debugMode = env.DEBUG_MODE;
-const serviceDomain = debugMode ? "http://localhost:3001" : "https://tx.zhangjh.cn";
+const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
 const mimeTypeMap = {
     "application/msword": "doc",
