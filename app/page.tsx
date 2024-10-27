@@ -7,6 +7,7 @@ import { BookOpen, Brain, Database, MessageSquare, FileText, Globe } from 'lucid
 import './index.css';
 import { useEffect, useState } from "react"
 import { QRCodeSVG } from 'qrcode.react';
+import { useUser } from '@clerk/clerk-react';
 
 // const serviceDomain = "http://localhost:3001";
 const serviceDomain = "https://tx.zhangjh.cn";
@@ -43,11 +44,12 @@ const PricingCard = ({ title, price, features, isPopular, onClick }) => (
   </div>
 );
 
-const PaymentModal = ({ isOpen, onClose, feature, itemType }) => {
+const PaymentModal = ({ userId, isOpen, onClose, feature, itemType }) => {
   const [qrContent, setQrContent] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    console.log(userId);
     if(isOpen) {
       console.log("PaymentModal");
       setLoading(true); // 开始加载
@@ -57,7 +59,7 @@ const PaymentModal = ({ isOpen, onClose, feature, itemType }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ itemType, userId: "12345" }),
+        body: JSON.stringify({ itemType, userId }),
       })
         .then(response => response.json())
         .then(response => {
@@ -66,10 +68,28 @@ const PaymentModal = ({ isOpen, onClose, feature, itemType }) => {
             throw new Error("生成订单二维码失败:" + response.errorMessage);
           }
           const codeUrl = response.data.code_url;
+          const orderId = response.data.orderId;
           if(!codeUrl) {
             throw new Error("生成订单二维码失败");
           }
+          if(!orderId) {
+            throw new Error("创建订单失败");
+          }
           setQrContent(codeUrl);
+          // 创建一个轮询请求，判断支付状态
+          const timer = setInterval(() => {
+            fetch(`${serviceDomain}/order/get?orderId=${orderId}`)
+              .then(response => response.json())
+              .then(response => {
+                if(response.success) {
+                  if(response.data.status === 1) {
+                    clearInterval(timer);
+                    alert("支付成功");
+                    onClose();
+                  }
+                }
+              });
+          }, 3000);
         }).catch(error => {
           console.error("Error:", error);
           alert("生成订单失败，请稍后再试");
@@ -77,7 +97,7 @@ const PaymentModal = ({ isOpen, onClose, feature, itemType }) => {
           setLoading(false); // 加载完成
         });
     }
-  }, [isOpen, itemType, onClose]);
+  }, [isOpen, itemType, onClose, userId]);
 
   if (!isOpen) return null;
 
@@ -121,7 +141,15 @@ export default function Home() {
   const [isPaymentOpen, setPaymentOpen] = useState(false);
   const [feature, setFeature] = useState([]);
   const [itemType, setItemType] = useState("");
+  const [userId, setUserId] = useState("");
+
+  const { user, isSignedIn } = useUser();
   const handlePaymentOpen = (feature, itemType) => {
+    if(!isSignedIn) {
+      window.location.href = "/sign-in?redirect_url=" + window.location.pathname;
+      return;
+    }
+    setUserId(user.id);
     console.log("handlePaymentOpen");
     setPaymentOpen(true);
     setFeature(feature);
@@ -132,6 +160,7 @@ export default function Home() {
     setFeature([]);
     setItemType("");
   }
+
   const featuresArr = {
     "single": [
       "单篇文章解析",
@@ -279,7 +308,7 @@ export default function Home() {
                 isPopular={false}
                 onClick={() => handlePaymentOpen(featuresArr.senior, "senior")}
               />
-              <PaymentModal feature={feature} itemType={itemType} isOpen={isPaymentOpen} onClose={handlePaymentClose} />
+              <PaymentModal userId={userId} feature={feature} itemType={itemType} isOpen={isPaymentOpen} onClose={handlePaymentClose} />
             </div>
           </div>
         </section>

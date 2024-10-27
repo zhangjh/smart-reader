@@ -7,13 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
-
-import { withAuth } from '@/components/withAuth';
+import { useUser } from '@clerk/nextjs';
 
 const serviceDomain = "https://tx.zhangjh.cn";
+// const serviceDomain = "http://localhost:3001";
+
 const BookSearch = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const { user, isSignedIn } = useUser();
 
   const { data: searchResults, refetch, isFetching } = useQuery({
     queryKey: ['bookSearch', searchTerm],
@@ -43,6 +45,13 @@ const BookSearch = () => {
 
   const getDownloadLink = async (bookId: string, bookHash: string) => {
     try {
+      if(!isSignedIn) {
+        window.location.href = "/sign-in?redirect_url=" + window.location.pathname;
+        return;
+      }
+      const userId = user.id;
+      console.log(userId);
+      // todo: 校验权限
       const response = await fetch(`${serviceDomain}/books/download`, {
         method: 'POST',
         headers: {
@@ -128,4 +137,4 @@ const BookSearch = () => {
   );
 };
 
-export default withAuth(BookSearch);
+export default BookSearch;
