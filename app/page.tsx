@@ -50,6 +50,7 @@ const PricingCard = ({ title, price, features, isPopular, onClick }) => (
 const PaymentModal = ({ userId, isOpen, onClose, feature, itemType }) => {
   const [qrContent, setQrContent] = useState("");
   const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null); // 显式设置类型
 
   useEffect(() => {
     console.log(userId);
@@ -87,12 +88,14 @@ const PaymentModal = ({ userId, isOpen, onClose, feature, itemType }) => {
                 if(response.success) {
                   if(response.data.status === 1) {
                     clearInterval(timer);
+                    setTimer(null);
                     toast.success("支付成功");
-                    onClose();
+                    onClose(timer);
                   }
                 }
               });
           }, 3000);
+          setTimer(timer);
         }).catch(error => {
           console.error("Error:", error);
           toast.error("生成订单失败，请稍后再试");
@@ -134,7 +137,7 @@ const PaymentModal = ({ userId, isOpen, onClose, feature, itemType }) => {
             )
           )}
         </div>
-        <Button onClick={onClose} className="w-full">关闭</Button>
+        <Button onClick={() => onClose(timer)} className="w-full">关闭</Button>
       </div>
     </div>
   );
@@ -158,10 +161,13 @@ export default function Home() {
     setFeature(feature);
     setItemType(itemType);
   }
-  const handlePaymentClose = () => {
+  const handlePaymentClose = (timer) => {
     setPaymentOpen(false);
     setFeature([]);
     setItemType("");
+    if(timer) {
+      clearInterval(timer);
+    }
   }
 
   const featuresArr = {
