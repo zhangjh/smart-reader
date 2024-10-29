@@ -8,11 +8,10 @@ import { Loader2 } from "lucide-react";
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import { useUser } from '@clerk/nextjs';
-import { env } from 'process';
 import { ToastContainer, toast } from 'react-toastify'; // 引入 ToastContainer 和 toast
 import 'react-toastify/dist/ReactToastify.css'; // 引入样式
 
-const debugMode = env.DEBUG_MODE;
+const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
 const BookSearch = () => {
