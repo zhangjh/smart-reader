@@ -30,14 +30,14 @@ const Orders = () => {
     setLoading(true);
     try {
       const response = await fetch(`${serviceDomain}/order/list?pageIndex=${currentPage}&pageSize=5&status=${statusFilter}`);
-      const data = await response.json();
+      const res = await response.json();
       
-      if (!data.success) {
-        throw new Error(data.errorMessage || '获取订单列表失败');
+      if (!res.success) {
+        throw new Error(res.errorMessage || '获取订单列表失败');
       }
       
-      setOrders(data.data.orders);
-      setTotalPages(Math.ceil(data.data.total / 5));
+      setOrders(res.data.results);
+      setTotalPages(Math.ceil(res.data.total / 5));
     } catch (error) {
       console.error('Error fetching orders:', error);
       toast.error('获取订单列表失败，请稍后重试');
