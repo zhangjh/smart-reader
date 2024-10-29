@@ -8,15 +8,18 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 
+import util from '@/utils/util';
+
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
 interface Order {
   id: number;
-  book: string;
-  date: string;
-  status: number;
-  price: string;
+  create_time: string;
+  item_type: string;
+  order_type: number;
+  order_price: number;
+  status: string;
 }
 
 const Orders = () => {
@@ -48,7 +51,43 @@ const Orders = () => {
 
   useEffect(() => {
     fetchOrders();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, statusFilter]);
+
+  const getItemTypeText = (type: string) => {
+    switch (type) {
+      case 'single':
+        return '单次服务';
+      case 'basic':
+        return '基本服务';
+      case 'senior':
+        return '高级服务';
+      default:
+        return '未知类型';
+    }
+  };
+  const getItemContent = (type: string) => {
+    return util.featuresArr[type as keyof typeof util.featuresArr].toString();
+  };
+
+  const getOrderTypeText = (type: number) => {
+    switch (type) {
+      case 1:
+        return '新购';
+      case 2:
+        return '续费';
+      default:
+        return '未知类型';
+    }
+  };
+
+  const handleDate = (date: string) => {
+    // 2024-10-26T15:54:36.897Z
+    return date.toLocaleString().replace('T', ' ').replace('Z', '').replace(/\.\d+/, '');
+  };
+  const handlePrice = (price: number) => {
+    return price / 100 + ' ¥';
+  };
 
   const getStatusText = (status: number) => {
     switch (status) {
@@ -90,12 +129,16 @@ const Orders = () => {
                 <Card key={order.id} className="p-4">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h3 className="font-medium">{order.book}</h3>
-                      <p className="text-sm text-gray-500">{order.date}</p>
+                      <h3 className="font-medium">{getOrderTypeText(order.order_type)}</h3>
+                      <p className="text-sm text-gray-500">{handleDate(order.create_time)}</p>
+                    </div>
+                    <div>
+                      <h3 className="font-medium">{getItemTypeText(order.item_type)}</h3>
+                      <p className="text-sm text-gray-500">{getItemContent(order.item_type)}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium">{order.price}</p>
-                      <p className="text-sm text-gray-500">{getStatusText(order.status)}</p>
+                      <p className="font-medium">{handlePrice(order.order_price)}</p>
+                      <p className="text-sm text-gray-500">{getStatusText(parseInt(order.status))}</p>
                     </div>
                   </div>
                 </Card>

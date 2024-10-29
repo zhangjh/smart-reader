@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, ClipboardList, History, Menu } from 'lucide-react';
+import { BookOpen, ClipboardList, History, Menu, Search } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { LogoIcon } from './icons/logo';
@@ -23,7 +23,7 @@ const Sidebar = ({ children }) => {
             : 'text-gray-600 hover:bg-gray-50'
         }`}
       >
-        <BookOpen className="h-5 w-5" />
+        <Search className="h-5 w-5" />
         <span>找书</span>
       </Link>
       <Link

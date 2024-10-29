@@ -11,6 +11,8 @@ import { useUser } from '@clerk/clerk-react';
 import { ToastContainer, toast } from 'react-toastify'; // 引入 ToastContainer 和 toast
 import 'react-toastify/dist/ReactToastify.css'; // 引入样式
 
+import util from "@/utils/util"
+
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
@@ -169,28 +171,6 @@ export default function Home() {
     }
   }
 
-  const featuresArr = {
-    "single": [
-      "单篇文章解析",
-      "AI总结与评分",
-      "智能问答",
-      "文档多语种翻译"
-    ],
-    "basic": [
-      "不限次数使用",
-      "AI总结与评分",
-      "智能问答",
-      "文档多语种翻译"
-    ],
-    "senior": [
-      "不限次数使用",
-      "AI总结与评分",
-      "智能问答",
-      "文档多语种翻译",
-      "个人知识库"
-    ]
-  };
-
   return (
     <>
       <ToastContainer />
@@ -300,23 +280,23 @@ export default function Home() {
                 <PricingCard
                   title="单篇文章"
                   price="¥5 / 次"
-                  features={featuresArr.single}
+                  features={util.featuresArr.single}
                   isPopular={false}
-                  onClick={() => handlePaymentOpen(featuresArr.single, "single")}
+                  onClick={() => handlePaymentOpen(util.featuresArr.single, "single")}
                 />
                 <PricingCard
                   title="基础包月"
                   price="¥29.9 / 月"
-                  features={featuresArr.basic}
+                  features={util.featuresArr.basic}
                   isPopular={true}
-                  onClick={() => handlePaymentOpen(featuresArr.basic, "basic")}
+                  onClick={() => handlePaymentOpen(util.featuresArr.basic, "basic")}
                 />
                 <PricingCard
                   title="高级包月"
                   price="¥49.9 / 月"
-                  features={featuresArr.senior}
+                  features={util.featuresArr.senior}
                   isPopular={false}
-                  onClick={() => handlePaymentOpen(featuresArr.senior, "senior")}
+                  onClick={() => handlePaymentOpen(util.featuresArr.senior, "senior")}
                 />
                 <PaymentModal userId={userId} feature={feature} itemType={itemType} isOpen={isPaymentOpen} onClose={handlePaymentClose} />
               </div>
