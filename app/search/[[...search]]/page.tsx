@@ -56,7 +56,7 @@ const BookSearch = () => {
         throw new Error("用户未登录");
       }
       // 校验权限
-      fetch(`${serviceDomain}/order/list?status=1&userId=${userId}`)
+      await fetch(`${serviceDomain}/order/list?status=1&userId=${userId}`)
         .then(response => response.json())
         .then(response => {
           if(!response.success) {
@@ -110,10 +110,17 @@ const BookSearch = () => {
                     // 试用的功能模块
                     model: 'download'
                   }),
-                })
+                }).then(response => response.json())
+                .then(response => {
+                  console.log(response);
+                  if(response.success) {
+                    toast.success("新用户试用成功");
+                  }
+                });
               });
           }
         });
+        
       const response = await fetch(`${serviceDomain}/books/download`, {
         method: 'POST',
         headers: {
