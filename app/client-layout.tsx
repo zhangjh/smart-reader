@@ -64,7 +64,7 @@ function SignUpSaveUser() {
               toast.error("保存用户信息出错:" + res.errorMsg);
             } else {
               // 写本地缓存
-              const user = res.user;
+              const user = res.data;
               window.localStorage.setItem("userId", user.id);
               window.localStorage.setItem("extId", userId);
             }
