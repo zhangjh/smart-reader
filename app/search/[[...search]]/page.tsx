@@ -90,7 +90,7 @@ const BookSearch = () => {
               .then(response => {
                 if(!response.success) {
                   // toast.error("查询试用次数失败：", response.errorMsg);
-                  throw new Error("查询试用次数失败：" + response.errorMsg);
+                  throw new Error("试用失败：" + response.errorMsg);
                 }
                 if(!response.success) {
                   // 已经试用过了
