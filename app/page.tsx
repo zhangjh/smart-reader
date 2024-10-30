@@ -190,9 +190,6 @@ export default function Home() {
                 <div className="rounded-md shadow">
                   <Button size="lg" className="w-full">立即体验</Button>
                 </div>
-                <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
-                  <Button variant="outline" size="lg" className="w-full bg-white text-blue-600">了解更多</Button>
-                </div>
               </div>
             </div>
           </section>
