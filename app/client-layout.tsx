@@ -42,7 +42,7 @@ function SignUpSaveUser() {
           const extType = user.externalAccounts[0].provider;
           
            // 判断是否已经保存过
-          const savedUserId = localStorage.getItem("userId");
+          const savedUserId = localStorage.getItem("extId");
           if(savedUserId && savedUserId === user.id) {
             return;
           }
@@ -64,7 +64,9 @@ function SignUpSaveUser() {
               toast.error("保存用户信息出错:" + res.errorMsg);
             } else {
               // 写本地缓存
-              window.localStorage.setItem("userId", userId);
+              const user = res.user;
+              window.localStorage.setItem("userId", user.id);
+              window.localStorage.setItem("extId", userId);
             }
           });
         } catch (error) {

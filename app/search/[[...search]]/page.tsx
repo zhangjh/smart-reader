@@ -17,7 +17,7 @@ const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://
 const BookSearch = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const { user, isSignedIn } = useUser();
+  const { isSignedIn } = useUser();
 
   const { data: searchResults, refetch, isFetching } = useQuery({
     queryKey: ['bookSearch', searchTerm],
@@ -51,9 +51,69 @@ const BookSearch = () => {
         window.location.href = "/sign-in?redirect_url=" + window.location.pathname;
         return;
       }
-      const userId = user.id;
-      console.log(userId);
-      // todo: 校验权限
+      const userId = localStorage.getItem("userId");
+      if(!userId) {
+        throw new Error("用户未登录");
+      }
+      // 校验权限
+      fetch(`${serviceDomain}/order/list?status=1&userId=${userId}`)
+        .then(response => response.json())
+        .then(response => {
+          if(!response.success) {
+            toast.error("查询付费订阅失败：", response.errorMsg);
+            return;
+          }
+          if(response.data.length > 0) {
+            const orders = response.data.results;
+            for(const order of orders) {
+              const curTime = new Date().getTime();
+              // 订单一个月的生效期
+              if(curTime > order.createTime + 30 * 24 * 60 * 60 * 1000) {
+                // 已经失效
+                console.log("orderId:", order.id, " expired");
+              } else {
+                // 存在有效的订阅，校验通过
+                break;
+              }
+            }
+            // 如果到这了，证明没有有效订阅
+            toast.error("您的付费订阅已失效，请重新订阅");
+            setTimeout(() => {
+              window.location.href = "/" + window.location.pathname;
+            }, 2000);
+            return;
+          } else {
+            // 没有订单存在，可以试用一次
+            fetch(`${serviceDomain}/trial/auth?userId=${userId}&productType=zhiyue&model=download`)
+              .then(response => response.json())
+              .then(response => {
+                if(!response.success) {
+                  toast.error("查询试用次数失败：", response.errorMsg);
+                  return;
+                }
+                if(!response.success) {
+                  // 已经试用过了
+                  toast.error("每个新用户仅可试用一次，请选择合适的计划付费订阅");
+                  setTimeout(() => {
+                    window.location.href = "/" + window.location.pathname;
+                  }, 2000);
+                  return;
+                } 
+                // 新用户每个模块可以试用一次，记录试用次数
+                fetch(`${serviceDomain}/trial/create`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    userId: userId,
+                    // 试用的功能模块
+                    model: 'download'
+                  }),
+                })
+              });
+          }
+        });
       const response = await fetch(`${serviceDomain}/books/download`, {
         method: 'POST',
         headers: {

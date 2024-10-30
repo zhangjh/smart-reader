@@ -55,9 +55,13 @@ const EpubReader = () => {
       setChatAnswer([...chatAnswer]);
     }, 1000);
     // 调用chat接口获取结果
+    const userId = localStorage.getItem('userId');
+    if(!userId) {
+      throw new Error("用户未登录");
+    }
     const headers = {
       'Content-Type': 'application/json',
-      'userId': "1234",
+      'userId': userId,
     };
     fetch(serviceDomain + '/chat/', {
       method: 'POST',
