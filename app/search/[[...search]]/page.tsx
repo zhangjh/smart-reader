@@ -143,6 +143,9 @@ const BookSearch = () => {
               })
               .catch(error => {
                 toast.error(error.message);
+                setTimeout(() => {
+                  window.location.href = "/";
+                }, 3000);
               });
           }
         });
