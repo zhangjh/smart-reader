@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { LogoIcon } from './icons/logo';
 
-
 const Sidebar = ({ children }) => {
   const pathname = usePathname();
   const isActive = (path) => pathname === path;
@@ -65,7 +64,7 @@ const Sidebar = ({ children }) => {
   return (
     <div className="min-h-screen flex">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:block w-64 bg-white border-r">
+      <aside side="left" className="hidden md:block w-64 p-0 bg-white border-r">
         <div className="h-20 flex items-center px-6 border-b">
           <Link href="/" className="flex items-center space-x-2">
             <LogoIcon className="w-10 h-10" />
@@ -88,12 +87,12 @@ const Sidebar = ({ children }) => {
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 p-0">
+            <SheetContent side="left" className="w-64 p-0 bg-white">
               <div className="h-16 flex items-center px-6 border-b">
-                <Link href="/" className="flex items-center space-x-2">
-                  <LogoIcon className="w-8 h-8" />
-                  <span className="text-xl font-bold text-blue-600">智阅</span>
-                </Link>
+                  <Link href="/" className="flex items-center space-x-2">
+                      <LogoIcon className="w-8 h-8" />
+                      <span className="text-xl font-bold text-blue-600">智阅</span>
+                  </Link>
               </div>
               <NavLinks />
             </SheetContent>

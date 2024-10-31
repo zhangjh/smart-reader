@@ -72,7 +72,9 @@ const ReadingHistory = () => {
                             type="text"
                             placeholder="输入书籍名称检索"
                             value={titleFilter} 
-                            onChange={e => setTitleFilter(e.target.value)} />
+                            onChange={e => setTitleFilter(e.target.value)} 
+                            className="w-full md:w-3/4" // 在手机端宽度为100%，在中等及以上屏幕宽度为75%
+                        />
                         <Button 
                             type="submit" 
                             disabled={loading}
