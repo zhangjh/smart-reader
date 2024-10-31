@@ -52,7 +52,7 @@ const BookSearch = () => {
         window.location.href = "/sign-in?redirect_url=" + window.location.pathname;
         return;
       }
-      const userId = localStorage.getItem("userId");
+      const userId = window.localStorage.getItem("userId");
       if(!userId) {
         throw new Error("用户未登录");
       }

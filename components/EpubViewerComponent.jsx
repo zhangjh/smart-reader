@@ -35,7 +35,7 @@ const EpubViewerComponent = ({ url, title }) => {
       });
       renditionRef.current = rendition;
 
-      const savedLocation = localStorage.getItem(bookKey);
+      const savedLocation = window.localStorage.getItem(bookKey);
       console.log("savedLocation: " + savedLocation);
       if(savedLocation) {
         await rendition.display(savedLocation);
@@ -56,7 +56,7 @@ const EpubViewerComponent = ({ url, title }) => {
 
        // 监听页面变化事件
       rendition.on("locationChanged", (location) => {
-        localStorage.setItem(bookKey, JSON.stringify(location));
+        window.localStorage.setItem(bookKey, JSON.stringify(location));
       });
     };
 

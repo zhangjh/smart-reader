@@ -30,11 +30,15 @@ const ReadingHistory = () => {
     const [readingHistory, setReadingHistory] = useState<History[]>([]);
     const [loading, setLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(0);
+    const [userId, setUserId] = useState<string | null>(null);
 
-    const userId = localStorage.getItem("userId");
-    if(!userId) {
-    throw new Error("用户未登录");
-    }
+    useEffect(() => {
+        const id = window.localStorage.getItem("userId");
+        if (!id) {
+            throw new Error("用户未登录");
+        }
+        setUserId(id);
+    }, []);
 
     const fetchHistory = async () => {
         setLoading(true);
@@ -99,25 +103,39 @@ const ReadingHistory = () => {
                         {readingHistory.map((history) => (
                         <Card key={history.id} className="p-4">
                             <div className="flex justify-between items-center">
-                            <div>
-                                <h3 className="font-medium">开始阅读时间</h3>
-                                <p className="text-sm text-gray-500">{handleDate(history.create_time)}</p>
-                            </div>
-                            <div>
-                                <h3 className="font-medium">最近阅读时间</h3>
-                                <p className="text-sm text-gray-500">{history.modify_time}</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="font-medium">书籍</p>
-                                <p className="text-sm text-gray-500">{history.title} : {history.author}</p>
-                            </div>
-                            <div className="space-y-1">
-                                <div className="flex justify-between text-sm">
-                                <span>阅读进度</span>
-                                <span>{history.progress}%</span>
+                                <div>
+                                    <h3 className="font-medium">开始阅读时间</h3>
+                                    <p className="text-sm text-gray-500">{handleDate(history.create_time)}</p>
                                 </div>
-                                <Progress value={history.progress} className="h-2" />
+                                <div>
+                                    <h3 className="font-medium">最近阅读时间</h3>
+                                    <p className="text-sm text-gray-500">{history.modify_time}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="font-medium">书籍</p>
+                                    <p className="text-sm text-gray-500">{history.title} : {history.author}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <div className="flex justify-between text-sm">
+                                    <span>阅读进度</span>
+                                    <span>{history.progress}%</span>
+                                    </div>
+                                    <Progress value={history.progress} className="h-2" />
+                                </div>
                             </div>
+                            <div className="flex justify-end mt-2">
+                                <Button 
+                                    onClick={() => window.location.href = `/reader?fileId=${history.fileId}`} 
+                                    className="mr-2 bg-green-500 hover:bg-green-600 text-white"
+                                >
+                                    去阅读
+                                </Button>
+                                <Button 
+                                    onClick={() => window.location.href = `${serviceDomain}/books/getReadFileUrl?fileId=${history.fileId}`} 
+                                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                                >
+                                    下载
+                                </Button>
                             </div>
                         </Card>
                         ))}
