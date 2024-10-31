@@ -39,7 +39,10 @@ function SignUpSaveUser() {
           const userName = user.username;
           const email = user.emailAddresses[0].emailAddress;
           const avatar = user.imageUrl;
-          const extType = user.externalAccounts[0].provider;
+          let extType = "email";
+          if(user.externalAccounts.length > 0) {
+            extType = user.externalAccounts[0].provider;
+          }
           
            // 判断是否已经保存过
           const savedUserId = localStorage.getItem("extId");
