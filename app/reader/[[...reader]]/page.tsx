@@ -38,6 +38,11 @@ const EpubReader = () => {
   const [chatAnswer, setChatAnswer] = useState<{ question: string; answer: string; }[]>([]); // 指定类型为数组
   const [epubUrl, setEpubUrl] = useState(null);
 
+  const userId = localStorage.getItem('userId');
+  if(!userId) {
+    throw new Error("用户未登录");
+  }
+
   const handleQuestionSubmit = (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
@@ -55,10 +60,6 @@ const EpubReader = () => {
       setChatAnswer([...chatAnswer]);
     }, 1000);
     // 调用chat接口获取结果
-    const userId = localStorage.getItem('userId');
-    if(!userId) {
-      throw new Error("用户未登录");
-    }
     const headers = {
       'Content-Type': 'application/json',
       'userId': userId,
@@ -126,9 +127,10 @@ const EpubReader = () => {
       setFile(uploadedFile);
       setIsLoading(true);
 
-       // 调用后端服务进行格式转换，获取转换后的epub文件后再渲染
-       const formData = new FormData();
-       formData.append('file', uploadedFile);
+      // 调用后端服务进行格式转换，获取转换后的epub文件后再渲染
+      const formData = new FormData();
+      formData.append('file', uploadedFile);
+      formData.append('userId', userId);
 
       // 判断是否需要进行格式转换
       let format:string | undefined = uploadedFile.type;
