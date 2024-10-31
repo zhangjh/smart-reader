@@ -31,10 +31,15 @@ const ReadingHistory = () => {
     const [loading, setLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(0);
 
+    const userId = localStorage.getItem("userId");
+    if(!userId) {
+    throw new Error("用户未登录");
+    }
+
     const fetchHistory = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${serviceDomain}/books/getHistory?pageIndex=${currentPage}&pageSize=10&title=${titleFilter}`);
+            const response = await fetch(`${serviceDomain}/books/getHistory?userId=${userId}&pageIndex=${currentPage}&pageSize=10&title=${titleFilter}`);
             const res = await response.json();
             
             if (!res.success) {
@@ -119,7 +124,7 @@ const ReadingHistory = () => {
 
                         {readingHistory.length === 0 && (
                         <div className="text-center py-8 text-gray-500">
-                            暂无订单数据
+                            暂无阅读历史数据
                         </div>
                         )}
                     </div>
