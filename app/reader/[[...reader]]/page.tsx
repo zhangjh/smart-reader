@@ -24,6 +24,9 @@ const mimeTypeMap = {
     "application/x-mobipocket-ebook": "azw3",
     // 添加其他需要的 MIME 类型映射
 };
+
+const socket = new WebSocket('ws://localhost:3002/summary');
+
 const EpubReader = () => {
   const [question, setQuestion] = useState('');
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -42,8 +45,6 @@ const EpubReader = () => {
   if(!userId) {
     throw new Error("用户未登录");
   }
-
-  const socket = new WebSocket('ws://localhost:3002/summary');
 
   const handleQuestionSubmit = (e) => {
     e.preventDefault();
@@ -192,8 +193,16 @@ const EpubReader = () => {
           });
         } else if(data.type === 'data') {
           // 更新summary
-          setSummary(summary + data.data);
+          setSummary(prevSummary => prevSummary + data.data); // 使用函数式更新
         }
+      };
+
+      socket.onclose = () => {
+        console.log('websocket closed');
+      };
+
+      socket.onerror = (error) => {
+        console.error('websocket error: ', error);
       };
       
       setProcessing(false);
