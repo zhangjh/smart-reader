@@ -43,6 +43,8 @@ const EpubReader = () => {
     throw new Error("用户未登录");
   }
 
+  const socket = new WebSocket('ws://localhost:3002/summary');
+
   const handleQuestionSubmit = (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
@@ -159,24 +161,21 @@ const EpubReader = () => {
       setEpubUrl(fileUrl);
       // fetch summary
       setProcessing(true);
-      fetch(`${serviceDomain}/parse/summary`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      socket.onopen = () => {
+        console.log('websocket connected');
+        socket.send(JSON.stringify({
+          'fileId': fileId,
           'userId': userId,
-          'fileId': fileId
-        }),
-      })
-      .then(response => response.json())
-      .then(response => {
-        console.log(response);
-        if(!response.success) {
-          throw new Error(response.errorMsg);
+        }));
+      };
+
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if(!data.success) {
+          throw new Error(data.errorMsg);
         }
-        // 流式输出结束标记
-        if(response.type === 'finish') {
+        // 结束标记
+        if(data.type === 'finish') {
           // 更新解析记录
           fetch(`${serviceDomain}/parse/updateRecord`, {
             method: 'POST',
@@ -191,11 +190,12 @@ const EpubReader = () => {
               'summary': summary,
             }),
           });
-        } else {
-          // 持续更新summary
-          setSummary(summary + response);
+        } else if(data.type === 'data') {
+          // 更新summary
+          setSummary(summary + data.data);
         }
-      });
+      };
+      
       setProcessing(false);
 
       setTitle(title);
