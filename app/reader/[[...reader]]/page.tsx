@@ -143,26 +143,59 @@ const EpubReader = () => {
         throw new Error("文件格式不支持");
       }
      
-      const summaryResponse = await fetch(serviceDomain + "/parse/convertAndSummary", {
+      const convertResponse = await fetch(serviceDomain + "/parse/convert", {
         method: 'POST',
         body: formData,
       });
-      const summaryResult = await summaryResponse.json();
-      if (!summaryResult.success) {
-        console.error(summaryResult.errorMsg);
-        throw new Error(summaryResult.errorMsg);
+      const convertResult = await convertResponse.json();
+      if (!convertResult.success) {
+        console.error(convertResult.errorMsg);
+        throw new Error(convertResult.errorMsg);
       }
-      const fileUrl = summaryResult.data.fileUrl;
-      const summary = summaryResult.data.summary;
-      const title = summaryResult.data.title;
-      const author = summaryResult.data.author;
+      const fileUrl = convertResult.data.fileUrl;
+      const fileId = convertResult.data.fileId;
       console.log("fileUrl: ", fileUrl);
       setIsLoading(false);
       setEpubUrl(fileUrl);
       // fetch summary
       setProcessing(true);
-
-      setSummary(summary);
+      fetch(`${serviceDomain}/parse/summary`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'userId': userId,
+          'fileId': fileId
+        }),
+      })
+      .then(response => response.json())
+      .then(response => {
+        console.log(response);
+        if(!response.success) {
+          throw new Error(response.errorMsg);
+        }
+        // 流式输出结束标记
+        if(response.type === 'finish') {
+          // 更新解析记录
+          fetch(`${serviceDomain}/parse/updateRecord`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              'fileId': fileId,
+              'userId': userId,
+              'title': title,
+              'author': author,
+              'summary': summary,
+            }),
+          });
+        } else {
+          // 持续更新summary
+          setSummary(summary + response);
+        }
+      });
       setProcessing(false);
 
       setTitle(title);
