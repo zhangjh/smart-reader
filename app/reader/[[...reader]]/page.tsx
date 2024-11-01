@@ -25,8 +25,6 @@ const mimeTypeMap = {
     // 添加其他需要的 MIME 类型映射
 };
 
-const socket = new WebSocket('ws://localhost:3002/summary');
-
 const EpubReader = () => {
   const [question, setQuestion] = useState('');
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -162,6 +160,9 @@ const EpubReader = () => {
       setEpubUrl(fileUrl);
       // fetch summary
       setProcessing(true);
+
+      const socket = new WebSocket('ws://localhost:3002/summary');
+
       socket.onopen = () => {
         console.log('websocket connected');
         socket.send(JSON.stringify({
