@@ -161,7 +161,7 @@ const EpubReader = () => {
       // fetch summary
       setProcessing(true);
 
-      const socket = new WebSocket('ws://localhost:3002/summary');
+      const socket = new WebSocket('wss://tx.zhangjh.cn:3002/summary');
 
       socket.onopen = () => {
         console.log('websocket connected');
