@@ -184,6 +184,7 @@ const EpubReader = () => {
         if(data.success && !data.success) {
           throw new Error(data.errorMsg);
         }
+        setProcessing(false);
         // 结束标记
         if(data.type === 'finish') {
           // 更新解析记录
@@ -214,8 +215,6 @@ const EpubReader = () => {
         console.error('websocket error: ', error);
       };
       
-      setProcessing(false);
-
       setTitle(title);
       setAuthor(author);
     }
