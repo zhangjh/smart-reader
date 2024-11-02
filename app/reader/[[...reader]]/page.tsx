@@ -178,7 +178,8 @@ const EpubReader = () => {
 
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        if(!data.success) {
+        // data.success == false
+        if(data.success && !data.success) {
           throw new Error(data.errorMsg);
         }
         // 结束标记
