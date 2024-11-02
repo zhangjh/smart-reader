@@ -77,7 +77,7 @@ function SignUpSaveUser() {
         }
       } else {
         // 未登录清除本地缓存
-        window.localStorage.clear();
+        // window.localStorage.clear();
       }
     };
     saveUser();

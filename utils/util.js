@@ -106,7 +106,7 @@ const featuresArr = {
       const userId = window.localStorage.getItem('userId');
       if(!userId) {
         console.log("未登录，需要登录");
-        window.location.href = "/sign-in?redirect=" + window.location.pathname;
+        window.location.href = "/sign-in?redirect_url=" + window.location.pathname;
         return;
       }
       return userId;
