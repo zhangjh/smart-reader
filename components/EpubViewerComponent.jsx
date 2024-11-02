@@ -21,6 +21,26 @@ const EpubViewerComponent = ({ url, title }) => {
         setCurrentPage(location.start.displayed.page); // 更新当前页码
       }
     };
+  
+    const handleKeyPress = (e) => {
+      if (renditionRef.current) {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          handlePrevPage();
+        } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          handleNextPage();
+        }
+      }
+    };
+    // const handleWheel = (e) => {
+    //   if (renditionRef.current) {
+    //     e.preventDefault();
+    //     if (e.deltaY > 0) {
+    //       handleNextPage();
+    //     } else {
+    //       handlePrevPage();
+    //     }
+    //   }
+    // };
 
     const loadBook = async () => {
       if (book) {
@@ -62,41 +82,20 @@ const EpubViewerComponent = ({ url, title }) => {
 
     if (url) {
       loadBook();
+      document.addEventListener('keydown', handleKeyPress);
+      // document.addEventListener('wheel', handleWheel, { passive: false });
+      renditionRef.current.on('rendered', updatePageNumber); // 监听渲染事件以更新页码
     }
-
-    const handleKeyPress = (e) => {
-      if (renditionRef.current) {
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-          handlePrevPage();
-        } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-          handleNextPage();
-        }
-      }
-    };
-    // const handleWheel = (e) => {
-    //   if (renditionRef.current) {
-    //     e.preventDefault();
-    //     if (e.deltaY > 0) {
-    //       handleNextPage();
-    //     } else {
-    //       handlePrevPage();
-    //     }
-    //   }
-    // };
-
-    document.addEventListener('keydown', handleKeyPress);
-    // document.addEventListener('wheel', handleWheel, { passive: false });
-    renditionRef.current.on('rendered', updatePageNumber); // 监听渲染事件以更新页码
 
     return () => {
       if (book) {
         book.destroy();
-      }
-      document.removeEventListener('keydown', handleKeyPress);
-      // document.removeEventListener('wheel', handleWheel);
-      renditionRef.current.off('rendered', updatePageNumber);
+        document.removeEventListener('keydown', handleKeyPress);
+        // document.removeEventListener('wheel', handleWheel);
+        renditionRef.current.off('rendered', updatePageNumber);
+      } 
     };
-  }, [url]);
+  }, [bookKey, url]);
 
   const handlePrevPage = () => {
     if (renditionRef.current) {
