@@ -162,7 +162,7 @@ const EpubReader = () => {
       setProcessing(true);
 
       // 防止wss跨域
-      const socket = new WebSocket('ws://iread.chat/summary');
+      const socket = new WebSocket('wss://iread.chat/summary');
 
       socket.onopen = () => {
         console.log('websocket connected');
