@@ -75,6 +75,9 @@ function SignUpSaveUser() {
         } catch (error) {
           console.error("用户保存出错:", error);
         }
+      } else {
+        // 未登录清除本地缓存
+        window.localStorage.clear();
       }
     };
     saveUser();
