@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,15 @@ const BookSearch = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const { isSignedIn } = useUser();
+  const [userId, setUserId] = useState('');
+
+  useEffect(() => {
+    async function getUserId() {
+        const userId = await util.getUserInfo();
+        setUserId(userId);
+    }
+    getUserId();
+}, []);
 
   const { data: searchResults, refetch, isFetching } = useQuery({
     queryKey: ['bookSearch', searchTerm],
@@ -26,13 +35,15 @@ const BookSearch = () => {
       const response = await fetch(serviceDomain + `/books/search?keyword=${searchTerm}&limit=10`);
       console.log(response);
       if (!response.ok) {
-        throw new Error('查找失败');
+        toast.error('查找失败，请稍后再试');
+        return;
       }
       const res = await response.json();
       if(res.success) {
         return res.data;
       } else {
-        throw new Error('查找失败: ' + res.errorMsg);
+        toast.error('查找失败: ' + res.errorMsg);
+        return;
       }
     },
     enabled: false,
@@ -51,11 +62,7 @@ const BookSearch = () => {
       if(!isSignedIn) {
         window.location.href = "/sign-in?redirect_url=" + window.location.pathname;
         return;
-      }
-      const userId = window.localStorage.getItem("userId");
-      if(!userId) {
-        throw new Error("用户未登录");
-      }
+      } 
       // 校验权限
       util.authCheck(userId, "download", async () => {
         const response = await fetch(`${serviceDomain}/books/download`, {

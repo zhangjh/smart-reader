@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from 'react-toastify';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import util from '@/utils/util';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
@@ -33,11 +34,11 @@ const ReadingHistory = () => {
     const [userId, setUserId] = useState<string | null>(null);
 
     useEffect(() => {
-        const id = window.localStorage.getItem("userId");
-        if (!id) {
-            throw new Error("用户未登录");
+        async function getUserId() {
+            const userId = await util.getUserInfo();
+            setUserId(userId);
         }
-        setUserId(id);
+        getUserId();
     }, []);
 
     const fetchHistory = async () => {

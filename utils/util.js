@@ -102,6 +102,14 @@ const featuresArr = {
           }
         });
     },
+    async getUserInfo() {
+      const userId = window.localStorage.getItem('userId');
+      if(!userId) {
+        console.log("未登录，需要登录");
+        return window.locationbar.href = "/login?redirect=" + window.location.pathname;
+      }
+      return userId;
+    },
   };
 
 export default util;

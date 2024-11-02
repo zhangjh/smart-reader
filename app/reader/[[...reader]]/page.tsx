@@ -1,6 +1,6 @@
 'use client'
 
-import {useState } from 'react';
+import {useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import NavBar from '@/components/NavBar';
@@ -12,6 +12,7 @@ import remarkGfm from 'remark-gfm';
 
 import './index.css';
 import { withAuth } from '@/components/withAuth';
+import util from '@/utils/util';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
@@ -38,12 +39,15 @@ const EpubReader = () => {
   const [chatContext, setChatContext] = useState<{ role: string; content: string; }[]>([]);
   const [chatAnswer, setChatAnswer] = useState<{ question: string; answer: string; }[]>([]); // 指定类型为数组
   const [epubUrl, setEpubUrl] = useState(null);
+  const [userId, setUserId] = useState('');
 
-  const userId = localStorage.getItem('userId');
-  if(!userId) {
-    throw new Error("用户未登录");
-  }
-
+  useEffect(() => {
+    async function getUserId() {
+        const userId = await util.getUserInfo();
+        setUserId(userId);
+    }
+    getUserId();
+}, []);
   const handleQuestionSubmit = (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
