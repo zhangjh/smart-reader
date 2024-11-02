@@ -39,6 +39,7 @@ const EpubReader = () => {
   const [chatContext, setChatContext] = useState<{ role: string; content: string; }[]>([]);
   const [chatAnswer, setChatAnswer] = useState<{ question: string; answer: string; }[]>([]); // 指定类型为数组
   const [epubUrl, setEpubUrl] = useState(null);
+  const [fileId, setFileId] = useState('');
   const [userId, setUserId] = useState('');
 
   useEffect(() => {
@@ -164,6 +165,7 @@ const EpubReader = () => {
       console.log("fileUrl: ", fileUrl);
       setIsLoading(false);
       setEpubUrl(fileUrl);
+      setFileId(fileId);
       // fetch summary
       setProcessing(true);
 
@@ -205,6 +207,10 @@ const EpubReader = () => {
         } else if(data.type === 'data') {
           // 更新summary
           setSummary(prevSummary => prevSummary + data.data); // 使用函数式更新
+        } else if(data.type === 'title') {
+          setTitle(title);
+        } else if(data.type === 'author') {
+          setAuthor(author);
         }
       };
 
@@ -215,9 +221,6 @@ const EpubReader = () => {
       socket.onerror = (error) => {
         console.error('websocket error: ', error);
       };
-      
-      setTitle(title);
-      setAuthor(author);
     }
   };
 
@@ -264,7 +267,7 @@ const EpubReader = () => {
             {/* 左侧：Epub内容 */}
             <div className="w-full lg:w-1/2 p-4 lg:border-r lg:border-gray-200">
               <div className="bg-white rounded-lg shadow-md p-4 h-[60vh] lg:h-full">
-                <EpubViewerComponent url={epubUrl} title={title} />
+                <EpubViewerComponent url={epubUrl} fileId={fileId} />
               </div>
             </div>
 
