@@ -186,7 +186,8 @@ const EpubReader = () => {
         }
         setProcessing(false);
         // 结束标记
-        if(data.type === 'finish') {
+        if(data.type === 'finish') {          
+          console.log('summary:', summary);
           // 更新解析记录
           fetch(`${serviceDomain}/parse/updateRecord`, {
             method: 'POST',
