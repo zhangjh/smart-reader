@@ -129,6 +129,23 @@ const EpubReader = () => {
     setQuestion('');
   };
 
+  const updateRecord = async (title: string, author: string, summary: string) => {
+    // 更新解析记录
+    fetch(`${serviceDomain}/parse/updateRecord`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        'fileId': fileId,
+        'userId': userId,
+        'title': title,
+        'author': author,
+        'summary': summary,
+      }),
+    });
+  };
+
   const handleFileUpload = async (e) => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
@@ -188,22 +205,8 @@ const EpubReader = () => {
         }
         setProcessing(false);
         // 结束标记
-        if(data.type === 'finish') {          
-          console.log('summary:', summary);
-          // 更新解析记录
-          fetch(`${serviceDomain}/parse/updateRecord`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              'fileId': fileId,
-              'userId': userId,
-              'title': title,
-              'author': author,
-              'summary': summary,
-            }),
-          });
+        if(data.type === 'finish') {
+          updateRecord(title, author, summary);
         } else if(data.type === 'data') {
           // 更新summary
           setSummary(prevSummary => prevSummary + data.data); // 使用函数式更新
@@ -223,6 +226,12 @@ const EpubReader = () => {
       };
     }
   };
+
+  useEffect(() => {
+    console.log("title:", title);
+    console.log("author:", author);
+    console.log("summary:", summary);
+  }, [title, author, summary]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
