@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import localFont from 'next/font/local';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
+import Script from 'next/script';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
@@ -102,6 +103,10 @@ export default function ClientLayout({
             {children}
           </QueryClientProvider>
         </body>
+        <Script
+          strategy='lazyOnload'
+          src="//js.users.51.la/21929023.js"
+        ></Script>
       </html>
     </ClerkProvider>
   )
