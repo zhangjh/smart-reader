@@ -41,6 +41,11 @@ const EpubReader = () => {
   const [epubUrl, setEpubUrl] = useState(null);
   const [fileId, setFileId] = useState('');
   const [userId, setUserId] = useState('');
+  const [updateQueue, setUpdateQueue] = useState({
+    title: '',
+    author: '',
+    summary: ''
+  });
 
   useEffect(() => {
     async function getUserId() {
@@ -129,6 +134,24 @@ const EpubReader = () => {
     setQuestion('');
   };
 
+  const updateRecord = async (fileId: string, userId: string, data: any) => {
+    try {
+      await fetch(`${serviceDomain}/parse/updateRecord`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fileId,
+          userId,
+          ...data
+        }),
+      });
+    } catch (error) {
+      console.error('Error updating record:', error);
+    }
+  };
+
   const handleFileUpload = async (e) => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
@@ -189,28 +212,35 @@ const EpubReader = () => {
         setProcessing(false);
         // 结束标记
         if(data.type === 'finish') {          
-          console.log('summary:', summary);
-          // 更新解析记录
-          fetch(`${serviceDomain}/parse/updateRecord`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              'fileId': fileId,
-              'userId': userId,
-              'title': title,
-              'author': author,
-              'summary': summary,
-            }),
+          console.log('Final summary:', updateQueue.summary);
+          // 使用最新的状态值更新记录
+          updateRecord(fileId, userId, {
+            title: updateQueue.title,
+            author: updateQueue.author,
+            summary: updateQueue.summary
           });
         } else if(data.type === 'data') {
-          // 更新summary
-          setSummary(prevSummary => prevSummary + data.data); // 使用函数式更新
+          // 更新 summary 和队列
+          const newSummary = updateQueue.summary + data.data;
+          setSummary(newSummary);
+          setUpdateQueue(prev => ({
+            ...prev,
+            summary: newSummary
+          }));
         } else if(data.type === 'title') {
-          setTitle(title);
+          // 更新 title 和队列
+          setTitle(data.title);
+          setUpdateQueue(prev => ({
+            ...prev,
+            title: data.title
+          }));
         } else if(data.type === 'author') {
-          setAuthor(author);
+          // 更新 author 和队列
+          setAuthor(data.author);
+          setUpdateQueue(prev => ({
+            ...prev,
+            author: data.author
+          }));
         }
       };
 
