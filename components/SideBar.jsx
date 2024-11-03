@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { LogoIcon } from './icons/logo';
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 const Sidebar = ({ children }) => {
   const pathname = usePathname();
@@ -77,12 +78,28 @@ const Sidebar = ({ children }) => {
   return (
     <div className="min-h-screen flex">
       {/* Desktop Sidebar */}
-      <aside side="left" className="hidden md:block w-64 p-0 bg-white border-r">
-        <div className="h-20 flex items-center px-6 border-b">
+      <aside className="hidden md:block w-64 bg-white border-r">
+        <div className="h-20 flex items-center justify-between px-6 border-b">
           <Link href="/" className="flex items-center space-x-2">
             <LogoIcon className="w-10 h-10" />
             <span className="text-xl font-bold text-blue-600">智阅</span>
           </Link>
+          <div className="flex items-center space-x-2">
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button variant="ghost" size="sm">登录</Button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton 
+                appearance={{
+                  elements: {
+                    avatarBox: "w-8 h-8"
+                  }
+                }}
+              />
+            </SignedIn>
+          </div>
         </div>
         <NavLinks />
       </aside>
@@ -94,25 +111,41 @@ const Sidebar = ({ children }) => {
             <LogoIcon className="w-8 h-8" />
             <span className="text-xl font-bold text-blue-600">智阅</span>
           </Link>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-64 p-0 bg-white">
-              <div className="h-16 flex items-center px-6 border-b">
+          <div className="flex items-center space-x-2">
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button variant="ghost" size="sm">登录</Button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton 
+                appearance={{
+                  elements: {
+                    avatarBox: "w-8 h-8"
+                  }
+                }}
+              />
+            </SignedIn>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-64 p-0">
+                <div className="h-16 flex items-center px-6 border-b">
                   <Link href="/" className="flex items-center space-x-2">
-                      <LogoIcon className="w-8 h-8" />
-                      <span className="text-xl font-bold text-blue-600">智阅</span>
+                    <LogoIcon className="w-8 h-8" />
+                    <span className="text-xl font-bold text-blue-600">智阅</span>
                   </Link>
-              </div>
-              <NavLinks />
-            </SheetContent>
-          </Sheet>
+                </div>
+                <NavLinks />
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </div>
-      
+
       {/* Main Content Area */}
       <main className="flex-1 md:ml-0">
         <div className="md:h-16 h-16 border-b bg-white" />
