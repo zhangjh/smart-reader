@@ -28,11 +28,14 @@ const Orders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
   
   const fetchOrders = async () => {
+    if (!userId) return;  // 添加保护检查
+
     setLoading(true);
     try {
-      const response = await fetch(`${serviceDomain}/order/list?pageIndex=${currentPage}&pageSize=5&status=${statusFilter}`);
+      const response = await fetch(`${serviceDomain}/order/list?userId=${userId}&pageIndex=${currentPage}&pageSize=5&status=${statusFilter}`);
       const res = await response.json();
       
       if (!res.success) {
@@ -49,10 +52,29 @@ const Orders = () => {
     }
   };
 
+  const getUserId = async () => {
+    try {
+        const id = await util.getUserInfo();
+        if (id) {
+            setUserId(id);
+        }
+    } catch (error) {
+        console.error('Error fetching user info:', error);
+        toast.error('获取用户信息失败');
+    }
+  };
+
+  // 组件加载时获取用户ID
   useEffect(() => {
-    fetchOrders();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, statusFilter]);
+    getUserId();
+  }, []);
+
+  // 监听userId、currentPage和titleFilter的变化
+  useEffect(() => {
+    if (userId) {
+      fetchOrders();
+    }
+  }, [userId, currentPage, statusFilter]);
 
   const getItemTypeText = (type: string) => {
     switch (type) {
@@ -81,10 +103,23 @@ const Orders = () => {
     }
   };
 
-  const handleDate = (date: string) => {
-    // 2024-10-26T15:54:36.897Z
-    return date.toLocaleString().replace('T', ' ').replace('Z', '').replace(/\.\d+/, '');
+  const handleDate = (dateStr: string) => {
+    try {
+        const date = new Date(dateStr);
+        return date.toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    } catch (error) {
+        console.error('Date parsing error:', error);
+        return dateStr;
+    }
   };
+  
   const handlePrice = (price: number) => {
     return price / 100 + ' ¥';
   };

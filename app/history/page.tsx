@@ -195,6 +195,7 @@ const ReadingHistory = () => {
                                         <PaginationLink
                                             onClick={() => setCurrentPage(i + 1)}
                                             isActive={currentPage === i + 1}
+                                            className={currentPage === i + 1 ? 'bg-primary text-primary-foreground' : ''}
                                         >
                                             {i + 1}
                                         </PaginationLink>
