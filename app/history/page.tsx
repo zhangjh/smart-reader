@@ -46,7 +46,17 @@ const ReadingHistory = () => {
             if (!res.success) {
                 throw new Error(res.errorMessage || '获取阅读记录列表失败');
             }
-            
+            const historyList = res.data.results;
+            // 填充progress
+            for (let i = 0; i < historyList.length; i++) {
+                const item = historyList[i];
+                const fileId = item.fileId;
+                const progressStorage = localStorage.getItem(fileId);
+                if(progressStorage) {
+                    const progress = JSON.parse(progressStorage);
+                    historyList[i].progress = progress.progressPercentage;
+                }
+            }
             setReadingHistory(res.data.results);
             setTotalPages(Math.ceil(res.data.total / 10));
         } catch (error) {

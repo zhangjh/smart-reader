@@ -11,16 +11,10 @@ const EpubViewerComponent = ({ url, fileId }) => {
   const viewerRef = useRef(null);
   const renditionRef = useRef(null);
   const [showControls, setShowControls] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0); // 添加当前页码状态
+  const [progress, setProgress] = useState(0.00); // 添加当前进度
 
   useEffect(() => {
     let book = null;
-    const updatePageNumber = async () => {
-      if (renditionRef.current) {
-        const location = await renditionRef.current.currentLocation();
-        setCurrentPage(location.start.displayed.page); // 更新当前页码
-      }
-    };
   
     const handleKeyPress = (e) => {
       if (renditionRef.current) {
@@ -55,10 +49,12 @@ const EpubViewerComponent = ({ url, fileId }) => {
       });
       renditionRef.current = rendition;
 
-      const savedLocation = window.localStorage.getItem(bookKey);
-      console.log("savedLocation: " + savedLocation);
-      if(savedLocation) {
-        await rendition.display(JSON.parse(savedLocation).start);
+      const savedProgress = window.localStorage.getItem(bookKey);
+      console.log("savedLocation: " + savedProgress);
+      if(savedProgress) {
+        const savedProgressJO = JSON.parse(savedProgress);
+        setProgress(savedProgressJO.progressPercentage);
+        await rendition.display(savedProgressJO.cfi);
       } else {
         await rendition.display();
       }
@@ -75,16 +71,45 @@ const EpubViewerComponent = ({ url, fileId }) => {
       }
 
        // 监听页面变化事件
-      rendition.on("locationChanged", (location) => {
-        window.localStorage.setItem(bookKey, JSON.stringify(location));
+      // rendition.on("locationChanged", (location) => {
+      //   window.localStorage.setItem(bookKey, JSON.stringify(location));
+      // });
+
+      // 监听阅读进度变化
+      rendition.on("relocated", (location) => {
+        console.log("location: ", location);
+        // let storageJO = { location };
+        getReadingProgress().then(progress => {
+            console.log("当前阅读进度:", progress);
+            // 这里可以保存进度到localStorage或发送到服务器
+            // storageJO.progress = progress;
+            localStorage.setItem(bookKey, JSON.stringify(progress));
+        });
       });
     };
+
+    // 获取阅读进度的方法
+    const getReadingProgress = () => {
+      return new Promise((resolve) => {
+          // 获取当前位置信息
+          const currentLocation = renditionRef.current.currentLocation();
+          // 计算百分比进度
+          const progress = (currentLocation.start.percentage * 100).toFixed(2);
+          setProgress(progress);
+          // 获取CFI位置标识符
+          const cfi = currentLocation.start.cfi;
+          // 返回进度信息
+          resolve({
+              progressPercentage: progress,
+              cfi,
+          });
+      });
+    }
 
     if (url) {
       loadBook();
       document.addEventListener('keydown', handleKeyPress);
       // document.addEventListener('wheel', handleWheel, { passive: false });
-      renditionRef.current.on('rendered', updatePageNumber); // 监听渲染事件以更新页码
     }
 
     return () => {
@@ -92,7 +117,6 @@ const EpubViewerComponent = ({ url, fileId }) => {
         book.destroy();
         document.removeEventListener('keydown', handleKeyPress);
         // document.removeEventListener('wheel', handleWheel);
-        renditionRef.current.off('rendered', updatePageNumber);
       } 
     };
   }, [bookKey, url]);
@@ -125,7 +149,7 @@ const EpubViewerComponent = ({ url, fileId }) => {
     >
       <div ref={viewerRef} className="flex-grow pb-5">
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-black">
-          {`Page ${currentPage}`} {/* 显示当前页码 */}
+          {`- ${progress}% -`} {/* 显示当前页码 */}
         </div>
       </div>
       
