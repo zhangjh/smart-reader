@@ -34,6 +34,7 @@ const NavBar = () => {
             <div className="flex space-x-4 mr-6">
               <a href="/search" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">找书</a>
               <a href="/reader" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">阅读器</a>
+              <a href="/translation" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">翻译</a>
               {/* <a className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">知识库</a> */}
               <div className="relative">
                 <button onClick={toggleDropdown} className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">

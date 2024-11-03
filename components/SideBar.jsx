@@ -3,8 +3,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, ClipboardList, History, Menu, Search } from 'lucide-react';
+import { BookOpen, ClipboardList, Languages, History, Menu, Search } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { LogoIcon } from './icons/logo';
 
@@ -36,6 +37,18 @@ const Sidebar = ({ children }) => {
         <BookOpen className="h-5 w-5" />
         <span>阅读器</span>
       </Link>
+      <Link
+        href="/translation"
+        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
+          isActive('/translate')
+            ? 'bg-blue-50 text-blue-600'
+            : 'text-gray-600 hover:bg-gray-50'
+        }`}
+      >
+        <Languages className="h-5 w-5" />
+        <span>翻译</span>
+      </Link>
+      <Separator />
       <Link
         href="/orders"
         className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
