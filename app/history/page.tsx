@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import util from '@/utils/util';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";

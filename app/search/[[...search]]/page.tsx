@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
+import Image from 'next/image';
 import { useUser } from '@clerk/nextjs';
 import { ToastContainer, toast } from 'react-toastify'; // 引入 ToastContainer 和 toast
 import 'react-toastify/dist/ReactToastify.css'; // 引入样式
@@ -133,7 +134,13 @@ const BookSearch = () => {
                   >         
                     {book.title}
                   </h3>
-                  <img src={book.cover} alt={book.title} />
+                  <Image 
+                    src={book.cover}
+                    alt={book.title}
+                    width={150}
+                    height={150}
+                    className="rounded-lg"
+                  />
                   <p className="text-sm text-gray-600">
                     <strong>作者：</strong>{book.author}</p>
                   <p className="text-sm text-gray-600">

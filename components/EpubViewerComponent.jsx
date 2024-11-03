@@ -58,7 +58,7 @@ const EpubViewerComponent = ({ url, fileId }) => {
       const savedLocation = window.localStorage.getItem(bookKey);
       console.log("savedLocation: " + savedLocation);
       if(savedLocation) {
-        await rendition.display(savedLocation);
+        await rendition.display(JSON.parse(savedLocation).start);
       } else {
         await rendition.display();
       }
