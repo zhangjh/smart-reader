@@ -134,22 +134,21 @@ const EpubReader = () => {
     setQuestion('');
   };
 
-  const updateRecord = async (fileId: string, userId: string, data: any) => {
-    try {
-      await fetch(`${serviceDomain}/parse/updateRecord`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fileId,
-          userId,
-          ...data
-        }),
-      });
-    } catch (error) {
-      console.error('Error updating record:', error);
-    }
+  const updateRecord = async (title: string, author: string, summary: string) => {
+    // 更新解析记录
+    fetch(`${serviceDomain}/parse/updateRecord`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        'fileId': fileId,
+        'userId': userId,
+        'title': title,
+        'author': author,
+        'summary': summary,
+      }),
+    });
   };
 
   const handleFileUpload = async (e) => {
@@ -211,14 +210,8 @@ const EpubReader = () => {
         }
         setProcessing(false);
         // 结束标记
-        if(data.type === 'finish') {          
-          console.log('Final summary:', updateQueue.summary);
-          // 使用最新的状态值更新记录
-          updateRecord(fileId, userId, {
-            title: updateQueue.title,
-            author: updateQueue.author,
-            summary: updateQueue.summary
-          });
+        if(data.type === 'finish') {
+          updateRecord(title, author, summary);
         } else if(data.type === 'data') {
           // 更新 summary 和队列
           const newSummary = updateQueue.summary + data.data;
@@ -253,6 +246,12 @@ const EpubReader = () => {
       };
     }
   };
+
+  useEffect(() => {
+    console.log("title:", title);
+    console.log("author:", author);
+    console.log("summary:", summary);
+  }, [title, author, summary]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
