@@ -4,7 +4,7 @@ const nextConfig = {
       ignoreBuildErrors: true,
     },
     images: {
-      remotePatterns: ['cdn-zlib.sk'],
+      domains: ['s3proxy.cdn-zlib.sk'],
     },
 };
 
