@@ -13,6 +13,7 @@ import remarkGfm from 'remark-gfm';
 import './index.css';
 import { withAuth } from '@/components/withAuth';
 import util from '@/utils/util';
+import { toast } from 'react-toastify';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
@@ -90,7 +91,8 @@ const EpubReader = () => {
     }).then(async response => {
       const body = response.body;
       if(!body) {
-        throw new Error("接口调用异常");
+        toast.error("接口调用异常，请稍后重试");
+        return;
       }
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -167,7 +169,8 @@ const EpubReader = () => {
         format = uploadedFile.name.split('.').pop().toLowerCase();
       }
       if(!format) {
-        throw new Error("文件格式不支持");
+        toast.error("文件格式不支持");
+        return;
       }
      
       const convertResponse = await fetch(serviceDomain + "/parse/convert", {
@@ -177,7 +180,8 @@ const EpubReader = () => {
       const convertResult = await convertResponse.json();
       if (!convertResult.success) {
         console.error(convertResult.errorMsg);
-        throw new Error(convertResult.errorMsg);
+        toast.error(convertResult.errorMsg);
+        return;
       }
       const fileUrl = convertResult.data.fileUrl;
       const fileId = convertResult.data.fileId;
@@ -203,7 +207,8 @@ const EpubReader = () => {
         const data = JSON.parse(event.data);
         // data.success == false
         if(data.success && !data.success) {
-          throw new Error(data.errorMsg);
+          toast.error(data.errorMsg);
+          return;
         }
         setProcessing(false);
         // 结束标记
