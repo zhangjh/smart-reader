@@ -32,7 +32,6 @@ const EpubReader = () => {
   const [question, setQuestion] = useState('');
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [summary, setSummary] = useState('');
-  const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [chatting, setChatting] = useState(false);
@@ -41,6 +40,7 @@ const EpubReader = () => {
   const [epubUrl, setEpubUrl] = useState(null);
   const [fileId, setFileId] = useState('');
   const [userId, setUserId] = useState('');
+  const [progress, setProgress] = useState(0);
 
   const searchParams = useSearchParams();
   const fileIdParam = searchParams.get("fileId");
@@ -73,6 +73,17 @@ const EpubReader = () => {
             console.log(response.data);
             setEpubUrl(response.data);
             setIsLoading(false);
+        });
+      // 获取总结
+      fetch(`${serviceDomain}/books/getRecordDetail?userId=${userId}&fileId=${fileIdParam}`)
+        .then(response => response.json())
+        .then(response => {
+          if(!response.success) {
+            toast.error(response.errorMsg);
+            return;
+          }
+          setSummary(response.data.summary);
+          setProgress(response.data.progress);
         });
     }
   }, [fileIdParam, userId]);
@@ -175,7 +186,6 @@ const EpubReader = () => {
   const handleFileUpload = async (e) => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
-      setFile(uploadedFile);
       setIsLoading(true);
 
       // 调用后端服务进行格式转换，获取转换后的epub文件后再渲染
@@ -301,7 +311,7 @@ const EpubReader = () => {
             {/* 左侧：Epub内容 */}
             <div className="w-full lg:w-1/2 p-4 lg:border-r lg:border-gray-200">
               <div className="bg-white rounded-lg shadow-md p-4 h-[60vh] lg:h-full">
-                <EpubViewerComponent url={epubUrl} fileId={fileId} />
+                <EpubViewerComponent url={epubUrl} fileId={fileId} progress={progress} />
               </div>
             </div>
 
