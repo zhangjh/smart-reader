@@ -39,7 +39,7 @@ const ReadingHistory = () => {
         setLoading(true);
         try {
             const response = await fetch(
-                `${serviceDomain}/books/getHistory?userId=${userId}&pageIndex=${currentPage}&pageSize=10&title=${encodeURIComponent(titleFilter)}`
+                `${serviceDomain}/books/getHistory?userId=${userId}&pageIndex=${currentPage}&pageSize=10&title=${encodeURIComponent(titleFilter)}&orderField=modify_time`
             );
             const res = await response.json();
             
