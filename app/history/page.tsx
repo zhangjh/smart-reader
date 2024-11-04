@@ -21,7 +21,7 @@ interface History {
     cover: string;
     modify_time: string;
     progress: number;
-    fileId: string;
+    file_id: string;
     summary: string;
 }
 
@@ -50,7 +50,7 @@ const ReadingHistory = () => {
             // 填充progress
             for (let i = 0; i < historyList.length; i++) {
                 const item = historyList[i];
-                const fileId = item.fileId;
+                const fileId = item.file_id;
                 const progressStorage = localStorage.getItem(fileId);
                 if(progressStorage) {
                     const progress = JSON.parse(progressStorage);
@@ -168,13 +168,13 @@ const ReadingHistory = () => {
                                     </div>
                                     <div className="flex justify-end mt-4">
                                         <Button 
-                                            onClick={() => window.location.href = `/reader?fileId=${history.fileId}`}
+                                            onClick={() => window.location.href = `/reader?fileId=${history.file_id}`}
                                             className="mr-2 bg-green-500 hover:bg-green-600 text-white"
                                         >
                                             继续阅读
                                         </Button>
                                         <Button 
-                                            onClick={() => window.location.href = `${serviceDomain}/books/getReadFileUrl?fileId=${history.fileId}`}
+                                            onClick={() => window.location.href = `${serviceDomain}/books/getReadFileUrl?fileId=${history.file_id}`}
                                             className="bg-blue-500 hover:bg-blue-600 text-white"
                                         >
                                             下载
