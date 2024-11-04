@@ -36,6 +36,24 @@ const EpubViewerComponent = ({ url, fileId }) => {
     //   }
     // };
 
+    const updateRecord = (progress) => {
+      const userId = localStorage.getItem('userId');
+      if(!userId) {
+        return;
+      }
+      fetch(`${serviceDomain}/parse/updateRecord`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'fileId': fileId,
+          'userId': userId,
+          'progress': progress
+        }),
+      });
+    };
+
     const loadBook = async () => {
       if (book) {
         book.destroy();
@@ -84,6 +102,7 @@ const EpubViewerComponent = ({ url, fileId }) => {
             // 这里可以保存进度到localStorage或发送到服务器
             // storageJO.progress = progress;
             localStorage.setItem(bookKey, JSON.stringify(progress));
+            updateRecord(progress.progressPercentage);
         });
       });
     };
