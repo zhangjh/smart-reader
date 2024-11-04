@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { useSwipeable } from 'react-swipeable';
 import './reader.css';
 
+const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
+const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
+
 const EpubViewerComponent = ({ url, fileId }) => {
   const bookKey = fileId;
 
