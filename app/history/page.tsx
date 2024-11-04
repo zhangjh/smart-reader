@@ -174,7 +174,7 @@ const ReadingHistory = () => {
                                             继续阅读
                                         </Button>
                                         <Button 
-                                            onClick={() => window.location.href = `${serviceDomain}/books/getReadFileUrl?fileId=${history.file_id}`}
+                                            onClick={() => window.location.href = `${serviceDomain}/books/getReadFileUrl?userId=${userId}&fileId=${history.file_id}`}
                                             className="bg-blue-500 hover:bg-blue-600 text-white"
                                         >
                                             下载
