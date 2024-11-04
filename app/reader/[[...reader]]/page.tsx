@@ -30,8 +30,6 @@ const EpubReader = () => {
   const [question, setQuestion] = useState('');
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [summary, setSummary] = useState('');
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -41,13 +39,10 @@ const EpubReader = () => {
   const [epubUrl, setEpubUrl] = useState(null);
   const [fileId, setFileId] = useState('');
   const [userId, setUserId] = useState('');
-  const [updateQueue, setUpdateQueue] = useState({
-    title: '',
-    author: '',
-    summary: ''
-  });
 
   let finalSummary:Array<string> = [];
+  let title:string = "";
+  let author:string = "";
 
   useEffect(() => {
     async function getUserId() {
@@ -222,10 +217,10 @@ const EpubReader = () => {
           setSummary(prevSummary => prevSummary + data.data); // 使用函数式更新
         } else if(data.type === 'title') {
           console.log("received title:", data.data);
-          setTitle(data.data);
+          title = data.data;
         } else if(data.type === 'author') {
           console.log("received author", data.data);
-          setAuthor(data.data);
+          author = data.data;
         }
       };
 
@@ -238,12 +233,6 @@ const EpubReader = () => {
       };
     }
   };
-
-  useEffect(() => {
-    console.log("title:", title);
-    console.log("author:", author);
-    console.log("summary:", summary);
-  }, [title, author, summary]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
