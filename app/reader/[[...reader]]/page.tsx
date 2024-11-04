@@ -132,7 +132,7 @@ const EpubReader = () => {
     setQuestion('');
   };
 
-  const updateRecord = (title: string, author: string, summary: string) => {
+  const updateRecord = (fileId:string, title: string, author: string, summary: string) => {
     fetch(`${serviceDomain}/parse/updateRecord`, {
       method: 'POST',
       headers: {
@@ -208,18 +208,15 @@ const EpubReader = () => {
         setProcessing(false);
         // 结束标记
         if(data.type === 'finish') {          
-          console.log('summary:', finalSummary.join(""));
           // 更新解析记录
-          updateRecord(title, author, finalSummary.join(""));
+          updateRecord(fileId, title, author, finalSummary.join(""));
         } else if(data.type === 'data') {
           // 更新summary
           finalSummary.push(data.data);
           setSummary(prevSummary => prevSummary + data.data); // 使用函数式更新
         } else if(data.type === 'title') {
-          console.log("received title:", data.data);
           title = data.data;
         } else if(data.type === 'author') {
-          console.log("received author", data.data);
           author = data.data;
         }
       };
