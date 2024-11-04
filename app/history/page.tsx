@@ -114,6 +114,18 @@ const ReadingHistory = () => {
         }
     };
 
+    const getFile = (fileId:string) => {
+        fetch(`${serviceDomain}/books/getReadFileUrl?userId=${userId}&fileId=${fileId}`)
+            .then(response => response.json())
+            .then(response => {
+                if(!response.success) {
+                    toast.error(response.errorMsg);
+                    return;
+                }
+                window.location.href = response.data;
+            });
+    };
+
     return (
         <Sidebar>
             <div className="p-4 md:p-6">
@@ -174,7 +186,7 @@ const ReadingHistory = () => {
                                             继续阅读
                                         </Button>
                                         <Button 
-                                            onClick={() => window.location.href = `${serviceDomain}/books/getReadFileUrl?userId=${userId}&fileId=${history.file_id}`}
+                                            onClick={() => getFile(history.file_id)}
                                             className="bg-blue-500 hover:bg-blue-600 text-white"
                                         >
                                             下载
