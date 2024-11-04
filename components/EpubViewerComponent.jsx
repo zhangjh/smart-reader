@@ -8,13 +8,13 @@ import './reader.css';
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
-const EpubViewerComponent = ({ url, fileId, progress }) => {
+const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
   const bookKey = fileId;
 
   const viewerRef = useRef(null);
   const renditionRef = useRef(null);
   const [showControls, setShowControls] = useState(false);
-  const [progress, setProgress] = useState(progress ? progress : 0.0); // 添加当前进度
+  const [progress, setProgress] = useState(recoredProgress ? recoredProgress : 0.0); // 添加当前进度
 
   useEffect(() => {
     let book = null;
