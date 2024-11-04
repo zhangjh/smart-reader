@@ -47,6 +47,8 @@ const EpubReader = () => {
     summary: ''
   });
 
+  let finalSummary:Array<string> = [];
+
   useEffect(() => {
     async function getUserId() {
         const userId = await util.getUserInfo();
@@ -55,7 +57,8 @@ const EpubReader = () => {
         }
     }
     getUserId();
-}, []);
+  }, []);
+
   const handleQuestionSubmit = (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
@@ -134,8 +137,7 @@ const EpubReader = () => {
     setQuestion('');
   };
 
-  const updateRecord = async (title: string, author: string, summary: string) => {
-    // 更新解析记录
+  const updateRecord = (title: string, author: string, summary: string) => {
     fetch(`${serviceDomain}/parse/updateRecord`, {
       method: 'POST',
       headers: {
@@ -210,30 +212,20 @@ const EpubReader = () => {
         }
         setProcessing(false);
         // 结束标记
-        if(data.type === 'finish') {
-          updateRecord(title, author, summary);
+        if(data.type === 'finish') {          
+          console.log('summary:', finalSummary.join(""));
+          // 更新解析记录
+          updateRecord(title, author, finalSummary.join(""));
         } else if(data.type === 'data') {
-          // 更新 summary 和队列
-          const newSummary = updateQueue.summary + data.data;
-          setSummary(newSummary);
-          setUpdateQueue(prev => ({
-            ...prev,
-            summary: newSummary
-          }));
+          // 更新summary
+          finalSummary.push(data.data);
+          setSummary(prevSummary => prevSummary + data.data); // 使用函数式更新
         } else if(data.type === 'title') {
-          // 更新 title 和队列
-          setTitle(data.title);
-          setUpdateQueue(prev => ({
-            ...prev,
-            title: data.title
-          }));
+          console.log("received title:", data.data);
+          setTitle(data.data);
         } else if(data.type === 'author') {
-          // 更新 author 和队列
-          setAuthor(data.author);
-          setUpdateQueue(prev => ({
-            ...prev,
-            author: data.author
-          }));
+          console.log("received author", data.data);
+          setAuthor(data.data);
         }
       };
 
