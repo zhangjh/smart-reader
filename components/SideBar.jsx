@@ -132,7 +132,7 @@ const Sidebar = ({ children }) => {
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-64 p-0">
+              <SheetContent side="left" className="w-64 p-0 bg-white">
                 <div className="h-16 flex items-center px-6 border-b">
                   <Link href="/" className="flex items-center space-x-2">
                     <LogoIcon className="w-8 h-8" />
