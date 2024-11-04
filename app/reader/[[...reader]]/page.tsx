@@ -14,6 +14,7 @@ import './index.css';
 import { withAuth } from '@/components/withAuth';
 import util from '@/utils/util';
 import { toast } from 'react-toastify';
+import { useSearchParams } from 'next/navigation';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
@@ -41,6 +42,9 @@ const EpubReader = () => {
   const [fileId, setFileId] = useState('');
   const [userId, setUserId] = useState('');
 
+  const searchParams = useSearchParams();
+  const fileIdParam = searchParams.get("fileId");
+
   let finalSummary:Array<string> = [];
   let title:string = "";
   let author:string = "";
@@ -54,6 +58,24 @@ const EpubReader = () => {
     }
     getUserId();
   }, []);
+
+  useEffect(() => {
+    if (fileIdParam && userId) {
+      setFileId(fileIdParam);
+      // 获取fileUrl
+      fetch(`${serviceDomain}/books/getReadFileUrl?userId=${userId}&fileId=${fileIdParam}`)
+        .then(response => response.json())
+        .then(response => {
+            if(!response.success) {
+                toast.error(response.errorMsg);
+                return;
+            }
+            console.log(response.data);
+            setEpubUrl(response.data);
+            setIsLoading(false);
+        });
+    }
+  }, [fileIdParam, userId]);
 
   const handleQuestionSubmit = (e) => {
     e.preventDefault();
