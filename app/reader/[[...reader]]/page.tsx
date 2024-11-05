@@ -355,7 +355,7 @@ const EpubReader = () => {
 
               {/** 展示聊天问答内容 */}
               { (chatting || chatAnswer.length > 0) && (
-                <div className="flex-grow mb-4 h-1/2">
+                <div className="flex-grow mb-4 h-2/5">
                   <div className="bg-white rounded-lg shadow-md p-4">
                     <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[35vh]">
                       <div className="space-y-4 prose pr-4">
