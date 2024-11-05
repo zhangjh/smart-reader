@@ -92,6 +92,9 @@ const EpubReader = () => {
     }
   }, [fileIdParam, userId]);
 
+  const sleep = async (ms: number) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
   const handleQuestionSubmit = (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
@@ -222,13 +225,13 @@ const EpubReader = () => {
       const fileUrl = convertResult.data.fileUrl;
       const fileId = convertResult.data.fileId;
       console.log("fileUrl: ", fileUrl);
+      await sleep(5000);
       setIsLoading(false);
       setEpubUrl(fileUrl);
       setFileId(fileId);
       // fetch summary
       setProcessing(true);
 
-      // 防止wss跨域
       const socket = new WebSocket('wss://iread.chat/socket/summary?userId=' + userId);
 
       socket.onopen = () => {
