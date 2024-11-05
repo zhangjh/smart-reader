@@ -105,7 +105,7 @@ const EpubReader = () => {
     const chatSocket = new WebSocket("wss://iread.chat/socket/chat?userId=" + userId);
     chatSocket.onopen = () => {
       console.log("chat socket connected");
-      chatSocket.send(JSON.stringify({
+      const chatQuery = {
         'question': curQuestion,
         'title': title,
         'author': author,
@@ -113,7 +113,9 @@ const EpubReader = () => {
         'context': {
           messages: chatContext
         },
-      }));
+      };
+      console.log(chatQuery);
+      chatSocket.send(JSON.stringify(chatQuery));
     };
 
     // 本轮问答
