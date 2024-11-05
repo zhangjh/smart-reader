@@ -9,6 +9,7 @@ import { Send, Eraser, Upload } from 'lucide-react';
 import ReactMarkdown from 'react-markdown'; 
 import rehypeRaw from 'rehype-raw'
 import remarkGfm from 'remark-gfm';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 import './index.css';
 import { withAuth } from '@/components/withAuth';
@@ -100,19 +101,11 @@ const EpubReader = () => {
       "question": curQuestion,
       "answer": "正在思考中...",
     });
-    const timer = setInterval(() => {
-      chatAnswer[chatAnswer.length - 1].answer += ".";
-      setChatAnswer([...chatAnswer]);
-    }, 1000);
-    // 调用chat接口获取结果
-    const headers = {
-      'Content-Type': 'application/json',
-      'userId': userId,
-    };
-    fetch(serviceDomain + '/chat/', {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify({
+
+    const chatSocket = new WebSocket("wss://iread.chat/socket/chat?userId=" + userId);
+    chatSocket.onopen = () => {
+      console.log("chat socket connected");
+      chatSocket.send(JSON.stringify({
         'question': curQuestion,
         'title': title,
         'author': author,
@@ -120,46 +113,47 @@ const EpubReader = () => {
         'context': {
           messages: chatContext
         },
-      })
-    }).then(async response => {
-      const body = response.body;
-      if(!body) {
-        toast.error("接口调用异常，请稍后重试");
-        return;
-      }
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      // 本轮回答
-      let curAnswer = '';
-      while (true) {
-        const { done, value } = await reader.read();
-          if (done) {
-            reader.releaseLock();
-            // 构建聊天上下文
-            const curChatContext = chatContext;
-            curChatContext.push({
-              role: "user",
-              content: curQuestion
-            });
-            curChatContext.push({
-              role: "assistant",
-              content: curAnswer,
-            });
-            setChatContext(curChatContext);
-            setChatting(false);
-            break;
-          }
-          curAnswer = decoder.decode(value, { stream: true});
-          console.log(curAnswer);
-          // 停止定时器timer
-          if(timer) {
-            clearInterval(timer);
-          }
+      }));
+    };
+
+    // 本轮问答
+    let curAnswer:string = "";
+    chatSocket.onmessage = event => {
+      const data = JSON.parse(event.data);
+        // data.success == false
+        if(data.success && !data.success) {
+          toast.error(data.errorMsg);
+          return;
+        }
+        if(data.type === 'finish') {
+          setChatting(false);
+          // 构建聊天上下文
+          const curChatContext = chatContext;
+          curChatContext.push({
+            role: "user",
+            content: curQuestion
+          });
+          curChatContext.push({
+            role: "assistant",
+            content: curAnswer,
+          });
+          setChatContext(curChatContext);
+          curAnswer = "";
+        } else if(data.type === 'data') {
           // 构建问答区显示内容
+          curAnswer += data.data;
           chatAnswer[chatAnswer.length - 1].answer = curAnswer;
           setChatAnswer([...chatAnswer]);
         }
-      });
+    }
+
+    chatSocket.onclose = () => {
+      console.log("chat socket closed");
+    }
+
+    chatSocket.onerror = e => {
+      console.error("chat socket error", e);
+    }
   };
 
   const handleClearConversation = () => {
@@ -225,7 +219,7 @@ const EpubReader = () => {
       setProcessing(true);
 
       // 防止wss跨域
-      const socket = new WebSocket('wss://iread.chat/summary');
+      const socket = new WebSocket('wss://iread.chat/socket/summary?userId=' + userId);
 
       socket.onopen = () => {
         console.log('websocket connected');
@@ -272,7 +266,8 @@ const EpubReader = () => {
     <div className="min-h-screen flex flex-col bg-white">
       <NavBar />
       <div className="flex-grow flex flex-col lg:flex-row">
-        {!epubUrl && !isLoading && (
+        {/* 有fileId参数时不展示，等待epubUrl解析完成 */}
+        {!fileIdParam && !epubUrl && !isLoading && (
           <div className="w-full flex flex-col items-center justify-center p-4 h-screen">
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-4">上传您的电子书</h2>
@@ -341,19 +336,21 @@ const EpubReader = () => {
               )}
 
               {/** 展示聊天问答内容 */}
-              { chatting && (
+              { (chatting || chatAnswer.length > 0) && (
                 <div className="flex-grow mb-4">
-                <div className="bg-white rounded-lg shadow-md p-4 h-full">
-                  <div className="space-y-4 prose">
-                    <ReactMarkdown 
-                      rehypePlugins={[rehypeRaw]}
-                      remarkPlugins={[remarkGfm]}
-                    >
-                      {chatAnswer.map((item) => (
-                        `**问题:** ${item.question}  \n**回答:** ${item.answer}`
-                      )).join('\n\n')}
-                    </ReactMarkdown>
-                  </div>
+                <div className="bg-white rounded-lg shadow-md p-4">
+                  <ScrollArea className="h-[30vh] md:h-[40vh] lg:h-[50vh]">
+                    <div className="space-y-4 prose pr-4">
+                      <ReactMarkdown 
+                        rehypePlugins={[rehypeRaw]}
+                        remarkPlugins={[remarkGfm]}
+                      >
+                        {chatAnswer.map((item) => (
+                          `**问题:** ${item.question}  \n**回答:** ${item.answer}`
+                        )).join('\n\n')}
+                      </ReactMarkdown>
+                    </div>
+                  </ScrollArea>
                 </div>
               </div>
               ) }
