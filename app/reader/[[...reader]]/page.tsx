@@ -331,7 +331,6 @@ const EpubReader = () => {
             <div className="w-full lg:w-1/2 flex flex-col p-4 h-[calc(100vh-4rem)]">
               {/* 上半部分：摘要 */}
               <div className="flex-grow mb-4 h-1/2">
-
               {processing && (
                 <div className="bg-white rounded-lg shadow-md p-4 h-full flex items-center justify-center">
                   <div className="text-center">
@@ -342,7 +341,16 @@ const EpubReader = () => {
                   </div>
                 </div>
               )}
-              {!processing && (
+              
+              {(!processing && chatAnswer.length == 0) && (
+                <div className="bg-white rounded-lg shadow-md p-4 h-full">
+                  <div className="space-y-4 prose">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
+                  </div>
+              </div>
+              )}
+
+              {(!processing && chatAnswer.length > 0) && (
                 <div className="bg-white rounded-lg shadow-md p-4 h-full">
                   <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[35vh]">
                     <div className="space-y-4 prose">
