@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { IoLogoWechat } from "react-icons/io5";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaGithub } from "react-icons/fa";
+import { toast } from 'react-toastify';
 
 const Footer = () => {
   const [showWx, setShowWx] = useState(false);
@@ -17,7 +18,11 @@ const Footer = () => {
                 提升您的阅读体验，让学习更加高效。
               </p>
               <div className="flex space-x-6">
-                <a className="text-gray-400 hover:text-gray-500" onClick={() => setShowWx(true)}>
+                <a className="text-gray-400 hover:text-gray-500" 
+                  onClick={() => {
+                    setShowWx(true);
+                    toast.info("点击二维码关闭");
+                  }}>
                   <span className="sr-only">微信</span>
                   <IoLogoWechat />
                 </a>
