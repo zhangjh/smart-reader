@@ -86,6 +86,9 @@ const EpubReader = () => {
             toast.error(response.errorMsg);
             return;
           }
+          setTitle(response.data.title);
+          setAuthor(response.data.author);
+          setContentSummary(response.data.contentSummary);
           setSummary(response.data.summary);
           setProgress(response.data.progress);
         });
