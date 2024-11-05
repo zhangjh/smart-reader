@@ -249,10 +249,10 @@ export default function Home() {
               </h2>
               <div className="flex flex-wrap justify-between items-center space-y-8 md:space-y-0">
                 {[
-                  { step: 1, title: "上传电子书", description: "将您想要阅读的电子书上传到我们的平台。" },
-                  { step: 2, title: "阅读并获取AI总结", description: "阅读电子书，并获得AI生成的内容总结和评分。" },
-                  { step: 3, title: "构建知识库", description: "将重要内容添加到您的个人知识库中。" },
-                  { step: 4, title: "智能问答", description: "利用智能问答功能，深入探讨书中的内容。" },
+                  { step: 1, title: "找书并上传", description: "将您想要阅读的电子书上传到我们的平台。" },
+                  { step: 2, title: "初筛是否精读", description: "根据AI的总结内容和评分，掌握书籍梗概初筛是否精读。"},
+                  { step: 3, title: "阅读器&AI伴读", description: "阅读电子书，同时利用智能问答功能，深入探讨书中的内容。" },
+                  { step: 4, title: "构建知识库", description: "将重要内容添加到您的个人知识库中。" },
                   { step: 5, title: "多语种翻译", description: "需要时，使用多语种翻译功能突破语言障碍。" }
                 ].map(({ step, title, description }) => (
                   <div key={step} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/5 text-center px-2">
