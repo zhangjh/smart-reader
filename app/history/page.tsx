@@ -116,7 +116,16 @@ const ReadingHistory = () => {
     };
 
     const deleteHistory = (fileId: string) => {
-        fetch(`${serviceDomain}/books/deleteHistory?fileId=${fileId}`)
+        fetch(`${serviceDomain}/books/deleteHistory`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    fileId: fileId
+                })
+            })
             .then(response => response.json())
             .then(response => {
                 if(!response.success) {
