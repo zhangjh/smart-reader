@@ -9,8 +9,7 @@ import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
 import { useUser } from '@clerk/nextjs';
-import { ToastContainer, toast } from 'react-toastify'; // 引入 ToastContainer 和 toast
-import 'react-toastify/dist/ReactToastify.css'; // 引入样式
+import { toast } from 'react-toastify';
 import util from '@/utils/util';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
@@ -96,7 +95,6 @@ const BookSearch = () => {
 
   return (
     <>  
-      <ToastContainer />
       <div className="min-h-screen flex flex-col">
       <NavBar />
       <main className="flex items-center justify-center flex-grow container mx-auto px-4 py-8">

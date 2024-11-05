@@ -9,8 +9,9 @@ import { zhCN } from '@clerk/localizations'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import localFont from 'next/font/local';
 import { useEffect } from 'react';
-import { toast } from 'react-toastify';
 import Script from 'next/script';
+import { ToastContainer, toast } from 'react-toastify'; // 引入 ToastContainer 和 toast
+import 'react-toastify/dist/ReactToastify.css'; // 引入样式
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
@@ -102,6 +103,7 @@ export default function ClientLayout({
             <SignUpSaveUser />
             {children}
           </QueryClientProvider>
+          <ToastContainer />
         </body>
         <Script
           strategy='lazyOnload'

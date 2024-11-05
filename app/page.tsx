@@ -8,7 +8,7 @@ import './index.css';
 import { useEffect, useState } from "react"
 import { QRCodeSVG } from 'qrcode.react';
 import { useUser } from '@clerk/clerk-react';
-import { ToastContainer, toast } from 'react-toastify'; // 引入 ToastContainer 和 toast
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // 引入样式
 
 import util from "@/utils/util"
@@ -173,7 +173,6 @@ export default function Home() {
 
   return (
     <>
-      <ToastContainer />
       <div className="min-h-screen flex flex-col">
         <NavBar />
         <main className="flex-grow">
