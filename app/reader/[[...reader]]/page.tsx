@@ -344,11 +344,11 @@ const EpubReader = () => {
               
               {(!processing && chatAnswer.length == 0) && (
                 <div className="bg-white rounded-lg shadow-md p-4 h-full">
-                  <ScrollArea className="h-[80vh]"></ScrollArea>
+                  <ScrollArea className="h-[80vh]">
                     <div className="space-y-4 prose">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
                     </div>
-                  </div>
+                  </ScrollArea>
               </div>
               )}
 
