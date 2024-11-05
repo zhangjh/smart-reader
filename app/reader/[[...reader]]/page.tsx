@@ -49,6 +49,8 @@ const EpubReader = () => {
   let finalSummary:Array<string> = [];
   let title:string = "";
   let author:string = "";
+  // 区别于summary，这个contentSummary是书籍内容拆分成章节后的总结，用来辅助对话使用
+  let contentSummary:string = "";
 
   useEffect(() => {
     async function getUserId() {
@@ -109,7 +111,7 @@ const EpubReader = () => {
         'question': curQuestion,
         'title': title,
         'author': author,
-        'summary': summary,
+        'summary': contentSummary,
         'context': {
           messages: chatContext
         },
@@ -251,6 +253,8 @@ const EpubReader = () => {
           title = data.data;
         } else if(data.type === 'author') {
           author = data.data;
+        } else if(data.type === 'contentSummary') {
+          contentSummary = data.data;
         }
       };
 
