@@ -32,7 +32,7 @@ const mimeTypeMap = {
 const EpubReader = () => {
   const [question, setQuestion] = useState('');
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const [summary, setSummary] = useState('');
+  const [summary, setSummary] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [chatting, setChatting] = useState(false);
@@ -42,15 +42,16 @@ const EpubReader = () => {
   const [fileId, setFileId] = useState('');
   const [userId, setUserId] = useState('');
   const [progress, setProgress] = useState(0);
+  const [needUpdate, setNeedUpdate] = useState(false);
+
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
 
   const searchParams = useSearchParams();
   const fileIdParam = searchParams.get("fileId");
 
-  let finalSummary:Array<string> = [];
-  let title:string = "";
-  let author:string = "";
   // 区别于summary，这个contentSummary是书籍内容拆分成章节后的总结，用来辅助对话使用
-  let contentSummary:string = "";
+  const [contentSummary, setContentSummary] = useState("");
 
   useEffect(() => {
     async function getUserId() {
@@ -77,7 +78,7 @@ const EpubReader = () => {
             setEpubUrl(response.data);
             setIsLoading(false);
         });
-      // 获取总结
+      // 获取总结, todo: 从记录获取title、author、contentSummary填充
       fetch(`${serviceDomain}/books/getRecordDetail?userId=${userId}&fileId=${fileIdParam}`)
         .then(response => response.json())
         .then(response => {
@@ -165,7 +166,7 @@ const EpubReader = () => {
     setQuestion('');
   };
 
-  const updateRecord = (fileId:string, title: string, author: string, summary: string) => {
+  const updateRecord = (fileId:string, title: string, author: string, summary: string, contentSummary: string) => {
     fetch(`${serviceDomain}/parse/updateRecord`, {
       method: 'POST',
       headers: {
@@ -177,9 +178,14 @@ const EpubReader = () => {
         'title': title,
         'author': author,
         'summary': summary,
+        'contentSummary': contentSummary
       }),
     });
   };
+
+  useEffect(() => {
+    updateRecord(fileId, title, author, summary, contentSummary);
+  }, [needUpdate]);
 
   const handleFileUpload = async (e) => {
     const uploadedFile = e.target.files[0];
@@ -244,17 +250,16 @@ const EpubReader = () => {
         // 结束标记
         if(data.type === 'finish') {          
           // 更新解析记录
-          updateRecord(fileId, title, author, finalSummary.join(""));
+          setNeedUpdate(true);
         } else if(data.type === 'data') {
           // 更新summary
-          finalSummary.push(data.data);
           setSummary(prevSummary => prevSummary + data.data); // 使用函数式更新
         } else if(data.type === 'title') {
-          title = data.data;
+          setTitle(data.data);
         } else if(data.type === 'author') {
-          author = data.data;
+          setAuthor(data.data);
         } else if(data.type === 'contentSummary') {
-          contentSummary = data.data;
+          setContentSummary(data.data);
         }
       };
 
@@ -312,57 +317,58 @@ const EpubReader = () => {
             {/* 左侧：Epub内容 */}
             <div className="w-full lg:w-1/2 p-4 lg:border-r lg:border-gray-200">
               <div className="bg-white rounded-lg shadow-md p-4 h-[60vh] lg:h-full">
-                <EpubViewerComponent url={epubUrl} fileId={fileId} progress={progress} />
+                <EpubViewerComponent url={epubUrl} fileId={fileId} recoredProgress={progress} />
               </div>
             </div>
 
             {/* 右侧：摘要和问答 */}
-            <div className="w-full lg:w-1/2 flex flex-col p-4">
+            <div className="w-full lg:w-1/2 flex flex-col p-4 h-[calc(100vh-4rem)]">
               {/* 上半部分：摘要 */}
+              <div className="flex-grow mb-4 h-1/2">
+
               {processing && (
-                 <div className="flex-grow mb-4">
-                  <div className="bg-white rounded-lg shadow-md p-4 h-full flex items-center justify-center">
-                    <div className="text-center">
-                      <h2 className="text-2xl font-bold mb-4">AI正在总结中，请稍等...</h2>
-                      <div className="flex justify-center">
-                        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-                      </div>           
-                    </div>
+                <div className="bg-white rounded-lg shadow-md p-4 h-full flex items-center justify-center">
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold mb-4">AI正在总结中，请稍等...</h2>
+                    <div className="flex justify-center">
+                      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+                    </div>           
                   </div>
                 </div>
               )}
               {!processing && (
-                <div className="flex-grow mb-4">
-                  <div className="bg-white rounded-lg shadow-md p-4 h-full">
+                <div className="bg-white rounded-lg shadow-md p-4 h-full">
+                  <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[35vh]">
                     <div className="space-y-4 prose">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
                     </div>
-                  </div>
+                  </ScrollArea>
                 </div>
               )}
+              </div>
 
               {/** 展示聊天问答内容 */}
               { (chatting || chatAnswer.length > 0) && (
-                <div className="flex-grow mb-4">
-                <div className="bg-white rounded-lg shadow-md p-4">
-                  <ScrollArea className="h-[30vh] md:h-[40vh] lg:h-[50vh]">
-                    <div className="space-y-4 prose pr-4">
-                      <ReactMarkdown 
-                        rehypePlugins={[rehypeRaw]}
-                        remarkPlugins={[remarkGfm]}
-                      >
-                        {chatAnswer.map((item) => (
-                          `**问题:** ${item.question}  \n**回答:** ${item.answer}`
-                        )).join('\n\n')}
-                      </ReactMarkdown>
-                    </div>
-                  </ScrollArea>
+                <div className="flex-grow mb-4 h-1/2">
+                  <div className="bg-white rounded-lg shadow-md p-4">
+                    <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[35vh]">
+                      <div className="space-y-4 prose pr-4">
+                        <ReactMarkdown 
+                          rehypePlugins={[rehypeRaw]}
+                          remarkPlugins={[remarkGfm]}
+                        >
+                          {chatAnswer.map((item) => (
+                            `**问题:** ${item.question}  \n**回答:** ${item.answer}`
+                          )).join('\n\n')}
+                        </ReactMarkdown>
+                      </div>
+                    </ScrollArea>
+                  </div>
                 </div>
-              </div>
               ) }
 
               {/* 下半部分：问答 */}
-              <div className="mt-4">
+              <div className="mt-auto">
                 <div className="bg-white rounded-lg shadow-md p-4">
                   <Input
                     type="text"
