@@ -188,13 +188,13 @@ const ReadingHistory = () => {
                                         </Button>
                                         <Button 
                                             onClick={() => getFile(history.file_id)}
-                                            className="bg-blue-500 hover:bg-blue-600 text-white"
+                                            className="mr-2 bg-blue-500 hover:bg-blue-600 text-white"
                                         >
                                             下载
                                         </Button>
                                         <Button 
                                             onClick={() => deleteHistory(history.file_id)}
-                                            className="bg-red-500 hover:bg-red-600 text-white"
+                                            className="mr-2 bg-red-500 hover:bg-red-600 text-white"
                                         >
                                             删除
                                         </Button>
