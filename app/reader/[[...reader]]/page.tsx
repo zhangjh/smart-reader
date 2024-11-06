@@ -86,12 +86,18 @@ const EpubReader = () => {
             toast.error(response.errorMsg);
             return;
           }
+          setTitle(response.data.title);
+          setAuthor(response.data.author);
+          setContentSummary(response.data.contentSummary);
           setSummary(response.data.summary);
           setProgress(response.data.progress);
         });
     }
   }, [fileIdParam, userId]);
 
+  const sleep = async (ms: number) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
   const handleQuestionSubmit = (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
@@ -222,13 +228,13 @@ const EpubReader = () => {
       const fileUrl = convertResult.data.fileUrl;
       const fileId = convertResult.data.fileId;
       console.log("fileUrl: ", fileUrl);
+      await sleep(5000);
       setIsLoading(false);
       setEpubUrl(fileUrl);
       setFileId(fileId);
       // fetch summary
       setProcessing(true);
 
-      // 防止wss跨域
       const socket = new WebSocket('wss://iread.chat/socket/summary?userId=' + userId);
 
       socket.onopen = () => {
@@ -325,7 +331,6 @@ const EpubReader = () => {
             <div className="w-full lg:w-1/2 flex flex-col p-4 h-[calc(100vh-4rem)]">
               {/* 上半部分：摘要 */}
               <div className="flex-grow mb-4 h-1/2">
-
               {processing && (
                 <div className="bg-white rounded-lg shadow-md p-4 h-full flex items-center justify-center">
                   <div className="text-center">
@@ -336,7 +341,18 @@ const EpubReader = () => {
                   </div>
                 </div>
               )}
-              {!processing && (
+              
+              {(!processing && chatAnswer.length == 0) && (
+                <div className="bg-white rounded-lg shadow-md p-4 h-full">
+                  <ScrollArea className="h-[50vh] md:h-[55vh] lg:h-[60vh]">
+                    <div className="space-y-4 prose">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
+                    </div>
+                  </ScrollArea>
+              </div>
+              )}
+
+              {(!processing && chatAnswer.length > 0) && (
                 <div className="bg-white rounded-lg shadow-md p-4 h-full">
                   <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[35vh]">
                     <div className="space-y-4 prose">
@@ -349,7 +365,7 @@ const EpubReader = () => {
 
               {/** 展示聊天问答内容 */}
               { (chatting || chatAnswer.length > 0) && (
-                <div className="flex-grow mb-4 h-1/2">
+                <div className="flex-grow mb-4 h-1/3">
                   <div className="bg-white rounded-lg shadow-md p-4">
                     <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[35vh]">
                       <div className="space-y-4 prose pr-4">

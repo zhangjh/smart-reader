@@ -115,6 +115,27 @@ const ReadingHistory = () => {
             });
     };
 
+    const deleteHistory = (fileId: string) => {
+        fetch(`${serviceDomain}/books/deleteHistory`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    fileId: fileId
+                })
+            })
+            .then(response => response.json())
+            .then(response => {
+                if(!response.success) {
+                    toast.error(response.errorMsg);
+                    return;
+                }
+                fetchHistory();
+            });
+    };
+
     return (
         <Sidebar>
             <div className="p-4 md:p-6">
@@ -176,9 +197,15 @@ const ReadingHistory = () => {
                                         </Button>
                                         <Button 
                                             onClick={() => getFile(history.file_id)}
-                                            className="bg-blue-500 hover:bg-blue-600 text-white"
+                                            className="mr-2 bg-blue-500 hover:bg-blue-600 text-white"
                                         >
                                             下载
+                                        </Button>
+                                        <Button 
+                                            onClick={() => deleteHistory(history.file_id)}
+                                            className="mr-2 bg-red-500 hover:bg-red-600 text-white"
+                                        >
+                                            删除
                                         </Button>
                                     </div>
                                 </Card>

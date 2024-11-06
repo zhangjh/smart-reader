@@ -180,14 +180,15 @@ export default function Home() {
           <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
             <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8 text-center">
               <h1 className="text-4xl font-extrabold sm:text-5xl md:text-6xl mb-4">
-                您的智能阅读助手
+                您的智能阅读伙伴
               </h1>
               <p className="mt-3 max-w-md mx-auto text-xl sm:text-2xl md:mt-5 md:max-w-3xl">
                 结合电子书阅读、AI总结、个人知识库、智能问答和多语种翻译，提升您的阅读和学习体验。
               </p>
               <div className="mt-10 max-w-md mx-auto sm:flex sm:justify-center md:mt-12">
                 <div className="rounded-md shadow">
-                  <Button size="lg" className="w-full">立即体验</Button>
+                  <Button size="lg" className="w-full" 
+                    onClick={() => {location.href = "/reader"}}>立即体验</Button>
                 </div>
               </div>
             </div>
@@ -248,10 +249,10 @@ export default function Home() {
               </h2>
               <div className="flex flex-wrap justify-between items-center space-y-8 md:space-y-0">
                 {[
-                  { step: 1, title: "上传电子书", description: "将您想要阅读的电子书上传到我们的平台。" },
-                  { step: 2, title: "阅读并获取AI总结", description: "阅读电子书，并获得AI生成的内容总结和评分。" },
-                  { step: 3, title: "构建知识库", description: "将重要内容添加到您的个人知识库中。" },
-                  { step: 4, title: "智能问答", description: "利用智能问答功能，深入探讨书中的内容。" },
+                  { step: 1, title: "找书并上传", description: "将您想要阅读的电子书上传到我们的平台。" },
+                  { step: 2, title: "初筛是否精读", description: "根据AI的总结内容和评分，掌握书籍梗概初筛是否精读。"},
+                  { step: 3, title: "阅读器&AI伴读", description: "阅读电子书，同时利用智能问答功能，深入探讨书中的内容。" },
+                  { step: 4, title: "构建知识库", description: "将重要内容添加到您的个人知识库中。" },
                   { step: 5, title: "多语种翻译", description: "需要时，使用多语种翻译功能突破语言障碍。" }
                 ].map(({ step, title, description }) => (
                   <div key={step} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/5 text-center px-2">
@@ -308,7 +309,8 @@ export default function Home() {
               </h2>
               <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
                 <div className="inline-flex rounded-md shadow">
-                  <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">免费试用</Button>
+                  <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50"
+                    onClick={() => {location.href = "/reader"}}>免费试用</Button>
                 </div>
               </div>
             </div>
