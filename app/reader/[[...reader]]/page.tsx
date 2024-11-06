@@ -44,6 +44,7 @@ const EpubReader = () => {
   const [userId, setUserId] = useState('');
   const [progress, setProgress] = useState(0);
   const [needUpdate, setNeedUpdate] = useState(false);
+  const [summaryProgress, setSummaryProgesss] = useState<number>(0.0);
 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -253,6 +254,11 @@ const EpubReader = () => {
           toast.error(data.errorMsg);
           return;
         }
+        if(data.type === 'summaryProgress') {
+          console.log("summaryProgress:", data.data); 
+          setSummaryProgesss(data.data);
+          return;
+        }
         setProcessing(false);
         // 结束标记
         if(data.type === 'finish') {          
@@ -338,7 +344,10 @@ const EpubReader = () => {
                     <h2 className="text-2xl font-bold mb-4">AI正在总结中，请稍等...</h2>
                     <div className="flex justify-center">
                       <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-                    </div>           
+                    </div>   
+                    <div className="flex justify-center">
+                      <span>{summaryProgress * 100}%</span>
+                    </div>
                   </div>
                 </div>
               )}
