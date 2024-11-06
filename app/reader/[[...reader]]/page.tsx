@@ -137,6 +137,9 @@ const EpubReader = () => {
           toast.error(data.errorMsg);
           return;
         }
+        if(data.type === 'ping') {
+          return chatSocket.send(JSON.stringify({ type: 'pong' }));
+        }
         if(data.type === 'finish') {
           setChatting(false);
           // 构建聊天上下文
@@ -252,6 +255,9 @@ const EpubReader = () => {
         if(data.success && !data.success) {
           toast.error(data.errorMsg);
           return;
+        }
+        if(data.type === 'ping') {
+          return socket.send(JSON.stringify({ type: 'pong' }));
         }
         setProcessing(false);
         // 结束标记
