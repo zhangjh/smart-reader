@@ -65,6 +65,14 @@ const EpubReader = () => {
     getUserId();
   }, []);
 
+  const sliceContent = (content: string, maxLength: number) => {
+    // 如果不是string 类型，直接返回
+    if (typeof content !== 'string') {
+      return "";
+    }
+    return content.length > maxLength ? content.substring(0, maxLength) + '...' : content;
+  };
+
   useEffect(() => {
     if (fileIdParam && userId) {
       setFileId(fileIdParam);
@@ -88,8 +96,11 @@ const EpubReader = () => {
             toast.error(response.errorMsg);
             return;
           }
-          setTitle(response.data.title);
-          setAuthor(response.data.author);
+          let title = response.data.title;
+          let author = response.data.author;
+          // 截断保留5个字
+          setTitle(sliceContent(title, 5));
+          setAuthor(sliceContent(author, 5));
           setContentSummary(response.data.contentSummary);
           setSummary(response.data.summary);
           setProgress(response.data.progress);
@@ -266,9 +277,9 @@ const EpubReader = () => {
           // 更新summary
           setSummary(prevSummary => prevSummary + data.data); // 使用函数式更新
         } else if(data.type === 'title') {
-          setTitle(data.data);
+          setTitle(sliceContent(data.data, 5));
         } else if(data.type === 'author') {
-          setAuthor(data.data);
+          setAuthor(sliceContent(data.data, 5));
         } else if(data.type === 'contentSummary') {
           setContentSummary(data.data);
         }
