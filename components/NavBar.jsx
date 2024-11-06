@@ -36,7 +36,7 @@ const NavBar = () => {
       <a href="/reader" className="text-gray-600 hover:text-gray-900 px-2 py-2 rounded-md text-sm font-medium whitespace-nowrap">
         阅读器
       </a>
-      <a href="/translate" className="text-gray-600 hover:text-gray-900 px-2 py-2 rounded-md text-sm font-medium flex items-center whitespace-nowrap">
+      <a href="/translation" className="text-gray-600 hover:text-gray-900 px-2 py-2 rounded-md text-sm font-medium flex items-center whitespace-nowrap">
         翻译
       </a>
       <div className="relative inline-block">
