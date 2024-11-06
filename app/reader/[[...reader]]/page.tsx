@@ -329,7 +329,7 @@ const EpubReader = () => {
           <>
             {/* 左侧：Epub内容 */}
             <div className="w-full lg:w-1/2 p-4 lg:border-r lg:border-gray-200">
-              <div className="bg-white rounded-lg shadow-md p-4 h-[60vh] lg:h-full">
+              <div className="bg-white rounded-lg border border-gray-200 p-4 h-[60vh] lg:h-full">
                 <EpubViewerComponent url={epubUrl} fileId={fileId} recoredProgress={progress} />
               </div>
             </div>
@@ -339,7 +339,7 @@ const EpubReader = () => {
               {/* 上半部分：摘要 */}
               <div className="flex-grow mb-4 h-1/2">
               {processing && (
-                <div className="bg-white rounded-lg shadow-md p-4 h-full flex items-center justify-center">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex items-center justify-center">
                   <div className="text-center">
                     <h2 className="text-2xl font-bold mb-4">AI正在总结中，请稍等...</h2>
                     <div className="flex justify-center">
@@ -353,8 +353,8 @@ const EpubReader = () => {
               )}
               
               {(!processing && chatAnswer.length == 0) && (
-                <div className="bg-white rounded-lg shadow-md p-4 h-full">
-                  <ScrollArea className="h-[50vh] md:h-[55vh] lg:h-[60vh]">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 h-full">
+                  <ScrollArea className="h-[50vh] md:h-[55vh] lg:h-[50vh]">
                     <div className="space-y-4 prose">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
                     </div>
@@ -363,7 +363,7 @@ const EpubReader = () => {
               )}
 
               {(!processing && chatAnswer.length > 0) && (
-                <div className="bg-white rounded-lg shadow-md p-4 h-full">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 h-full">
                   <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[35vh]">
                     <div className="space-y-4 prose">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
@@ -376,8 +376,8 @@ const EpubReader = () => {
               {/** 展示聊天问答内容 */}
               { (chatting || chatAnswer.length > 0) && (
                 <div className="flex-grow mb-4 h-1/3">
-                  <div className="bg-white rounded-lg shadow-md p-4">
-                    <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[35vh]">
+                  <div className="bg-white rounded-lg border border-gray-200 p-4">
+                    <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[25vh]">
                       <div className="space-y-4 prose pr-4">
                         <ReactMarkdown 
                           rehypePlugins={[rehypeRaw]}
@@ -395,7 +395,7 @@ const EpubReader = () => {
 
               {/* 下半部分：问答 */}
               <div className="mt-auto">
-                <div className="bg-white rounded-lg shadow-md p-4">
+                <div className="bg-white rounded-lg border border-gray-200 p-4">
                   <Input
                     type="text"
                     placeholder="输入您想知道的关于本书的问题"
