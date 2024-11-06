@@ -47,10 +47,13 @@ function SignUpSaveUser() {
           }
           
            // 判断是否已经保存过
-          const savedUserId = localStorage.getItem("extId");
-          if(savedUserId && savedUserId === user.id) {
+          const savedExtId = localStorage.getItem("extId");
+          const savedUserId = localStorage.getItem("userId");
+          if(savedExtId && savedExtId === user.id && savedUserId) {
             return;
           }
+          localStorage.removeItem("extId");
+          localStorage.removeItem("userId");
 
           await fetch(`${serviceDomain}/user/register`, {
             method: 'POST',
