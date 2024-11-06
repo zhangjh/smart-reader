@@ -179,7 +179,10 @@ const ReadingHistory = () => {
                                         <div>
                                             <p className="font-medium">书籍</p>
                                             <p className="text-sm text-gray-500">
-                                                {util.sliceContent(history.title, 5)} : {util.sliceContent(history.author, 5)}
+                                                {util.sliceContent(history.title, 10)}
+                                            </p>
+                                            <p className="text-sm text-gray-500">
+                                                {util.sliceContent(history.author, 10)}
                                             </p>
                                         </div>
                                         <div className="space-y-1 w-full md:w-48">

@@ -88,9 +88,8 @@ const EpubReader = () => {
             toast.error(response.errorMsg);
             return;
           }
-          // 截断保留5个字
-          setTitle(util.sliceContent(response.data.title, 5));
-          setAuthor(util.sliceContent(response.data.author, 5));
+          setTitle(response.data.title);
+          setAuthor(response.data.author);
           setContentSummary(response.data.contentSummary);
           setSummary(response.data.summary);
           setProgress(response.data.progress);
@@ -267,9 +266,9 @@ const EpubReader = () => {
           // 更新summary
           setSummary(prevSummary => prevSummary + data.data); // 使用函数式更新
         } else if(data.type === 'title') {
-          setTitle(util.sliceContent(data.data, 5));
+          setTitle(data.data);
         } else if(data.type === 'author') {
-          setAuthor(util.sliceContent(data.data, 5));
+          setAuthor(data.data);
         } else if(data.type === 'contentSummary') {
           setContentSummary(data.data);
         }
