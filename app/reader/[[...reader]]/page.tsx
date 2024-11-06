@@ -96,11 +96,9 @@ const EpubReader = () => {
             toast.error(response.errorMsg);
             return;
           }
-          let title = response.data.title;
-          let author = response.data.author;
           // 截断保留5个字
-          setTitle(sliceContent(title, 5));
-          setAuthor(sliceContent(author, 5));
+          setTitle(sliceContent(response.data.title, 5));
+          setAuthor(sliceContent(response.data.author, 5));
           setContentSummary(response.data.contentSummary);
           setSummary(response.data.summary);
           setProgress(response.data.progress);
