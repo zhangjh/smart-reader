@@ -133,12 +133,9 @@ const EpubReader = () => {
     chatSocket.onmessage = event => {
       const data = JSON.parse(event.data);
         // data.success == false
-        if(data.success && !data.success) {
+        if(!data.success && data.errorMsg) {
           toast.error(data.errorMsg);
           return;
-        }
-        if(data.type === 'ping') {
-          return chatSocket.send(JSON.stringify({ type: 'pong' }));
         }
         if(data.type === 'finish') {
           setChatting(false);
@@ -252,12 +249,9 @@ const EpubReader = () => {
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         // data.success == false
-        if(data.success && !data.success) {
+        if(!data.success && data.errorMsg) {
           toast.error(data.errorMsg);
           return;
-        }
-        if(data.type === 'ping') {
-          return socket.send(JSON.stringify({ type: 'pong' }));
         }
         setProcessing(false);
         // 结束标记
