@@ -178,7 +178,9 @@ const ReadingHistory = () => {
                                         </div>
                                         <div>
                                             <p className="font-medium">书籍</p>
-                                            <p className="text-sm text-gray-500">{history.title} : {history.author}</p>
+                                            <p className="text-sm text-gray-500">
+                                                {util.sliceContent(history.title, 5)} : {util.sliceContent(history.author, 5)}
+                                            </p>
                                         </div>
                                         <div className="space-y-1 w-full md:w-48">
                                             <div className="flex justify-between text-sm">

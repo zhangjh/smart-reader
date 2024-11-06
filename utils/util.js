@@ -111,6 +111,13 @@ const featuresArr = {
       }
       return userId;
     },
+    sliceContent (content, maxLength) {
+      // 如果不是string 类型，直接返回
+      if (typeof content !== 'string') {
+        return "";
+      }
+      return content.length > maxLength ? content.substring(0, maxLength) + '...' : content;
+    },
   };
 
 export default util;
