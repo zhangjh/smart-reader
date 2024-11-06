@@ -19,6 +19,7 @@ import { useSearchParams } from 'next/navigation';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
+const socketDomain = debugMode === "true" ? "ws://localhost:3002" : "wss://tx.zhangjh.cn";
 
 const mimeTypeMap = {
     "application/msword": "doc",
@@ -111,7 +112,7 @@ const EpubReader = () => {
       "answer": "正在思考中...",
     });
 
-    const chatSocket = new WebSocket("wss://iread.chat/socket/chat?userId=" + userId);
+    const chatSocket = new WebSocket(`${socketDomain}/socket/chat?userId=${userId}`);
     chatSocket.onopen = () => {
       console.log("chat socket connected");
       const chatQuery = {
@@ -235,7 +236,7 @@ const EpubReader = () => {
       // fetch summary
       setProcessing(true);
 
-      const socket = new WebSocket('wss://iread.chat/socket/summary?userId=' + userId);
+      const socket = new WebSocket(`${socketDomain}/socket/summary?userId=${userId}`);
 
       socket.onopen = () => {
         console.log('websocket connected');
