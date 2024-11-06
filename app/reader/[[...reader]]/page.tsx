@@ -56,7 +56,7 @@ const EpubReader = () => {
   useEffect(() => {
     async function getUserId() {
         const userId = await util.getUserInfo();
-        if(userId) {
+        if(userId && userId != "null" && userId != "undefined") {
           setUserId(userId);
         }
     }
