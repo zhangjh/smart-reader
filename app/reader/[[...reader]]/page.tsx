@@ -45,6 +45,7 @@ const EpubReader = () => {
   const [progress, setProgress] = useState(0);
   const [needUpdate, setNeedUpdate] = useState(false);
   const [summaryProgress, setSummaryProgesss] = useState<number>(0.0);
+  const [checking, setChecking] = useState(true);
 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -54,17 +55,19 @@ const EpubReader = () => {
 
   // 区别于summary，这个contentSummary是书籍内容拆分成章节后的总结，用来辅助对话使用
   const [contentSummary, setContentSummary] = useState("");
-
+  
   useEffect(() => {
-    async function getUserId() {
-        const userId = await util.getUserInfo();
-        if(userId && userId != "null" && userId != "undefined") {
-          setUserId(userId);
-        }
-    }
-    getUserId();
+    async function init() {
+      const userId = await util.getUserInfo();
+      setUserId(userId);
+      // 权限校验
+      util.authCheck(userId, 'reader', async () => {
+        setChecking(false);
+      });
+    };
+    init();
   }, []);
-
+ 
   useEffect(() => {
     if (fileIdParam && userId) {
       setFileId(fileIdParam);
@@ -289,147 +292,161 @@ const EpubReader = () => {
     <div className="min-h-screen flex flex-col bg-white">
       <NavBar />
       <div className="flex-grow flex flex-col lg:flex-row">
-        {/* 有fileId参数时不展示，等待epubUrl解析完成 */}
-        {!fileIdParam && !epubUrl && !isLoading && (
-          <div className="w-full flex flex-col items-center justify-center p-4 h-screen">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold mb-4">上传您的电子书</h2>
-              <p className="mb-4">支持的格式：docx、pdf、epub、azw3</p>
-              <div className="flex items-center justify-center">
-                <Input
-                  type="file"
-                  accept=".docx,.pdf,.epub,.azw3"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  id="file-upload"
-                />
-                <label htmlFor="file-upload" className="cursor-pointer">
-                  <div className="flex items-center justify-center w-64 h-64 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400">
-                    <Upload className="w-12 h-12 text-gray-400" />
-                  </div>
-                </label>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {isLoading && (
+        {checking && (
           <div className="w-full flex items-center justify-center p-4">
             <div className="text-center">
-              <h2 className="text-2xl font-bold mb-4">正在处理您的电子书</h2>
+              <h2 className="text-2xl font-bold mb-4">权限校验中，请稍等...</h2>
               <div className="flex justify-center">
                 <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
               </div>           
             </div>
           </div>
         )}
-        
-        {epubUrl && (
+        {!checking && (
           <>
-            {/* 左侧：Epub内容 */}
-            <div className="w-full lg:w-1/2 p-4 lg:border-r lg:border-gray-200">
-              <div className="bg-white rounded-lg border border-gray-200 p-4 h-[82vh] lg:h-full">
-                <EpubViewerComponent url={epubUrl} fileId={fileId} recoredProgress={progress} />
+          {/* 有fileId参数时不展示，等待epubUrl解析完成 */}
+          {!fileIdParam && !epubUrl && !isLoading && (
+            <div className="w-full flex flex-col items-center justify-center p-4 h-screen">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold mb-4">上传您的电子书</h2>
+                <p className="mb-4">支持的格式：docx、pdf、epub、azw3</p>
+                <div className="flex items-center justify-center">
+                  <Input
+                    type="file"
+                    accept=".docx,.pdf,.epub,.azw3"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="file-upload"
+                  />
+                  <label htmlFor="file-upload" className="cursor-pointer">
+                    <div className="flex items-center justify-center w-64 h-64 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400">
+                      <Upload className="w-12 h-12 text-gray-400" />
+                    </div>
+                  </label>
+                </div>
               </div>
             </div>
+          )}
+        
+          {isLoading && (
+            <div className="w-full flex items-center justify-center p-4">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold mb-4">正在处理您的电子书</h2>
+                <div className="flex justify-center">
+                  <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+                </div>           
+              </div>
+            </div>
+          )}
+        
+          {epubUrl && (
+            <>
+              {/* 左侧：Epub内容 */}
+              <div className="w-full lg:w-1/2 p-4 lg:border-r lg:border-gray-200">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 h-[82vh] lg:h-full">
+                  <EpubViewerComponent url={epubUrl} fileId={fileId} recoredProgress={progress} />
+                </div>
+              </div>
 
-            {/* 右侧：摘要和问答 */}
-            <div className="w-full lg:w-1/2 flex flex-col p-4 h-[calc(100vh-4rem)]">
-              {/* 上半部分：摘要 */}
-              <div className="flex-grow mb-4 h-1/2">
-              {processing && (
-                <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex items-center justify-center">
-                  <div className="text-center">
-                    <h2 className="text-2xl font-bold mb-4">AI正在总结中，请稍等...</h2>
-                    <div className="flex justify-center">
-                      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-                    </div>   
-                    <div className="flex justify-center">
-                      <span>{summaryProgress}%</span>
+              {/* 右侧：摘要和问答 */}
+              <div className="w-full lg:w-1/2 flex flex-col p-4 h-[calc(100vh-4rem)]">
+                {/* 上半部分：摘要 */}
+                <div className="flex-grow mb-4 h-1/2">
+                {processing && (
+                  <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex items-center justify-center">
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-4">AI正在总结中，请稍等...</h2>
+                      <div className="flex justify-center">
+                        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+                      </div>   
+                      <div className="flex justify-center">
+                        <span>{summaryProgress}%</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="bg-white rounded-lg border border-gray-200 p-4 h-full">
+                {(!processing && chatAnswer.length == 0) && (
+                  <ScrollArea className="h-[50vh] md:h-[55vh] lg:h-[50vh]">
+                    <div className="space-y-4 prose">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
+                    </div>
+                  </ScrollArea>
+                )}
+                {(!processing && chatAnswer.length > 0) && (
+                  <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[35vh]">
+                    <div className="space-y-4 prose">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
+                    </div>
+                  </ScrollArea>
+                )}
+                </div>
+
+                
+                </div>
+
+                {/** 展示聊天问答内容 */}
+                { (chatting || chatAnswer.length > 0) && (
+                  <div className="flex-grow mb-4 h-1/3">
+                    <div className="bg-white rounded-lg border border-gray-200 p-4">
+                      <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[25vh]">
+                        <div className="space-y-4 prose pr-4">
+                          <ReactMarkdown 
+                            rehypePlugins={[rehypeRaw]}
+                            remarkPlugins={[remarkGfm]}
+                          >
+                            {chatAnswer.map((item) => (
+                              `**问题:** ${item.question}  \n**回答:** ${item.answer}`
+                            )).join('\n\n')}
+                          </ReactMarkdown>
+                        </div>
+                      </ScrollArea>
+                    </div>
+                  </div>
+                ) }
+
+                {/* 下半部分：问答 */}
+                <div className="mt-auto">
+                  <div className="bg-white rounded-lg border border-gray-200 p-4">
+                    <Input
+                      type="text"
+                      placeholder="输入您想知道的关于本书的问题"
+                      value={question}
+                      onChange={(e) => setQuestion(e.target.value)}
+                      onFocus={() => setIsInputFocused(true)}
+                      onBlur={() => setIsInputFocused(false)}
+                      className={`transition-all duration-300 ease-in-out ${
+                        isInputFocused ? 'h-20' : 'h-10'
+                      }`}
+                      disabled={chatting}
+                    />
+                    <div className="mt-2 flex justify-end space-x-2">
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        onClick={handleClearConversation}
+                        className="bg-gray-200 hover:bg-gray-300 text-gray-700"
+                        aria-label="清除对话"
+                      >
+                        <Eraser className="h-4 w-4 mr-2" />
+                        清除对话 
+                      </Button>
+                      <Button 
+                        type="submit" 
+                        onClick={handleQuestionSubmit}
+                        className="bg-blue-500 hover:bg-blue-600 text-white"
+                        aria-label="提交问题"
+                      >
+                        <Send className="h-4 w-4 mr-2" />
+                        提交
+                      </Button>
                     </div>
                   </div>
                 </div>
-              )}
-              
-              <div className="bg-white rounded-lg border border-gray-200 p-4 h-full">
-              {(!processing && chatAnswer.length == 0) && (
-                <ScrollArea className="h-[50vh] md:h-[55vh] lg:h-[50vh]">
-                  <div className="space-y-4 prose">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
-                  </div>
-                </ScrollArea>
-              )}
-              {(!processing && chatAnswer.length > 0) && (
-                <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[35vh]">
-                  <div className="space-y-4 prose">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
-                  </div>
-                </ScrollArea>
-              )}
               </div>
-
-              
-              </div>
-
-              {/** 展示聊天问答内容 */}
-              { (chatting || chatAnswer.length > 0) && (
-                <div className="flex-grow mb-4 h-1/3">
-                  <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[25vh]">
-                      <div className="space-y-4 prose pr-4">
-                        <ReactMarkdown 
-                          rehypePlugins={[rehypeRaw]}
-                          remarkPlugins={[remarkGfm]}
-                        >
-                          {chatAnswer.map((item) => (
-                            `**问题:** ${item.question}  \n**回答:** ${item.answer}`
-                          )).join('\n\n')}
-                        </ReactMarkdown>
-                      </div>
-                    </ScrollArea>
-                  </div>
-                </div>
-              ) }
-
-              {/* 下半部分：问答 */}
-              <div className="mt-auto">
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
-                  <Input
-                    type="text"
-                    placeholder="输入您想知道的关于本书的问题"
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                    onFocus={() => setIsInputFocused(true)}
-                    onBlur={() => setIsInputFocused(false)}
-                    className={`transition-all duration-300 ease-in-out ${
-                      isInputFocused ? 'h-20' : 'h-10'
-                    }`}
-                    disabled={chatting}
-                  />
-                  <div className="mt-2 flex justify-end space-x-2">
-                    <Button 
-                      type="button" 
-                      variant="outline"
-                      onClick={handleClearConversation}
-                      className="bg-gray-200 hover:bg-gray-300 text-gray-700"
-                      aria-label="清除对话"
-                    >
-                      <Eraser className="h-4 w-4 mr-2" />
-                      清除对话 
-                    </Button>
-                    <Button 
-                      type="submit" 
-                      onClick={handleQuestionSubmit}
-                      className="bg-blue-500 hover:bg-blue-600 text-white"
-                      aria-label="提交问题"
-                    >
-                      <Send className="h-4 w-4 mr-2" />
-                      提交
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </>
+          )}
           </>
         )}
       </div>
