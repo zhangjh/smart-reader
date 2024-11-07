@@ -15,10 +15,6 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
   const renditionRef = useRef(null);
   const [showControls, setShowControls] = useState(false);
   const [progress, setProgress] = useState(recoredProgress ? recoredProgress : 0.0);
-  // H5移动位置判断
-  const [startTime, setStartTime] = useState(0);
-  const [startX, setStartX] = useState(0);
-  const [startY, setStartY] = useState(0);
 
   useEffect(() => {
     let book = null;
@@ -159,44 +155,16 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
     }
   };
 
-  const onTouchStart = (e) => {
-    console.log('Touch Start:', {
-      clientX: e.changedTouches[0].clientX,
-      clientY: e.changedTouches[0].clientY
-    });
-    setStartTime(Date.now());
-    setStartX(e.changedTouches[0].clientX);
-    setStartY(e.changedTouches[0].clientY); 
-  };
-
-  const onTouchEnd = (e) => {
-    let endTime = Date.now();
-    let endX = e.changedTouches[0].clientX;
-    let endY = e.changedTouches[0].clientY;
-
-    console.log('Touch End:', {
-      duration: endTime - startTime,
-      deltaX: endX - startX,
-      deltaY: endY - startY
-    });
-
-    if (endTime - startTime > 2000) {
-        return
-    }
-    let direction = '';
-    //如果Y轴移动小于10,证明是上下滑动,所以不做处理
-    if (Math.abs(endX - startX) > 10 && Math.abs(endY - startY) < 10) {
-        direction = endX - startX > 0 ? 'right' : 'left'
-        if(endX - startX > 0) {
-          handleNextPage();
-        } else {
-          handlePrevPage();
-        }
-    }
-    console.log(direction);
-  };
-
   const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      console.log("swipe left");
+      handleNextPage();
+    },
+    onSwipedRight: () => {
+      console.log("swipe right");
+      handlePrevPage();
+    },
+    delta: 10, // 滑动距离阈值
     preventDefaultTouchmoveEvent: true,
     trackMouse: true
   });
@@ -206,11 +174,8 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
       className="h-full flex flex-col relative"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
-      onTouchStart={onTouchStart}
-      onTouchEnd={onTouchEnd}
-      {...handlers}
     >
-      <div ref={viewerRef} className="flex-grow pb-5">  
+      <div ref={viewerRef} className="flex-grow pb-5" {...handlers}>  
       </div>
 
       <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-black">
