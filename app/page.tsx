@@ -290,7 +290,7 @@ export default function Home() {
                 />
                 <PricingCard
                   title="高级包月"
-                  price="¥49.9 / 月"
+                  price="¥79.9 / 月"
                   features={util.featuresArr.senior}
                   isPopular={false}
                   onClick={() => handlePaymentOpen(util.featuresArr.senior, "senior")}
