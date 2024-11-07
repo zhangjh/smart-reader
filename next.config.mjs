@@ -6,6 +6,7 @@ const nextConfig = {
     images: {
       domains: ['s3proxy.cdn-zlib.sk'],
     },
+    // reactStrictMode: false,
 };
 
 export default nextConfig;
