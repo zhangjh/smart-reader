@@ -14,7 +14,9 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
   const viewerRef = useRef(null);
   const renditionRef = useRef(null);
   const [showControls, setShowControls] = useState(false);
-  const [progress, setProgress] = useState(recoredProgress ? recoredProgress : 0.0); // 添加当前进度
+  const [progress, setProgress] = useState(recoredProgress ? recoredProgress : 0.0);
+  // H5移动位置判断
+  let startTime, startX, startY, moveEndX, moveEndY, X, Y;
 
   useEffect(() => {
     let book = null;
@@ -155,9 +157,31 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
     }
   };
 
+  const onTouchStart = (e) => {
+    e.preventDefault();
+    startTime = Date.now();
+    startX = e.changedTouches[0].clientX;
+    startY = e.changedTouches[0].clientX;
+  };
+
+  const onTouchEnd = (e) => {
+    let endTime = Date.now()
+    let endX = e.changedTouches[0].clientX;
+    let endY = e.changedTouches[0].clinetY;
+    if (endTime - this.startTime > 2000) {
+        return
+    }
+    let direction = '';
+    //如果Y轴移动小于10,证明是上下滑动,所以不做处理
+    if (Math.abs(endX - this.startX) > 10 && Math.abs(endY - this.startY) < 10) {
+        direction = endX - this.startX > 0 ? 'right' : 'left'
+    } else {
+      return;
+    }
+    console.log(direction);
+  };
+
   const handlers = useSwipeable({
-    onSwipedLeft: handleNextPage,
-    onSwipedRight: handlePrevPage,
     preventDefaultTouchmoveEvent: true,
     trackMouse: true
   });
@@ -167,14 +191,17 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
       className="h-full flex flex-col relative"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
       {...handlers}
     >
-      <div ref={viewerRef} className="flex-grow pb-5">
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-black">
-          {`- ${progress}% -`} {/* 显示当前页码 */}
-        </div>
+      <div ref={viewerRef} className="flex-grow pb-5">  
       </div>
-      
+
+      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-black">
+        {`- ${progress}% -`}
+      </div>
+
       {showControls && (
         <>
           <Button 
