@@ -52,12 +52,17 @@ const featuresArr = {
           const curTime = new Date().getTime();
           
           let validSubscriptionFound = false;
-          
+          let remaings = 0;
           for (const order of orders) {
+            // 付费方案按月生效，未用完的会过期
             if (curTime <= order.createTime + 30 * 24 * 60 * 60 * 1000) {
-              // 存在有效的订阅，校验通过
-              validSubscriptionFound = true;
-              break;
+              // 存在有效的订阅，检查资源使用情况
+              const itemType = order.item_type;
+              switch(itemType) {
+                case "single":
+                case "basic":
+                case "senior":
+              }
             }
           }
     
@@ -65,8 +70,8 @@ const featuresArr = {
             // 如果没有有效的订阅
             throw new Error("您的付费订阅已失效，请重新订阅");
           }
-    
-          // 如果找到有效订阅，调用成功回调
+          // 如果找到有效订阅，判断是否存在剩余可用
+          
           if (cb) {
             cb();
           }
