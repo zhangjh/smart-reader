@@ -175,8 +175,20 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
     >
-      <div ref={viewerRef} className="flex-grow pb-5" {...handlers}>  
+      <div ref={viewerRef} className="flex-grow pb-5">  
       </div>
+
+      {/* 添加绝对遮罩层用来滑动 */}
+      <div 
+        {...handlers}
+        className="absolute inset-0 z-10"
+        style={{
+          touchAction: 'none',
+          userSelect: 'none',
+          pointerEvents: 'auto',
+          background: 'transparent'
+        }}
+      />
 
       <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-black">
         {`- ${progress}% -`}
