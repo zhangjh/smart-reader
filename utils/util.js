@@ -34,80 +34,90 @@ const featuresArr = {
     featuresArr,
     payModules,
     // 用户Id，模块，权限校验成功后的回调函数
-    async authCheck(userId, module, cb) {
-      // 校验权限
-      await fetch(`${serviceDomain}/order/list?status=1&userId=${userId}`)
-        .then(response => response.json())
-        .then(response => {
-          if(!response.success) {
-            throw new Error("查询付费订阅失败：" + response.errorMsg);
-          }
-          if(response.data.length > 0) {
-            const orders = response.data.results;
-            for(const order of orders) {
-              const curTime = new Date().getTime();
-              // 订单一个月的有效期
-              if(curTime > order.createTime + 30 * 24 * 60 * 60 * 1000) {
-                // 已经失效
-                console.log("orderId:", order.id, " expired");
-              } else {
-                // 存在有效的订阅，校验通过
-                break;
-              }
+    async authCheck (userId, module, cb, failCb) {
+      try {
+        // 校验权限
+        const response = await fetch(`${serviceDomain}/order/list?status=1&userId=${userId}`);
+        const data = await response.json();
+    
+        if (!data.success) {
+          throw new Error("查询付费订阅失败：" + data.errorMsg);
+        }
+    
+        if (data.data.length > 0) {
+          const orders = data.data.results;
+          const curTime = new Date().getTime();
+          
+          let validSubscriptionFound = false;
+          
+          for (const order of orders) {
+            if (curTime <= order.createTime + 30 * 24 * 60 * 60 * 1000) {
+              // 存在有效的订阅，校验通过
+              validSubscriptionFound = true;
+              break;
             }
-            // 如果到这了，证明没有有效订阅
-            throw new Error("您的付费订阅已失效，请重新订阅");
-          } else {
-            // 没有订单存在，可以试用一次
-            fetch(`${serviceDomain}/trial/auth?userId=${userId}&productType=zhiyue&model=${module}`)
-              .then(response => response.json())
-              .then(response => {
-                if(!response.success) {
-                  throw new Error("试用失败：" + response.errorMsg);
-                }
-                if(!response.success) {
-                  // 已经试用过了
-                  throw new Error("每个新用户仅可试用一次，请选择合适的计划付费订阅");
-                } 
-                // 新用户每个模块可以试用一次，记录试用次数
-                fetch(`${serviceDomain}/trial/create`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    userId: userId,
-                    // 试用的功能模块
-                    model: module
-                  }),
-                }).then(response => response.json())
-                .then(response => {
-                  console.log(response);
-                  if(response.success) {
-                    toast.success("新用户试用成功");
-                  }
-                });
-              })
-              .then(() => {
-                if(cb) {
-                  cb();
-                }
-              })
-              .catch(error => {
-                toast.error(error.message);
-                setTimeout(() => {
-                  window.location.href = "/";
-                }, 3000);
-              });
           }
+    
+          if (!validSubscriptionFound) {
+            // 如果没有有效的订阅
+            throw new Error("您的付费订阅已失效，请重新订阅");
+          }
+    
+          // 如果找到有效订阅，调用成功回调
+          if (cb) {
+            cb();
+          }
+          return;
+        }
+    
+        // 没有订单存在，可以试用一次
+        const trialResponse = await fetch(`${serviceDomain}/trial/auth?userId=${userId}&productType=zhiyue&model=${module}`);
+        const trialData = await trialResponse.json();
+    
+        if (!trialData.success) {
+          throw new Error("试用失败：" + trialData.errorMsg);
+        }
+    
+        if (!trialData.success) {
+          // 已经试用过了
+          throw new Error("每个新用户仅可试用一次，请选择合适的计划付费订阅");
+        }
+    
+        const createTrialResponse = await fetch(`${serviceDomain}/trial/create`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: userId,
+            model: module,
+          }),
         });
+    
+        const createTrialData = await createTrialResponse.json();
+    
+        if (createTrialData.success) {
+          if (cb) {
+            cb();
+          }
+          toast.success("新用户试用成功");
+        }
+      } catch (error) {
+        toast.error(error.message);
+        if (failCb) {
+          failCb(error.message);
+        }
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1500);
+      }
     },
     async getUserInfo() {
       const userId = window.localStorage.getItem('userId');
-      if(!userId) {
+      if(!userId || userId === "null" || userId === "undefined") {
         console.log("未登录，需要登录");
         window.location.href = "/sign-in?redirect_url=" + window.location.pathname;
-        return;
+        return "";
       }
       return userId;
     },
