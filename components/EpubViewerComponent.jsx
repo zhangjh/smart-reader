@@ -15,6 +15,7 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
   const renditionRef = useRef(null);
   const [showControls, setShowControls] = useState(false);
   const [progress, setProgress] = useState(recoredProgress ? recoredProgress : 0.0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let book = null;
@@ -80,6 +81,7 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
         await rendition.display();
       }
       await book.ready;
+      setLoading(false);
 
       // 检查是否已经生成了位置信息
       if (!book.locations.__locations) {
@@ -186,6 +188,11 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
       onMouseLeave={() => setShowControls(false)}
     >
       <div ref={viewerRef} className="flex-grow pb-5">  
+        {loading && (
+          <div className='flex justify-center items-center h-full'>
+            <div>文件内容加载中，请稍等...</div>
+          </div>
+        )}
       </div>
 
       {/* 添加绝对遮罩层用来滑动 */}
@@ -200,9 +207,11 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
         }}
       />
 
-      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-black">
+      {!loading && (
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-black">
         {`- ${progress}% -`}
-      </div>
+        </div>
+      )}
 
       {showControls && (
         <>

@@ -233,7 +233,6 @@ const EpubReader = () => {
       setIsLoading(false);
       setEpubUrl(fileUrl);
       setFileId(fileId);
-      // fetch summary
       setProcessing(true);
 
       const socket = new WebSocket(`${socketDomain}/socket/summary?userId=${userId}`);
@@ -257,12 +256,14 @@ const EpubReader = () => {
           setSummaryProgesss(data.data);
           return;
         }
-        setProcessing(false);
         // 结束标记
         if(data.type === 'finish') {          
           // 更新解析记录
           setNeedUpdate(true);
         } else if(data.type === 'data') {
+          if(processing) {
+            setProcessing(false);
+          }
           // 更新summary
           setSummary(prevSummary => prevSummary + data.data); // 使用函数式更新
         } else if(data.type === 'title') {

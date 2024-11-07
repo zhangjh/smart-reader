@@ -12,7 +12,7 @@ function AuthenticatedContent({ children }: { children: React.ReactNode }) {
   if (!isSignedIn) {
     return (
       <div className="centered-container"> 
-        <SignIn path={pathname} signUpUrl='/sign-up' redirectUrl={pathname} />
+        <SignIn path={pathname} signUpUrl='/sign-up' fallbackRedirectUrl={pathname} />
       </div>
     )
   }
