@@ -16,7 +16,7 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
   const [showControls, setShowControls] = useState(false);
   const [progress, setProgress] = useState(recoredProgress ? recoredProgress : 0.0);
   // H5移动位置判断
-  let startTime, startX, startY, moveEndX, moveEndY, X, Y;
+  let startTime, startX, startY;
 
   useEffect(() => {
     let book = null;
@@ -168,15 +168,18 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
     let endTime = Date.now()
     let endX = e.changedTouches[0].clientX;
     let endY = e.changedTouches[0].clinetY;
-    if (endTime - this.startTime > 2000) {
+    if (endTime - startTime > 2000) {
         return
     }
     let direction = '';
     //如果Y轴移动小于10,证明是上下滑动,所以不做处理
-    if (Math.abs(endX - this.startX) > 10 && Math.abs(endY - this.startY) < 10) {
-        direction = endX - this.startX > 0 ? 'right' : 'left'
-    } else {
-      return;
+    if (Math.abs(endX - startX) > 10 && Math.abs(endY - startY) < 10) {
+        direction = endX - startX > 0 ? 'right' : 'left'
+        if(endX - startX > 0) {
+          handleNextPage();
+        } else {
+          handlePrevPage();
+        }
     }
     console.log(direction);
   };
