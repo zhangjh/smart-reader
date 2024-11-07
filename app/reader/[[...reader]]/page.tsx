@@ -437,4 +437,3 @@ const EpubReader = () => {
 };
 
 export default withAuth(EpubReader);
-// export default EpubReader;

@@ -16,10 +16,6 @@ const NavBar = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleSignOut = () => {
-    // window.location.href = '/';
-  };
-
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
   };
@@ -77,7 +73,7 @@ const NavBar = () => {
               </SignInButton>
             </SignedOut>
             <SignedIn>
-              <SignOutButton signOutCallback={handleSignOut}>
+              <SignOutButton>
                 <UserButton 
                   appearance={{
                     elements: {

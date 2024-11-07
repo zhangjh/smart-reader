@@ -99,7 +99,7 @@ export default function ClientLayout({
   const queryClient = new QueryClient();
   
   return (
-    <ClerkProvider localization={zhCN}>      
+    <ClerkProvider localization={zhCN} afterSignOutUrl="/sign-out">      
       <html lang="zh">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <QueryClientProvider client={queryClient}>
