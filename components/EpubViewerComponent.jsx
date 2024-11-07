@@ -16,7 +16,9 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
   const [showControls, setShowControls] = useState(false);
   const [progress, setProgress] = useState(recoredProgress ? recoredProgress : 0.0);
   // H5移动位置判断
-  let startTime, startX, startY;
+  const [startTime, setStartTime] = useState(0);
+  const [startX, setStartX] = useState(0);
+  const [startY, setStartY] = useState(0);
 
   useEffect(() => {
     let book = null;
@@ -158,16 +160,26 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
   };
 
   const onTouchStart = (e) => {
-    e.preventDefault();
-    startTime = Date.now();
-    startX = e.changedTouches[0].clientX;
-    startY = e.changedTouches[0].clientX;
+    console.log('Touch Start:', {
+      clientX: e.changedTouches[0].clientX,
+      clientY: e.changedTouches[0].clientY
+    });
+    setStartTime(Date.now());
+    setStartX(e.changedTouches[0].clientX);
+    setStartY(e.changedTouches[0].clientY); 
   };
 
   const onTouchEnd = (e) => {
-    let endTime = Date.now()
+    let endTime = Date.now();
     let endX = e.changedTouches[0].clientX;
-    let endY = e.changedTouches[0].clinetY;
+    let endY = e.changedTouches[0].clientY;
+
+    console.log('Touch End:', {
+      duration: endTime - startTime,
+      deltaX: endX - startX,
+      deltaY: endY - startY
+    });
+
     if (endTime - startTime > 2000) {
         return
     }
