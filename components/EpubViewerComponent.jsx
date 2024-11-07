@@ -164,6 +164,16 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
       console.log("swipe right");
       handlePrevPage();
     },
+    onSwipedDown: () => {
+      console.log("swipe down");
+      // 往下滑动一定距离
+      window.scrollTo(0, -500);
+    },
+    onSwipedUp: () => {
+      console.log("swipe up");
+      // 往上滑动一定距离
+      window.scrollTo(0, 500);
+    },
     delta: 10, // 滑动距离阈值
     preventDefaultTouchmoveEvent: true,
     trackMouse: true
