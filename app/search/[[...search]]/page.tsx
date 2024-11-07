@@ -144,7 +144,13 @@ const BookSearch = () => {
                   <p className="text-sm text-gray-600">
                     <strong>语种：</strong>{book.language}</p>
                   <p className="text-sm text-gray-600">
+                    <strong>评分：</strong>{book.interestScore}</p>
+                  <p className="text-sm text-gray-600">
                     <strong>出版社：</strong>{book.publisher}</p>
+                  <p className="text-sm text-gray-600">
+                    <strong>格式：</strong>{book.extension}</p>
+                  <p className="text-sm text-gray-600">
+                    <strong>大小：</strong>{book.filesizeString}</p>
                   <div 
                     className="mt-2"
                     dangerouslySetInnerHTML={{ __html: book.description }}
