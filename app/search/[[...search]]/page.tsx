@@ -66,7 +66,7 @@ const BookSearch = () => {
         return;
       } 
       // 校验权限
-      util.authCheck(userId, "download", async () => {
+      await util.authCheck(userId, "download", async () => {
         const response = await fetch(`${serviceDomain}/books/download`, {
           method: 'POST',
           headers: {

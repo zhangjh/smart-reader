@@ -45,7 +45,7 @@ const EpubReader = () => {
   const [progress, setProgress] = useState(0);
   const [needUpdate, setNeedUpdate] = useState(false);
   const [summaryProgress, setSummaryProgesss] = useState<number>(0.0);
-  const [checking, setChecking] = useState(true);
+  const [checking, setChecking] = useState(false);
 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -60,10 +60,6 @@ const EpubReader = () => {
     async function init() {
       const userId = await util.getUserInfo();
       setUserId(userId);
-      // 权限校验
-      util.authCheck(userId, 'reader', async () => {
-        setChecking(false);
-      });
     };
     init();
   }, []);
@@ -100,9 +96,14 @@ const EpubReader = () => {
     }
   }, [fileIdParam, userId]);
 
-  const handleQuestionSubmit = (e) => {
+  const handleQuestionSubmit = async (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
+    
+    // 权限校验
+    await util.authCheck(userId, 'chat', async () => {
+      setChecking(false);
+    });
     const curQuestion = question;
     setChatting(true);
     // 清空输入框
@@ -201,6 +202,11 @@ const EpubReader = () => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
       setIsLoading(true);
+      // 权限校验
+      setChecking(true);
+      await util.authCheck(userId, 'reader', async () => {
+        setChecking(false);
+      });
 
       // 调用后端服务进行格式转换，获取转换后的epub文件后再渲染
       const formData = new FormData();
