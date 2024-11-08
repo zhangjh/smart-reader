@@ -99,7 +99,7 @@ const EpubReader = () => {
   const handleQuestionSubmit = async (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
-    
+
     // 权限校验
     await util.authCheck(userId, 'chat', async () => {
       setChecking(false);
@@ -299,7 +299,7 @@ const EpubReader = () => {
       <NavBar />
       <div className="flex-grow flex flex-col lg:flex-row">
         {checking && (
-          <div className="w-full flex items-center justify-center p-4">
+          <div className="w-full flex items-center justify-center p-4 h-screen">
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-4">权限校验中，请稍等...</h2>
               <div className="flex justify-center">
