@@ -19,7 +19,7 @@ interface Order {
   item_type: string;
   order_type: number;
   order_price: number;
-  status: string;
+  status: number;
   pay_url: string;
 }
 
@@ -90,7 +90,10 @@ const Orders = () => {
     }
   };
   const getItemContent = (type: string) => {
-    return util.featuresArr[type as keyof typeof util.featuresArr].toString();
+    return util.featuresArr[type as keyof typeof util.featuresArr]
+      .toString()
+      .split(',')
+      .join(',\n');
   };
 
   const getOrderTypeText = (type: number) => {
@@ -174,10 +177,10 @@ const Orders = () => {
                     </div>
                     <div>
                       <h3 className="font-medium">复制去微信支付</h3>
-                      { order.status === '0' && (
+                      { order.status === 0 && (
                         <p className="text-sm text-gray-500">{order.pay_url}</p>
                       )}
-                      { order.status === '1' && (
+                      { order.status === 1 && (
                         <p className="text-sm text-gray-500">已支付无需操作</p>
                       )}
                     </div>
