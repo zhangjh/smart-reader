@@ -7,7 +7,6 @@ import { BookOpen, Brain, Database, MessageSquare, FileText, Globe } from 'lucid
 import './index.css';
 import { useEffect, useState } from "react"
 import { QRCodeSVG } from 'qrcode.react';
-import { useUser } from '@clerk/clerk-react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // 引入样式
 
@@ -150,13 +149,15 @@ export default function Home() {
   const [itemType, setItemType] = useState("");
   const [userId, setUserId] = useState("");
 
-  const { user, isSignedIn } = useUser();
+  useEffect(() => {
+    async function init() {
+      const userId = await util.getUserInfo();
+      setUserId(userId);
+    };
+    init();
+  }, []);
   const handlePaymentOpen = (feature, itemType) => {
-    if(!isSignedIn) {
-      window.location.href = "/sign-in?redirect_url=" + window.location.pathname;
-      return;
-    }
-    setUserId(user.id);
+  
     console.log("handlePaymentOpen");
     setPaymentOpen(true);
     setFeature(feature);
