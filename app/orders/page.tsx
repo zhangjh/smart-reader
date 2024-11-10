@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 
 import util from '@/utils/util';
+import { Button } from '@/components/ui/button';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
@@ -138,6 +139,14 @@ const Orders = () => {
         return '未知状态';
     }
   };
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      toast.success('复制成功');
+    }).catch((error) => {
+      console.error('Copy failed:', error);
+      toast.error('复制失败，请重试');
+    });
+  };
 
   return (
     <Sidebar>
@@ -176,17 +185,17 @@ const Orders = () => {
                       <p className="text-sm text-gray-500 whitespace-pre-wrap">{getItemContent(order.item_type)}</p>
                     </div>
                     <div>
-                      <h3 className="font-medium">复制去微信支付</h3>
-                      { order.status === 0 && (
-                        <p className="text-sm text-gray-500">{order.pay_url}</p>
-                      )}
-                      { order.status === 1 && (
-                        <p className="text-sm text-gray-500">已支付无需操作</p>
-                      )}
-                    </div>
-                    <div className="text-right">
                       <p className="font-medium">{handlePrice(order.order_price)}</p>
                       <p className="text-sm text-gray-500">{getStatusText(order.status)}</p>
+                    </div>
+                    <div className="flex justify-end mt-4">
+                      <h3 className='font-medium'>去微信支付</h3>
+                      <Button 
+                          onClick={() => copyToClipboard(order.pay_url)}
+                          className="mr-2 bg-green-500 hover:bg-green-600 text-white"
+                      >
+                          复制
+                      </Button>
                     </div>
                   </div>
                 </Card>
