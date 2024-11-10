@@ -31,9 +31,12 @@ const Orders = () => {
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isMobileDevice, setIsMobileDevice] = useState(false); // 添加状态
 
-  const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
-  
+  useEffect(() => {
+    // 仅在客户端执行
+    setIsMobileDevice(/Mobi|Android/i.test(navigator.userAgent));
+  }, []);
   const fetchOrders = async () => {
     if (!userId) return;  // 添加保护检查
 
