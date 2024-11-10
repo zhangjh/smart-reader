@@ -31,6 +31,8 @@ const Orders = () => {
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
+
+  const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
   
   const fetchOrders = async () => {
     if (!userId) return;  // 添加保护检查
@@ -176,6 +178,10 @@ const Orders = () => {
               {orders.map((order) => (
                 <Card key={order.id} className="p-4">
                   <div className="flex flex-col md:flex-row justify-between items-start">
+                  <div className="mb-4 md:mb-0">
+                      <h3 className="font-medium">订单号</h3>
+                      <p className="text-sm text-gray-500">{order.id}</p>
+                    </div>
                     <div className="mb-4 md:mb-0">
                       <h3 className="font-medium">{getOrderTypeText(order.order_type)}</h3>
                       <p className="text-sm text-gray-500">{handleDate(order.create_time)}</p>
@@ -188,17 +194,18 @@ const Orders = () => {
                       <p className="font-medium">{handlePrice(order.order_price)}</p>
                       <p className="text-sm text-gray-500">{getStatusText(order.status)}</p>
                     </div>
-                    <div className="flex flex-col items-center mt-4 md:mt-0">
-                      <h3 className="font-medium mb-2">去微信支付</h3>
+                    { isMobileDevice && (
+                      <div className="flex flex-col mt-4 md:mt-0">
                       {order.status === 0 && order.pay_url && (
                         <Button 
                           onClick={() => copyToClipboard(order.pay_url)}
                           className="bg-green-500 hover:bg-green-600 text-white"
                         >
-                          复制
+                          复制去微信支付
                         </Button>
                       )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </Card>
               ))}
