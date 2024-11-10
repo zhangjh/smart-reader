@@ -20,6 +20,7 @@ interface Order {
   order_type: number;
   order_price: number;
   status: string;
+  pay_url: string;
 }
 
 const Orders = () => {
@@ -174,6 +175,14 @@ const Orders = () => {
                     <div className="text-right">
                       <p className="font-medium">{handlePrice(order.order_price)}</p>
                       <p className="text-sm text-gray-500">{getStatusText(parseInt(order.status))}</p>
+                    </div>
+                    <div>
+                      <h3 className="font-medium">复制去微信支付</h3>
+                      { order.status === '0' ? (
+                        <p className="text-sm text-gray-500">{order.pay_url}</p>
+                      ) : (
+                        <p className="text-sm text-gray-500">已支付无需操作</p>
+                      )}
                     </div>
                   </div>
                 </Card>
