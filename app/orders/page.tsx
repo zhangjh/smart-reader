@@ -175,28 +175,28 @@ const Orders = () => {
             <div className="space-y-4 mb-6">
               {orders.map((order) => (
                 <Card key={order.id} className="p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
+                  <div className="flex flex-col md:flex-row justify-between items-start">
+                    <div className="mb-4 md:mb-0">
                       <h3 className="font-medium">{getOrderTypeText(order.order_type)}</h3>
                       <p className="text-sm text-gray-500">{handleDate(order.create_time)}</p>
                     </div>
-                    <div className="max-w-xs"> {/* 限制列的最大宽度 */}
+                    <div className="mb-4 md:mb-0 max-w-xs"> {/* 限制列的最大宽度 */}
                       <h3 className="font-medium">{getItemTypeText(order.item_type)}</h3>
                       <p className="text-sm text-gray-500 whitespace-pre-wrap">{getItemContent(order.item_type)}</p>
                     </div>
-                    <div>
+                    <div className="mb-4 md:mb-0">
                       <p className="font-medium">{handlePrice(order.order_price)}</p>
                       <p className="text-sm text-gray-500">{getStatusText(order.status)}</p>
                     </div>
-                    <div className="flex flex-col items-center mt-4">
-                      <h3 className='font-medium'>去微信支付</h3>
+                    <div className="flex flex-col items-center mt-4 md:mt-0">
+                      <h3 className="font-medium mb-2">去微信支付</h3>
                       {order.status === 0 && order.pay_url && (
-                      <Button 
-                        onClick={() => copyToClipboard(order.pay_url)}
-                        className="bg-green-500 hover:bg-green-600 text-white"
-                      >
-                        复制
-                      </Button>
+                        <Button 
+                          onClick={() => copyToClipboard(order.pay_url)}
+                          className="bg-green-500 hover:bg-green-600 text-white"
+                        >
+                          复制
+                        </Button>
                       )}
                     </div>
                   </div>
