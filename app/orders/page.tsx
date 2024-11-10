@@ -171,9 +171,9 @@ const Orders = () => {
                       <h3 className="font-medium">{getOrderTypeText(order.order_type)}</h3>
                       <p className="text-sm text-gray-500">{handleDate(order.create_time)}</p>
                     </div>
-                    <div>
+                    <div className="max-w-xs"> {/* 限制列的最大宽度 */}
                       <h3 className="font-medium">{getItemTypeText(order.item_type)}</h3>
-                      <p className="text-sm text-gray-500">{getItemContent(order.item_type)}</p>
+                      <p className="text-sm text-gray-500 whitespace-pre-wrap">{getItemContent(order.item_type)}</p>
                     </div>
                     <div>
                       <h3 className="font-medium">复制去微信支付</h3>
@@ -186,7 +186,7 @@ const Orders = () => {
                     </div>
                     <div className="text-right">
                       <p className="font-medium">{handlePrice(order.order_price)}</p>
-                      <p className="text-sm text-gray-500">{getStatusText(parseInt(order.status))}</p>
+                      <p className="text-sm text-gray-500">{getStatusText(order.status)}</p>
                     </div>
                   </div>
                 </Card>
