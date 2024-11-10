@@ -188,14 +188,16 @@ const Orders = () => {
                       <p className="font-medium">{handlePrice(order.order_price)}</p>
                       <p className="text-sm text-gray-500">{getStatusText(order.status)}</p>
                     </div>
-                    <div className="flex justify-end mt-4">
+                    <div className="flex flex-col items-center mt-4">
                       <h3 className='font-medium'>去微信支付</h3>
+                      {order.status === 0 && order.pay_url && (
                       <Button 
-                          onClick={() => copyToClipboard(order.pay_url)}
-                          className="mr-2 bg-green-500 hover:bg-green-600 text-white"
+                        onClick={() => copyToClipboard(order.pay_url)}
+                        className="bg-green-500 hover:bg-green-600 text-white"
                       >
-                          复制
+                        复制
                       </Button>
+                      )}
                     </div>
                   </div>
                 </Card>
