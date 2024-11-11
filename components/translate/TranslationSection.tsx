@@ -5,12 +5,12 @@ import EpubViewerComponent from '../EpubViewerComponent';
 
 interface TranslationSectionProps {
   userId: string;
-  serviceDomain: string;
+  socketDomain: string;
   fileId: string;
   documentUrl: string;
 }
 
-const TranslationSection = ({ userId, serviceDomain, fileId, documentUrl }: TranslationSectionProps) => {
+const TranslationSection = ({ userId, socketDomain, fileId, documentUrl }: TranslationSectionProps) => {
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
   const [targetLang, setTargetLang] = useState<string>('');
   const [translateUrl, setTranslateUrl] = useState<string>('');
@@ -18,17 +18,17 @@ const TranslationSection = ({ userId, serviceDomain, fileId, documentUrl }: Tran
   const [transProgress, setTransProgress] = useState<number>(0.0);
 
   useEffect(() => {
+    setTargetLang(targetLang);
   }, [targetLang]);
 
   const handleTranslate = async () => {
     setIsTranslating(true);
     try {
-        const translateSocket = new WebSocket(`${serviceDomain}/socket/translate?userId=${userId}`);
+        const translateSocket = new WebSocket(`${socketDomain}/socket/translate?userId=${userId}`);
         translateSocket.onopen = () => {
             console.log("translate socket connected");
             translateSocket.send(JSON.stringify({
                 "fileId": fileId,         // 原始待翻译文档的fileId
-                "fileUrl": documentUrl,
                 "userId": userId,
                 "targetLang": targetLang
             }));

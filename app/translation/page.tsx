@@ -11,6 +11,7 @@ import EpubViewerComponent from '@/components/EpubViewerComponent';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
+const socketDomain = debugMode === "true" ? "ws://localhost:3002" : "wss://tx.zhangjh.cn";
 
 const TranslatePage = () => { 
   const [documentUrl, setDocumentUrl] = useState<string | null>(null);
@@ -57,7 +58,7 @@ const TranslatePage = () => {
               userId={userId}
               fileId={fileId}
               documentUrl={documentUrl}
-              serviceDomain={serviceDomain}
+              socketDomain={socketDomain}
             />
           </>
         )}
