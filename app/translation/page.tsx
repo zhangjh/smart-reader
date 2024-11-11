@@ -57,7 +57,6 @@ const TranslatePage = () => {
             <TranslationSection
               userId={userId}
               fileId={fileId}
-              documentUrl={documentUrl}
               socketDomain={socketDomain}
             />
           </>
