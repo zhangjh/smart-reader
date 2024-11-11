@@ -8,7 +8,7 @@ import './reader.css';
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
-const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
+const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = false }) => {
   const bookKey = fileId;
 
   const viewerRef = useRef(null);
@@ -207,7 +207,7 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress }) => {
         }}
       />
 
-      {!loading && (
+      {!loading && !ignoreProgress && (
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-black">
         {`- ${progress}% -`}
         </div>

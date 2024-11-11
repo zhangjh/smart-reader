@@ -79,7 +79,7 @@ const EpubReader = () => {
             setEpubUrl(response.data);
             setIsLoading(false);
         });
-      // 获取总结, todo: 从记录获取title、author、contentSummary填充
+      // 获取总结, 从记录获取title、author、contentSummary填充
       fetch(`${serviceDomain}/books/getRecordDetail?userId=${userId}&fileId=${fileIdParam}`)
         .then(response => response.json())
         .then(response => {
@@ -212,6 +212,8 @@ const EpubReader = () => {
       const formData = new FormData();
       formData.append('file', uploadedFile);
       formData.append('userId', userId);
+      // 借用spaceId区分阅读解析和翻译
+      formData.append('spaceId', '0');
 
       // 判断是否需要进行格式转换
       let format:string | undefined = uploadedFile.type;
@@ -308,6 +310,7 @@ const EpubReader = () => {
             </div>
           </div>
         )}
+        
         {!checking && (
           <>
           {/* 有fileId参数时不展示，等待epubUrl解析完成 */}

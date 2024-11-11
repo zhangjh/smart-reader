@@ -1,27 +1,69 @@
 'use client'
 
-// import React, { useEffect, useState } from 'react';
-import Sidebar from '@/components/SideBar';
-// import { Card } from "@/components/ui/card";
-// import { Progress } from "@/components/ui/progress";
-// import { toast } from 'react-toastify';
-// import { Input } from '@/components/ui/input';
-// import { Button } from '@/components/ui/button';
-// import util from '@/utils/util';
+import { useEffect, useState } from 'react';
+import NavBar from '@/components/NavBar';
+import FileUploader from '@/components/translate/FileUploader';
+import TranslationSection from '@/components/translate/TranslationSection';
+import { withAuth } from '@/components/withAuth';
+import './index.css';
+import util from '@/utils/util';
+import EpubViewerComponent from '@/components/EpubViewerComponent';
 
-const Translation = () => {
-    return (
-        <Sidebar>
-            <div className="p-4 md:p-6">
-                <div className="max-w-4xl mx-auto">
-                    <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-                        <span>开发中，敬请期待...</span>                        
-                    </div>
+const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
+const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
-                </div>
+const TranslatePage = () => { 
+  const [documentUrl, setDocumentUrl] = useState<string | null>(null);
+  const [fileId, setFileId] = useState<string>('');
+  const [userId, setUserId] = useState<string>('');
+
+  useEffect(() => {
+    async function init() {
+        const userId = await util.getUserInfo();
+        setUserId(userId);
+    };
+    init();
+  }, []);
+
+  useEffect(() => {
+    console.log(userId);
+  }, [documentUrl, userId]);
+
+  const handleFileProcessed = (fileUrl: string, fileId: string) => {
+    setDocumentUrl(fileUrl);
+    setFileId(fileId);
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-white">
+      <NavBar />
+      <div className="flex-grow flex flex-col lg:flex-row">
+        {!documentUrl && (
+          <FileUploader 
+            onFileProcessed={handleFileProcessed}
+            serviceDomain={serviceDomain}
+            userId={userId}
+          />
+        )}
+        
+        {documentUrl && (
+          <>
+            <div className="w-full lg:w-1/2 p-4 border border-gray-200">
+              <div className="bg-white rounded-lg shadow-md p-4 h-[60vh] lg:h-full overflow-auto">
+                <EpubViewerComponent url={documentUrl} fileId={fileId} recoredProgress={0.0} ignoreProgress={true}/>
+              </div>
             </div>
-        </Sidebar>
-    );
-}
+            <TranslationSection
+              userId={userId}
+              fileId={fileId}
+              documentUrl={documentUrl}
+              serviceDomain={serviceDomain}
+            />
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
 
-export default Translation;
+export default withAuth(TranslatePage);
