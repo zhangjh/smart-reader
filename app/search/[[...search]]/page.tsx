@@ -86,6 +86,8 @@ const BookSearch = () => {
         }
         const res = await response.json();
         if (res.success && res.data) {
+          // 保存下载使用次数
+          util.saveUsage("download", userId);
           window.open(res.data, '_blank');
         } else {
           throw new Error('获取下载链接失败');

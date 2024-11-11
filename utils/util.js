@@ -149,6 +149,27 @@ const featuresArr = {
         }, 1500);
       }
     },
+
+    async saveUsage (module, userId) {
+      fetch(`${serviceDomain}/usage/save`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            productType: "zhiyue",
+            model: module,
+            userId: userId,
+          }),
+        })
+        .then(response => response.json())
+        .then(response => {
+          if(!response.success) {
+            toast.error(response.errorMsg);
+            return;
+          }
+        });
+    },
     async getUserInfo() {
       const userId = window.localStorage.getItem('userId');
       if(!userId || userId === "null" || userId === "undefined") {

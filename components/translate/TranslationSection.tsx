@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'react-toastify';
 import EpubViewerComponent from '../EpubViewerComponent';
+import util from '@/utils/util';
 
 interface TranslationSectionProps {
   userId: string;
@@ -51,6 +52,8 @@ const TranslationSection = ({ userId, socketDomain, fileId }: TranslationSection
                 case 'fileUrl':
                     setTranslateUrl(data.data);
                     setIsTranslating(false);
+                    // 保存翻译使用次数
+                    util.saveUsage('translate', userId);
                     break;
                 case 'transProgress':
                     setTransProgress(data.data);

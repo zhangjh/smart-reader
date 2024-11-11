@@ -120,6 +120,7 @@ const EpubReader = () => {
       console.error("chat socket error", e);
     }
   }
+
   const handleQuestionSubmit = async (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
@@ -164,6 +165,8 @@ const EpubReader = () => {
         }
         if(data.type === 'finish') {
           setChatting(false);
+          // 保存聊天使用记录
+          util.saveUsage('chat', userId);
           // 构建聊天上下文
           const curChatContext = chatContext;
           curChatContext.push({
@@ -261,9 +264,11 @@ const EpubReader = () => {
       setFileId(fileId);
       setProcessing(true);
 
+      // 保存文件解析使用记录
+      util.saveUsage('reader', userId);
+
       // 建立问答socket
       openSocket();
-
       const socket = new WebSocket(`${socketDomain}/socket/summary?userId=${userId}`);
 
       socket.onopen = () => {
