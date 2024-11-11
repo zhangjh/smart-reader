@@ -17,6 +17,8 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
   const [progress, setProgress] = useState(recoredProgress ? recoredProgress : 0.0);
   const [loading, setLoading] = useState(true);
 
+  const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
+
   useEffect(() => {
     let book = null;
   
@@ -195,17 +197,19 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
         )}
       </div>
 
-      {/* 添加绝对遮罩层用来滑动 */}
-      <div 
-        {...handlers}
-        className="absolute inset-0 z-10"
-        style={{
-          touchAction: 'none',
-          userSelect: 'none',
-          pointerEvents: 'auto',
-          background: 'transparent'
-        }}
-      />
+      {/* 仅在移动设备上添加绝对遮罩层用来滑动 */}
+      {isMobileDevice && (
+        <div 
+          {...handlers}
+          className="absolute inset-0 z-10"
+          style={{
+            touchAction: 'none',
+            userSelect: 'none',
+            pointerEvents: 'auto',
+            background: 'transparent'
+          }}
+        />
+      )}
 
       {!loading && !ignoreProgress && (
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-black">

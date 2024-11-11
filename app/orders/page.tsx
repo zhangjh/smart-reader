@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 
 import util from '@/utils/util';
+import { Button } from '@/components/ui/button';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
@@ -19,7 +20,8 @@ interface Order {
   item_type: string;
   order_type: number;
   order_price: number;
-  status: string;
+  status: number;
+  pay_url: string;
 }
 
 const Orders = () => {
@@ -29,7 +31,12 @@ const Orders = () => {
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
-  
+  const [isMobileDevice, setIsMobileDevice] = useState(false); // 添加状态
+
+  useEffect(() => {
+    // 仅在客户端执行
+    setIsMobileDevice(/Mobi|Android/i.test(navigator.userAgent));
+  }, []);
   const fetchOrders = async () => {
     if (!userId) return;  // 添加保护检查
 
@@ -89,7 +96,10 @@ const Orders = () => {
     }
   };
   const getItemContent = (type: string) => {
-    return util.featuresArr[type as keyof typeof util.featuresArr].toString();
+    return util.featuresArr[type as keyof typeof util.featuresArr]
+      .toString()
+      .split(',')
+      .join(',\n');
   };
 
   const getOrderTypeText = (type: number) => {
@@ -134,6 +144,14 @@ const Orders = () => {
         return '未知状态';
     }
   };
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      toast.success('复制成功');
+    }).catch((error) => {
+      console.error('Copy failed:', error);
+      toast.error('复制失败，请重试');
+    });
+  };
 
   return (
     <Sidebar>
@@ -162,19 +180,35 @@ const Orders = () => {
             <div className="space-y-4 mb-6">
               {orders.map((order) => (
                 <Card key={order.id} className="p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
+                  <div className="flex flex-col md:flex-row justify-between items-start">
+                  <div className="mb-4 md:mb-0">
+                      <h3 className="font-medium">订单号</h3>
+                      <p className="text-sm text-gray-500">{order.id}</p>
+                    </div>
+                    <div className="mb-4 md:mb-0">
                       <h3 className="font-medium">{getOrderTypeText(order.order_type)}</h3>
                       <p className="text-sm text-gray-500">{handleDate(order.create_time)}</p>
                     </div>
-                    <div>
+                    <div className="mb-4 md:mb-0 max-w-xs"> {/* 限制列的最大宽度 */}
                       <h3 className="font-medium">{getItemTypeText(order.item_type)}</h3>
-                      <p className="text-sm text-gray-500">{getItemContent(order.item_type)}</p>
+                      <p className="text-sm text-gray-500 whitespace-pre-wrap">{getItemContent(order.item_type)}</p>
                     </div>
-                    <div className="text-right">
+                    <div className="mb-4 md:mb-0">
                       <p className="font-medium">{handlePrice(order.order_price)}</p>
-                      <p className="text-sm text-gray-500">{getStatusText(parseInt(order.status))}</p>
+                      <p className="text-sm text-gray-500">{getStatusText(order.status)}</p>
                     </div>
+                    { isMobileDevice && (
+                      <div className="flex flex-col mt-4 md:mt-0">
+                      {order.status === 0 && order.pay_url && (
+                        <Button 
+                          onClick={() => copyToClipboard(order.pay_url)}
+                          className="bg-green-500 hover:bg-green-600 text-white"
+                        >
+                          复制去微信支付
+                        </Button>
+                      )}
+                      </div>
+                    )}
                   </div>
                 </Card>
               ))}

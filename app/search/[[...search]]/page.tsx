@@ -42,6 +42,10 @@ const BookSearch = () => {
       }
       const res = await response.json();
       if(res.success) {
+        if(!res.data || res.data.length === 0) {
+          toast.info("未搜索到对应书籍");
+          return;
+        }
         return res.data;
       } else {
         toast.error('查找失败: ' + res.errorMsg);

@@ -145,7 +145,7 @@ const featuresArr = {
           failCb(error.message);
         }
         setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = "/#solution";
         }, 1500);
       }
     },
