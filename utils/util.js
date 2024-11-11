@@ -158,8 +158,8 @@ const featuresArr = {
           },
           body: JSON.stringify({
             productType: "zhiyue",
-            model: module,
-            userId: userId,
+            module,
+            userId,
           }),
         })
         .then(response => response.json())
