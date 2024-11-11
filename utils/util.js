@@ -56,7 +56,7 @@ const featuresArr = {
         }
     
         // 查询到付费订阅，统计剩余次数
-        if (data.data.length > 0) {
+        if (data.data.results && data.data.results.length > 0) {
           const orders = data.data.results;
           const curTime = new Date().getTime();
         
