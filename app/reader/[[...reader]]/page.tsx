@@ -53,6 +53,8 @@ const EpubReader = () => {
   const searchParams = useSearchParams();
   const fileIdParam = searchParams.get("fileId");
 
+  const [chatSocket, setChatSocket] = useState<WebSocket | null>(null);
+
   // 区别于summary，这个contentSummary是书籍内容拆分成章节后的总结，用来辅助对话使用
   const [contentSummary, setContentSummary] = useState("");
   
@@ -67,6 +69,8 @@ const EpubReader = () => {
   useEffect(() => {
     if (fileIdParam && userId) {
       setFileId(fileIdParam);
+      // 建立socket
+      openSocket();
       // 获取fileUrl
       fetch(`${serviceDomain}/books/getReadFileUrl?userId=${userId}&fileId=${fileIdParam}`)
         .then(response => response.json())
@@ -96,6 +100,26 @@ const EpubReader = () => {
     }
   }, [fileIdParam, userId]);
 
+  const openSocket = async function() {
+    const chatSocket = new WebSocket(`${socketDomain}/socket/chat?userId=${userId}`);
+    if(!chatSocket) {
+      toast.error("socket连接服务器失败，请重试");
+      return;
+    }
+    setChatSocket(chatSocket);
+
+    chatSocket.onopen = () => {
+      console.log("chat socket connected");
+    };
+
+    chatSocket.onclose = () => {
+      console.log("chat socket closed");
+    }
+
+    chatSocket.onerror = e => {
+      console.error("chat socket error", e);
+    }
+  }
   const handleQuestionSubmit = async (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
@@ -114,22 +138,21 @@ const EpubReader = () => {
       "answer": "正在思考中...",
     });
 
-    const chatSocket = new WebSocket(`${socketDomain}/socket/chat?userId=${userId}`);
-    chatSocket.onopen = () => {
-      console.log("chat socket connected");
-      const chatQuery = {
-        'question': curQuestion,
-        'title': title,
-        'author': author,
-        'summary': contentSummary,
-        'context': {
-          messages: chatContext
-        },
-      };
-      console.log(chatQuery);
-      chatSocket.send(JSON.stringify(chatQuery));
+    const chatQuery = {
+      'question': curQuestion,
+      'title': title,
+      'author': author,
+      'summary': contentSummary,
+      'context': {
+        messages: chatContext
+      },
     };
-
+    console.log(chatQuery);
+    if(!chatSocket) {
+      toast.error("socket连接服务器失败，请重试");
+      return;
+    }
+    chatSocket.send(JSON.stringify(chatQuery));
     // 本轮问答
     let curAnswer:string = "";
     chatSocket.onmessage = event => {
@@ -159,14 +182,6 @@ const EpubReader = () => {
           chatAnswer[chatAnswer.length - 1].answer = curAnswer;
           setChatAnswer([...chatAnswer]);
         }
-    }
-
-    chatSocket.onclose = () => {
-      console.log("chat socket closed");
-    }
-
-    chatSocket.onerror = e => {
-      console.error("chat socket error", e);
     }
   };
 
@@ -246,6 +261,9 @@ const EpubReader = () => {
       setFileId(fileId);
       setProcessing(true);
 
+      // 建立问答socket
+      openSocket();
+
       const socket = new WebSocket(`${socketDomain}/socket/summary?userId=${userId}`);
 
       socket.onopen = () => {
@@ -315,10 +333,11 @@ const EpubReader = () => {
           <>
           {/* 有fileId参数时不展示，等待epubUrl解析完成 */}
           {!fileIdParam && !epubUrl && !isLoading && (
-            <div className="w-full flex flex-col items-center justify-center p-4 h-screen">
+            <div className="w-full flex flex-col items-center justify-center p-4 lg:h-screen h-[70vh]">
               <div className="text-center">
                 <h2 className="text-2xl font-bold mb-4">上传您的电子书</h2>
                 <p className="mb-4">支持的格式：docx、pdf、epub、azw3</p>
+                <p className="mb-4">大小不要超过100MB</p>
                 <div className="flex items-center justify-center">
                   <Input
                     type="file"
