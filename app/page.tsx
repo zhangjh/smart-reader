@@ -150,11 +150,10 @@ export default function Home() {
   const [userId, setUserId] = useState("");
 
   useEffect(() => {
-    async function init() {
-      const userId = await util.getUserInfo();
+    const userId = localStorage.getItem("userId");
+    if(userId) {
       setUserId(userId);
-    };
-    init();
+    }
   }, []);
   const handlePaymentOpen = (feature, itemType) => {
   
