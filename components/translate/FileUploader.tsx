@@ -15,8 +15,6 @@ const FileUploader = ({ onFileProcessed, serviceDomain, userId }: FileUploaderPr
   const [checking, setChecking] = useState(false);
 
   useEffect(() => {
-    console.log(userId);
-    console.log(serviceDomain);
   }, []);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

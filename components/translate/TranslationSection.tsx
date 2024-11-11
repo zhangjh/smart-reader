@@ -124,7 +124,7 @@ const TranslationSection = ({ userId, socketDomain, fileId }: TranslationSection
             <>
             {!translateUrl ? (
                  <div className="flex items-center justify-center h-full text-gray-500">
-                    点击"开始翻译"按钮开始翻译
+                    点击开始翻译按钮开始翻译
                 </div>
             ) : (
                 <EpubViewerComponent url={translateUrl} fileId={translateFileId} recoredProgress={0.0} ignoreProgress={true} />

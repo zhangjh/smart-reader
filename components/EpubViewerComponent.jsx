@@ -145,7 +145,7 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
         // document.removeEventListener('wheel', handleWheel);
       } 
     };
-  }, [bookKey, url]);
+  }, [bookKey, fileId, url]);
 
   const handlePrevPage = () => {
     if (renditionRef.current) {
