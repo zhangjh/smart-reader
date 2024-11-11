@@ -67,11 +67,11 @@ const featuresArr = {
               // 存在有效的订阅，检查资源使用情况
               const itemType = order.item_type;
               switch(itemType) {
-                // 单次
+                // 单次，但智能问答不限次
                 case "single":
                   remaings['download'] += 1;
                   remaings['reader'] += 1;
-                  remaings['chat'] += 1;
+                  remaings['chat'] += 999;
                   break;
                 // 基础版：10次下载，不限次解析
                 case "basic":
@@ -97,6 +97,7 @@ const featuresArr = {
           }
           const usage = usagesData.data;
           // 次数已用完
+          console.log("剩余次数：", remaings[module] - usage);
           if (remaings[module] - usage <= 0) {
             throw new Error("您的生效付费订阅次数已用完，请重新订阅");
           }
