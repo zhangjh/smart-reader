@@ -15,7 +15,7 @@ export default function Page() {
       window.location.href = "/";
     });
 
-  }, []);
+  }, [signOut]);
 
   return null;
 }
