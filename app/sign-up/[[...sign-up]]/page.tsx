@@ -4,6 +4,7 @@ import { SignUp, useSignUp, useUser } from '@clerk/nextjs'
 import '@/app/sign.css';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
+import util from '@/utils/util';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
@@ -28,7 +29,6 @@ export default function Page() {
           if(email) {
             extType = "email";
           }
-          
           // 判断是否已经保存过
           const savedExtId = localStorage.getItem("extId");
           const savedUserId = localStorage.getItem("userId");
@@ -37,29 +37,8 @@ export default function Page() {
           }
           localStorage.removeItem("extId");
           localStorage.removeItem("userId");
-
-          await fetch(`${serviceDomain}/user/register`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-              userName,
-              avatar,
-              extType,
-              extId: userId,
-              email
-            })
-          }).then(response => response.json())
-          .then(res => {
-            if(!res.success) {
-              console.log(res.errorMsg);
-              toast.error("保存用户信息出错:" + res.errorMsg);
-            } else {
-              // 写本地缓存
-              const user = res.data;
-              window.localStorage.setItem("userId", user.id);
-              window.localStorage.setItem("extId", userId);
-              window.history.go(-1);
-            }
+          await util.register({
+            extType, extId: userId, avatar, userName, email
           });
         } catch (error) {
           console.error("用户保存出错:", error);

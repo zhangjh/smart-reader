@@ -172,6 +172,32 @@ const featuresArr = {
           }
         });
     },
+    /**
+     * userName,
+      avatar,
+      extType,
+      extId,
+      email
+     */
+    async register(saveUser) {
+      fetch(`${serviceDomain}/user/register`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(saveUser)
+      }).then(response => response.json())
+      .then(res => {
+        if(!res.success) {
+          console.log(res.errorMsg);
+          toast.error("保存用户信息出错:" + res.errorMsg);
+        } else {
+          // 写本地缓存
+          const user = res.data;
+          window.localStorage.setItem("userId", user.id);
+          window.localStorage.setItem("extId", saveUser.extId);
+          window.history.go(-1);
+        }
+      });
+    },
     async getUserInfo() {
       const userId = window.localStorage.getItem('userId');
       if(!userId || userId === "null" || userId === "undefined") {

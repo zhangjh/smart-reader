@@ -4,6 +4,7 @@ import { SignIn, useUser } from '@clerk/nextjs'
 import '@/app/sign.css'; 
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
+import util from '@/utils/util';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
@@ -13,8 +14,9 @@ export default function Page() {
 
   useEffect(() => {
     if(isSignedIn) {
-      debugger;
       const id = user.id;
+      const userName = user.username;
+      const avatar = user.imageUrl;
       const email = user.emailAddresses[0].emailAddress;
       // 如果有邮箱认为是邮箱登录，否则只记录clerk
       let extType = "clerk";
@@ -24,9 +26,12 @@ export default function Page() {
       // 查询内部userId
       fetch(`${serviceDomain}/user/getUser?extId=${id}&extType=${extType}`)
         .then(response => response.json())
-        .then(response => {
+        .then(async response => {
           if(!response.success) {
-            toast.error("查询登录用户失败");
+            // 三方登录的不走注册，需要在这里注册一下
+            await util.register({
+              extType, extId: id, avatar, email, userName
+            });
             return;
           }
           localStorage.setItem("extId", id);
