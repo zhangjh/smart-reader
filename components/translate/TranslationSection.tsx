@@ -81,6 +81,12 @@ const TranslationSection = ({ userId, socketDomain, fileId }: TranslationSection
     }
   };
 
+  const downloadTranslate = async () => {
+    if(translateUrl) {
+        window.location.href = translateUrl;
+    }
+  }
+
   return (
     <div className="w-full lg:w-1/2 p-4 border border-gray-200">
       <div className="bg-white rounded-lg shadow-md p-4 h-[60vh] lg:h-full">
@@ -97,12 +103,24 @@ const TranslationSection = ({ userId, socketDomain, fileId }: TranslationSection
             <option value="德语">德语</option>
             <option value="中文">中文</option>
           </select>
-          <Button 
-            onClick={handleTranslate}
-            disabled={isTranslating}
-          >
-            {isTranslating ? '翻译中...' : '开始翻译'}
-          </Button>
+          <div>
+            <Button
+                onClick={downloadTranslate}
+                disabled={!translateUrl}
+                className="mr-3"
+                size="sm"
+                variant="secondary"
+            >
+                点击下载
+            </Button>
+            <Button 
+                onClick={handleTranslate}
+                disabled={isTranslating}
+                size="sm"
+            >
+                {isTranslating ? '翻译中...' : '开始翻译'}
+            </Button>
+          </div>
         </div>
         <div className="prose max-w-none overflow-auto h-[calc(100%-4rem)]">
           {isTranslating && (
