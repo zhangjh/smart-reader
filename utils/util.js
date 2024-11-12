@@ -194,6 +194,7 @@ const featuresArr = {
           const user = res.data;
           window.localStorage.setItem("userId", user.id);
           window.localStorage.setItem("extId", saveUser.extId);
+          return user.id;
         }
       });
     },
@@ -204,7 +205,7 @@ const featuresArr = {
         .then(async response => {
           if(!response.success) {
             // 三方登录的不走注册，需要在这里注册一下
-            await util.register({
+            return await util.register({
               extType, extId, avatar, email, userName
             });
           }
