@@ -194,7 +194,7 @@ const featuresArr = {
           const user = res.data;
           window.localStorage.setItem("userId", user.id);
           window.localStorage.setItem("extId", saveUser.extId);
-          window.history.go(-1);
+          window.location.href = "/";
         }
       });
     },
