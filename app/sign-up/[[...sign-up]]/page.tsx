@@ -23,9 +23,10 @@ export default function Page() {
           const userName = user.username;
           const email = user.emailAddresses[0].emailAddress;
           const avatar = user.imageUrl;
-          let extType = "email";
-          if(user.externalAccounts.length > 0) {
-            extType = user.externalAccounts[0].provider;
+          // 如果有邮箱认为是邮箱登录，否则只记录clerk
+          let extType = "clerk";
+          if(email) {
+            extType = "email";
           }
           
           // 判断是否已经保存过
@@ -57,6 +58,7 @@ export default function Page() {
               const user = res.data;
               window.localStorage.setItem("userId", user.id);
               window.localStorage.setItem("extId", userId);
+              window.history.go(-1);
             }
           });
         } catch (error) {
@@ -67,9 +69,9 @@ export default function Page() {
     }
   }, [isLoaded, signUp, isSignedIn, user]);
 
-  return (
+  return !isSignedIn && (
     <div className="centered-container">
-      <SignUp fallbackRedirectUrl={"/"} />
+      <SignUp />
     </div>
   )
 }

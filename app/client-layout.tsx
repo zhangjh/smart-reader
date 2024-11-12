@@ -11,8 +11,6 @@ import Script from 'next/script';
 import { ToastContainer } from 'react-toastify'; // 引入 ToastContainer 和 toast
 import 'react-toastify/dist/ReactToastify.css'; // 引入样式
 
-
-
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
     variable: "--font-geist-sans",
@@ -33,7 +31,7 @@ export default function ClientLayout({
   const queryClient = new QueryClient();
   
   return (
-    <ClerkProvider localization={zhCN} afterSignOutUrl="/sign-out" signUpFallbackRedirectUrl="/sign-up" >      
+    <ClerkProvider localization={zhCN} afterSignOutUrl="/sign-out" signUpFallbackRedirectUrl="/sign-up" signInFallbackRedirectUrl="/sign-in" >      
       <html lang="zh">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <QueryClientProvider client={queryClient}>

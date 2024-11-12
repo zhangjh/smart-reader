@@ -1,3 +1,4 @@
+import { SignIn } from '@clerk/nextjs';
 import { toast } from 'react-toastify';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
@@ -175,7 +176,7 @@ const featuresArr = {
       const userId = window.localStorage.getItem('userId');
       if(!userId || userId === "null" || userId === "undefined") {
         console.log("未登录，需要登录");
-        window.location.href = "/sign-in?redirect_url=" + window.location.pathname;
+        <SignIn fallbackRedirectUrl={window.location.pathname} />
         return "";
       }
       return userId;

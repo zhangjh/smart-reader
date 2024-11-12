@@ -13,10 +13,13 @@ export default function Page() {
 
   useEffect(() => {
     if(isSignedIn) {
+      debugger;
       const id = user.id;
-      let extType = "email";
-      if(user.externalAccounts.length > 0) {
-        extType = user.externalAccounts[0].provider;
+      const email = user.emailAddresses[0].emailAddress;
+      // 如果有邮箱认为是邮箱登录，否则只记录clerk
+      let extType = "clerk";
+      if(email) {
+        extType = "email";
       }
       // 查询内部userId
       fetch(`${serviceDomain}/user/getUser?extId=${id}&extType=${extType}`)
@@ -28,11 +31,12 @@ export default function Page() {
           }
           localStorage.setItem("extId", id);
           localStorage.setItem("userId", response.data.id);
+          window.history.go(-1);
         });
     }
-  }, []);
+  }, [isSignedIn]);
 
-  return (
+  return !isSignedIn && (
     <div className="centered-container">
       <SignIn />
     </div>
