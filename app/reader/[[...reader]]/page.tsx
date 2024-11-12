@@ -86,7 +86,7 @@ const EpubReader = () => {
 
   useEffect(() => {
     init();
-  }, []);
+  }, [isSignedIn]);
  
   useEffect(() => {
     if (fileIdParam && userId) {

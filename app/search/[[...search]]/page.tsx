@@ -44,7 +44,7 @@ const BookSearch = () => {
   
     useEffect(() => {
       init();
-    }, []);
+    }, [isSignedIn]);
 
   const { data: searchResults, refetch, isFetching } = useQuery({
     queryKey: ['bookSearch', searchTerm],

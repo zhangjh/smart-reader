@@ -82,7 +82,7 @@ const ReadingHistory = () => {
 
     useEffect(() => {
         init();
-    }, []);
+    }, [isSignedIn]);
 
     // 监听userId、currentPage和titleFilter的变化
     useEffect(() => {
