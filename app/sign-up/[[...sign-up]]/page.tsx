@@ -3,7 +3,6 @@
 import { SignUp, useSignUp, useUser } from '@clerk/nextjs'
 import '@/app/sign.css';
 import { useEffect } from 'react';
-import { useLogin } from '@/contexts/login-context';
 import { toast } from 'react-toastify';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;

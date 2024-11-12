@@ -2,16 +2,13 @@
 
 import {
   ClerkProvider,
-  useSignUp,
-  useUser,
 } from '@clerk/nextjs'
 import { zhCN } from '@clerk/localizations'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import localFont from 'next/font/local';
-import { useEffect } from 'react';
 import Script from 'next/script';
-import { ToastContainer, toast } from 'react-toastify'; // 引入 ToastContainer 和 toast
+import { ToastContainer } from 'react-toastify'; // 引入 ToastContainer 和 toast
 import 'react-toastify/dist/ReactToastify.css'; // 引入样式
 
 

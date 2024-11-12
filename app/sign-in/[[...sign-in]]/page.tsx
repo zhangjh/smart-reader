@@ -9,9 +9,9 @@ const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
 export default function Page() {
-  
+  const { user, isSignedIn } = useUser();
+
   useEffect(() => {
-    const { user, isSignedIn } = useUser();
     if(isSignedIn) {
       const id = user.id;
       let extType = "email";
