@@ -3,7 +3,6 @@
 import { SignIn, useUser } from '@clerk/nextjs'
 import '@/app/sign.css'; 
 import { useEffect } from 'react';
-import { toast } from 'react-toastify';
 import util from '@/utils/util';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
