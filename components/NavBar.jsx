@@ -74,7 +74,7 @@ const NavBar = () => {
             </SignedOut>
             <SignedIn>
               <SignOutButton>
-                <UserButton 
+                <UserButton
                   appearance={{
                     elements: {
                       avatarBox: "w-8 h-8"
