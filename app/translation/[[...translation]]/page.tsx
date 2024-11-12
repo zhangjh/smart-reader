@@ -8,6 +8,7 @@ import { withAuth } from '@/components/withAuth';
 import './index.css';
 import util from '@/utils/util';
 import EpubViewerComponent from '@/components/EpubViewerComponent';
+import { SignedIn } from '@clerk/nextjs';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
@@ -36,33 +37,35 @@ const TranslatePage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <NavBar />
-      <div className="flex-grow flex flex-col lg:flex-row">
-        {!documentUrl && (
-          <FileUploader 
-            onFileProcessed={handleFileProcessed}
-            serviceDomain={serviceDomain}
-            userId={userId}
-          />
-        )}
-        
-        {documentUrl && (
-          <>
-            <div className="w-full lg:w-1/2 p-4 border border-gray-200">
-              <div className="bg-white rounded-lg shadow-md p-4 h-[60vh] lg:h-full overflow-auto">
-                <EpubViewerComponent url={documentUrl} fileId={fileId} recoredProgress={0.0} ignoreProgress={true}/>
-              </div>
-            </div>
-            <TranslationSection
-              userId={userId}
-              fileId={fileId}
-              socketDomain={socketDomain}
+    <SignedIn>
+        <div className="min-h-screen flex flex-col bg-white">
+        <NavBar />
+        <div className="flex-grow flex flex-col lg:flex-row">
+            {!documentUrl && (
+            <FileUploader 
+                onFileProcessed={handleFileProcessed}
+                serviceDomain={serviceDomain}
+                userId={userId}
             />
-          </>
-        )}
-      </div>
-    </div>
+            )}
+            
+            {documentUrl && (
+            <>
+                <div className="w-full lg:w-1/2 p-4 border border-gray-200">
+                <div className="bg-white rounded-lg shadow-md p-4 h-[60vh] lg:h-full overflow-auto">
+                    <EpubViewerComponent url={documentUrl} fileId={fileId} recoredProgress={0.0} ignoreProgress={true}/>
+                </div>
+                </div>
+                <TranslationSection
+                userId={userId}
+                fileId={fileId}
+                socketDomain={socketDomain}
+                />
+            </>
+            )}
+        </div>
+        </div> 
+    </SignedIn>
   );
 };
 
