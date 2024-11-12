@@ -198,13 +198,21 @@ const featuresArr = {
         }
       });
     },
-    async getUserInfo() {
-      const userId = window.localStorage.getItem('userId');
-      if(!userId || userId === "null" || userId === "undefined") {
-        console.log("未登录，需要登录");
-        <SignIn fallbackRedirectUrl={window.location.pathname} />
-        return "";
-      }
+    async getUserByExtId(extType, extId) {
+      // 查询内部userId
+      const userId = fetch(`${serviceDomain}/user/getUser?extId=${extId}&extType=${extType}`)
+        .then(response => response.json())
+        .then(async response => {
+          if(!response.success) {
+            // 三方登录的不走注册，需要在这里注册一下
+            await util.register({
+              extType, extId, avatar, email, userName
+            });
+          }
+          localStorage.setItem("extId", extId);
+          localStorage.setItem("userId", response.data.id);
+          return response.data.id;
+        });
       return userId;
     },
     sliceContent (content, maxLength) {

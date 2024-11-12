@@ -8,7 +8,7 @@ import { withAuth } from '@/components/withAuth';
 import './index.css';
 import util from '@/utils/util';
 import EpubViewerComponent from '@/components/EpubViewerComponent';
-import { SignedIn } from '@clerk/nextjs';
+import { SignedIn, useUser } from '@clerk/nextjs';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
@@ -19,11 +19,28 @@ const TranslatePage = () => {
   const [fileId, setFileId] = useState<string>('');
   const [userId, setUserId] = useState<string>('');
 
-  useEffect(() => {
-    async function init() {
-        const userId = await util.getUserInfo();
+  const { isSignedIn, user } = useUser();
+
+  async function init() {
+    const savedUserId = localStorage.getItem("userId");
+    if(savedUserId) {
+      setUserId(savedUserId);
+    } else {
+      if(isSignedIn) {
+        const extId = user.id;
+        const email = user.emailAddresses[0].emailAddress;
+        // 如果有邮箱认为是邮箱登录，否则只记录clerk
+        let extType = "clerk";
+        if(email) {
+          extType = "email";
+        }
+        const userId = await util.getUserByExtId(extType, extId);
         setUserId(userId);
-    };
+      }
+    }
+  };
+
+  useEffect(() => {
     init();
   }, []);
 

@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 
 import util from '@/utils/util';
 import { Button } from '@/components/ui/button';
+import { useUser } from '@clerk/nextjs';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
@@ -32,6 +33,8 @@ const Orders = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
   const [isMobileDevice, setIsMobileDevice] = useState(false); // 添加状态
+
+  const { isSignedIn, user } = useUser();
 
   useEffect(() => {
     // 仅在客户端执行
@@ -59,21 +62,27 @@ const Orders = () => {
     }
   };
 
-  const getUserId = async () => {
-    try {
-        const id = await util.getUserInfo();
-        if (id) {
-            setUserId(id);
+  async function init() {
+    const savedUserId = localStorage.getItem("userId");
+    if(savedUserId) {
+      setUserId(savedUserId);
+    } else {
+      if(isSignedIn) {
+        const extId = user.id;
+        const email = user.emailAddresses[0].emailAddress;
+        // 如果有邮箱认为是邮箱登录，否则只记录clerk
+        let extType = "clerk";
+        if(email) {
+          extType = "email";
         }
-    } catch (error) {
-        console.error('Error fetching user info:', error);
-        toast.error('获取用户信息失败');
+        const userId = await util.getUserByExtId(extType, extId);
+        setUserId(userId);
+      }
     }
   };
 
-  // 组件加载时获取用户ID
   useEffect(() => {
-    getUserId();
+    init();
   }, []);
 
   // 监听userId、currentPage和titleFilter的变化
