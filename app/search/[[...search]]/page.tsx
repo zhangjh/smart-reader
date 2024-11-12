@@ -28,13 +28,15 @@ const BookSearch = () => {
       } else {
         if(isSignedIn) {
           const extId = user.id;
+          const userName = user.username;
           const email = user.emailAddresses[0].emailAddress;
+          const avatar = user.imageUrl;
           // 如果有邮箱认为是邮箱登录，否则只记录clerk
           let extType = "clerk";
           if(email) {
             extType = "email";
           }
-          const userId = await util.getUserByExtId(extType, extId);
+          const userId = await util.getUserByExtId({extType, extId, avatar, email, userName});
           setUserId(userId);
         }
       }

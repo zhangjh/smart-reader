@@ -198,7 +198,7 @@ const featuresArr = {
         }
       });
     },
-    async getUserByExtId(extType, extId) {
+    async getUserByExtId({extId, extType, avatar, email, userName}) {
       // 查询内部userId
       const userId = fetch(`${serviceDomain}/user/getUser?extId=${extId}&extType=${extType}`)
         .then(response => response.json())
