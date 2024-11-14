@@ -117,7 +117,7 @@ const featuresArr = {
           throw new Error("试用失败：" + trialData.errorMsg);
         }
     
-        if (trialData.success && trialData.data) {
+        if (trialData.success && trialData.data && trialData.data.length > 0) {
           // 已经试用过了
           throw new Error("每个新用户仅可试用一次，请选择合适的计划付费订阅");
         }
