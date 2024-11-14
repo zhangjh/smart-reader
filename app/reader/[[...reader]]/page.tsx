@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import NavBar from '@/components/NavBar';
 import EpubViewerComponent from '@/components/EpubViewerComponent';
-import { Send, Eraser, Upload } from 'lucide-react';
+import { Send, Eraser, Upload, Binary } from 'lucide-react';
 import ReactMarkdown from 'react-markdown'; 
 import rehypeRaw from 'rehype-raw'
 import remarkGfm from 'remark-gfm';
@@ -36,6 +36,7 @@ const EpubReader = () => {
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [summary, setSummary] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [converting, setConverting] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [chatting, setChatting] = useState(false);
   const [chatContext, setChatContext] = useState<{ role: string; content: string; }[]>([]);
@@ -92,7 +93,7 @@ const EpubReader = () => {
     if (fileIdParam && userId) {
       setFileId(fileIdParam);
       // 建立socket
-      openSocket();
+      openChatSocket();
       // 获取fileUrl
       fetch(`${serviceDomain}/books/getReadFileUrl?userId=${userId}&fileId=${fileIdParam}`)
         .then(response => response.json())
@@ -122,7 +123,7 @@ const EpubReader = () => {
     }
   }, [fileIdParam, userId]);
 
-  const openSocket = async function() {
+  const openChatSocket = async function() {
     const chatSocket = new WebSocket(`${socketDomain}/socket/chat?userId=${userId}`);
     if(!chatSocket) {
       toast.error("socket连接服务器失败，请重试");
@@ -243,10 +244,10 @@ const EpubReader = () => {
     if (uploadedFile) {
       setIsLoading(true);
       // 权限校验
-      setChecking(true);
-      await util.authCheck(userId, 'reader', async () => {
-        setChecking(false);
-      });
+      // setChecking(true);
+      // await util.authCheck(userId, 'reader', async () => {
+      //   setChecking(false);
+      // });
 
       // 调用后端服务进行格式转换，获取转换后的epub文件后再渲染
       const formData = new FormData();
@@ -266,31 +267,37 @@ const EpubReader = () => {
         toast.error("文件格式不支持");
         return;
       }
-     
-      const convertResponse = await fetch(serviceDomain + "/parse/convert", {
-        method: 'POST',
-        body: formData,
-      });
-      const convertResult = await convertResponse.json();
-      if (!convertResult.success) {
-        console.error(convertResult.errorMsg);
-        toast.error(convertResult.errorMsg);
-        return;
+      
+      const convertSocket = new WebSocket(`${socketDomain}/socket/convert?userId=${userId}`);
+      convertSocket.onopen = () => {
+        console.log("convertSocket connected");
+        convertSocket.send(JSON.stringify({ file: uploadedFile, format }));
+        setIsLoading(false);
+        setConverting(true);
       }
-      const fileUrl = convertResult.data.fileUrl;
-      const fileId = convertResult.data.fileId;
-      console.log("fileUrl: ", fileUrl);
-
-      setIsLoading(false);
-      setEpubUrl(fileUrl);
-      setFileId(fileId);
-      setProcessing(true);
+      convertSocket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if(!data.success && data.errorMsg) {
+          toast.error(data.errorMsg);
+          return;
+        }
+        if(data.type === "fileUrl") {
+          setEpubUrl(data.data);
+        }
+        if(data.type === "fileId") {
+          setFileId(data.data);
+        }
+        if(data.type === "finish") {
+          setConverting(false);
+          setProcessing(true);
+        }
+      }
 
       // 保存文件解析使用记录
       util.saveUsage('reader', userId);
 
       // 建立问答socket
-      openSocket();
+      openChatSocket();
       const socket = new WebSocket(`${socketDomain}/socket/summary?userId=${userId}`);
 
       socket.onopen = () => {
@@ -388,6 +395,17 @@ const EpubReader = () => {
               <div className="w-full flex items-center justify-center p-4">
                 <div className="text-center">
                   <h2 className="text-2xl font-bold mb-4">正在处理您的电子书</h2>
+                  <div className="flex justify-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+                  </div>           
+                </div>
+              </div>
+            )}
+
+            {!isLoading && converting && (
+              <div className="w-full flex items-center justify-center p-4">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold mb-4">正在转换电子书格式</h2>
                   <div className="flex justify-center">
                     <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
                   </div>           
