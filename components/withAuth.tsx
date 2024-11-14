@@ -1,18 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import { SignIn, useUser } from '@clerk/nextjs';
+import { SignIn, useSignUp, useUser } from '@clerk/nextjs';
 import { usePathname } from 'next/navigation';
 import '@/app/sign.css'; 
 
 function AuthenticatedContent({ children }: { children: React.ReactNode }) {
-  const { isSignedIn } = useUser()
-  const pathname = usePathname()
+  const { isSignedIn } = useUser();
+  const pathname = usePathname();
   
   if (!isSignedIn) {
+    const signInFallbackRedirectUrl = `/sign-in?redirect=${pathname}`
+    const signUpFallbackRedirectUrl = `/sign-up?redirect=${pathname}`
     return (
       <div className="centered-container"> 
-        <SignIn path={pathname} signUpUrl='/sign-up' fallbackRedirectUrl={pathname} />
+        <SignIn path={pathname} signUpFallbackRedirectUrl={signUpFallbackRedirectUrl} fallbackRedirectUrl={signInFallbackRedirectUrl} />
       </div>
     )
   }

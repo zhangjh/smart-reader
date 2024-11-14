@@ -1,15 +1,18 @@
 'use client'
 
-import { SignIn, useUser } from '@clerk/nextjs'
+import { SignedOut, SignIn, useUser } from '@clerk/nextjs'
 import '@/app/sign.css'; 
 import { useEffect } from 'react';
 import util from '@/utils/util';
+import { useSearchParams } from 'next/navigation';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
 export default function Page() {
   const { user, isSignedIn } = useUser();
+
+  const redirect = useSearchParams().get("redirect");
 
   useEffect(() => {
     if(isSignedIn) {
@@ -36,12 +39,15 @@ export default function Page() {
           localStorage.setItem("extId", id);
           localStorage.setItem("userId", response.data.id);
         });
+      if(redirect) {
+        window.location.href = redirect;
+      }
     }
   }, [isSignedIn]);
 
-  return !isSignedIn && (
+  return <SignedOut>
     <div className="centered-container">
       <SignIn />
     </div>
-  )
+  </SignedOut>
 }
