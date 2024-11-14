@@ -35,7 +35,6 @@ export default function Page() {
           }
           localStorage.setItem("extId", id);
           localStorage.setItem("userId", response.data.id);
-          window.location.href = "/";
         });
     }
   }, [isSignedIn]);
