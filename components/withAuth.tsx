@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import { SignIn, useSignUp, useUser } from '@clerk/nextjs';
+import { SignIn, useUser } from '@clerk/nextjs';
 import { usePathname } from 'next/navigation';
 import '@/app/sign.css'; 
 
