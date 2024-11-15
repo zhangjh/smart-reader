@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import NavBar from '@/components/NavBar';
 import EpubViewerComponent from '@/components/EpubViewerComponent';
-import { Send, Eraser, Upload, Binary } from 'lucide-react';
+import { Send, Eraser, Upload } from 'lucide-react';
 import ReactMarkdown from 'react-markdown'; 
 import rehypeRaw from 'rehype-raw'
 import remarkGfm from 'remark-gfm';
