@@ -172,34 +172,6 @@ const featuresArr = {
           }
         });
     },
-    // 只在首次注册时调用保存用户, user: clerk useUser
-    async signUpSaveUser (user) {
-      try {
-        console.log(user);
-        const userId = user.id;
-        const userName = user.username;
-        const email = user.emailAddresses[0].emailAddress;
-        const avatar = user.imageUrl;
-        // 如果有邮箱认为是邮箱登录，否则只记录clerk
-        let extType = "clerk";
-        if(email) {
-          extType = "email";
-        }
-        // 判断是否已经保存过
-        const savedExtId = localStorage.getItem("extId");
-        const savedUserId = localStorage.getItem("userId");
-        if(savedExtId && savedExtId === user.id && savedUserId) {
-          return;
-        }
-        localStorage.removeItem("extId");
-        localStorage.removeItem("userId");
-        await this.register({
-          extType, extId: userId, avatar, userName, email
-        });
-      } catch (error) {
-        console.error("用户保存出错:", error);
-      }
-    },
     /**
      * userName,
       avatar,

@@ -22,34 +22,34 @@ const FileUploader = ({ onFileProcessed, serviceDomain, userId }: FileUploaderPr
     if (uploadedFile) {
       setChecking(true);
       // 校验权限
-      await util.authCheck(userId, 'translate', () => {
-          setChecking(false);
-      });
-      setIsLoading(true);
-      try {
-        const formData = new FormData();
-        formData.append('file', uploadedFile);
-        formData.append('userId', userId);
-        formData.append('spaceId', '1');
+      await util.authCheck(userId, 'translate', async () => {
+        setChecking(false);
+        setIsLoading(true);
+        try {
+          const formData = new FormData();
+          formData.append('file', uploadedFile);
+          formData.append('userId', userId);
+          formData.append('spaceId', '1');
 
-        const response = await fetch(`${serviceDomain}/parse/convert`, {
-          method: 'POST',
-          body: formData,
-        });
-        
-        const result = await response.json();
-        if (!result.success) {
-          throw new Error(result.errorMsg);
+          const response = await fetch(`${serviceDomain}/parse/convert`, {
+            method: 'POST',
+            body: formData,
+          });
+          
+          const result = await response.json();
+          if (!result.success) {
+            throw new Error(result.errorMsg);
+          }
+
+          const { fileUrl, fileId } = result.data;
+          onFileProcessed(fileUrl, fileId, userId);
+        } catch (error) {
+          console.error('File upload error:', error);
+          toast.error('文件上传失败，请重试');
+        } finally {
+          setIsLoading(false);
         }
-
-        const { fileUrl, fileId } = result.data;
-        onFileProcessed(fileUrl, fileId, userId);
-      } catch (error) {
-        console.error('File upload error:', error);
-        toast.error('文件上传失败，请重试');
-      } finally {
-        setIsLoading(false);
-      }
+      });
     }
   };
 

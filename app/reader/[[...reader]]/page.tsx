@@ -295,67 +295,66 @@ const EpubReader = () => {
       setChecking(true);
       await util.authCheck(userId, 'reader', async () => {
         setChecking(false);
-      });
-
-      // 调用后端服务进行格式转换，获取转换后的epub文件后再渲染
-      const reader = new FileReader();
-      reader.onload = () => {
-        const fileContent = reader.result as ArrayBuffer;
-        if(!fileContent) {
-          toast.error("文件内容为空");
-          return;
-        }
-
-        // 判断是否需要进行格式转换
-        let format:string | undefined = uploadedFile.type;
-        format = mimeTypeMap[uploadedFile.type as keyof typeof mimeTypeMap];
-        if(!format) {
-          // 获取文件扩展名
-          format = uploadedFile.name.split('.').pop().toLowerCase();
-        }
-        if(!format) {
-          toast.error("文件格式不支持");
-          return;
-        }
-
-        const convertSocket = new WebSocket(`${socketDomain}/socket/convert?userId=${userId}`);
-        convertSocket.onopen = () => {
-          console.log("convertSocket connected");
-          convertSocket.send(JSON.stringify({ 
-            fileData: Array.from(new Uint8Array(fileContent)), 
-            fileExt: format,
-            fileName: uploadedFile.name,
-            fileSize: uploadedFile.size
-           }));
-           setUpLoading(false);
-          setConverting(true);
-        }
-        convertSocket.onmessage = async (event) => {
-          const data = JSON.parse(event.data);
-          if(!data.success && data.errorMsg) {
-            toast.error(data.errorMsg);
+        // 调用后端服务进行格式转换，获取转换后的epub文件后再渲染
+        const reader = new FileReader();
+        reader.onload = () => {
+          const fileContent = reader.result as ArrayBuffer;
+          if(!fileContent) {
+            toast.error("文件内容为空");
             return;
           }
-          if(data.type === "fileUrl") {
-            setEpubUrl(data.data);
+
+          // 判断是否需要进行格式转换
+          let format:string | undefined = uploadedFile.type;
+          format = mimeTypeMap[uploadedFile.type as keyof typeof mimeTypeMap];
+          if(!format) {
+            // 获取文件扩展名
+            format = uploadedFile.name.split('.').pop().toLowerCase();
           }
-          if(data.type === "fileId") {
-            setFileId(data.data);
-            // 有fileId后就可以创建连接了
-            // 建立总结socket
-            openSummarySocket(data.data);
-            // 建立问答socket
-            openChatSocket();
+          if(!format) {
+            toast.error("文件格式不支持");
+            return;
           }
-          if(data.type === "finish") {
-            setConverting(false);
-            setSummaring(true);
-            // 保存文件解析使用记录
-            await util.saveUsage('reader', userId);
+
+          const convertSocket = new WebSocket(`${socketDomain}/socket/convert?userId=${userId}`);
+          convertSocket.onopen = () => {
+            console.log("convertSocket connected");
+            convertSocket.send(JSON.stringify({ 
+              fileData: Array.from(new Uint8Array(fileContent)), 
+              fileExt: format,
+              fileName: uploadedFile.name,
+              fileSize: uploadedFile.size
+            }));
+            setUpLoading(false);
+            setConverting(true);
           }
-        }
-      };
-      reader.readAsArrayBuffer(uploadedFile);
+          convertSocket.onmessage = async (event) => {
+            const data = JSON.parse(event.data);
+            if(!data.success && data.errorMsg) {
+              toast.error(data.errorMsg);
+              return;
+            }
+            if(data.type === "fileUrl") {
+              setEpubUrl(data.data);
+            }
+            if(data.type === "fileId") {
+              setFileId(data.data);
+              // 有fileId后就可以创建连接了
+              // 建立总结socket
+              openSummarySocket(data.data);
+              // 建立问答socket
+              openChatSocket();
+            }
+            if(data.type === "finish") {
+              setConverting(false);
+              setSummaring(true);
+              // 保存文件解析使用记录
+              await util.saveUsage('reader', userId);
+            }
+          }
+        };
+        reader.readAsArrayBuffer(uploadedFile);
+      });
     }
   };
 
