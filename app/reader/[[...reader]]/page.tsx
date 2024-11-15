@@ -195,11 +195,11 @@ const EpubReader = () => {
   const handleQuestionSubmit = async (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
-
-    // 权限校验
-    await util.authCheck(userId, 'chat', async () => {
-      setChecking(false);
-    });
+    // setChecking(true);
+    // // 权限校验
+    // await util.authCheck(userId, 'chat', async () => {
+    //   setChecking(false);
+    // });
     const curQuestion = question;
     setChatting(true);
     // 清空输入框

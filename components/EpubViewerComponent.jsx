@@ -217,7 +217,7 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
         </div>
       )}
 
-      {showControls && (
+      {showControls && !isMobileDevice && (
         <>
           <Button 
             onClick={handlePrevPage} 
