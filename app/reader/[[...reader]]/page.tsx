@@ -382,7 +382,7 @@ const EpubReader = () => {
                 <div className="text-center">
                   <h2 className="text-2xl font-bold mb-4">上传您的电子书</h2>
                   <p className="mb-4">支持的格式：docx、pdf、epub、azw3</p>
-                  <p className="mb-4">大小不要超过100MB</p>
+                  <p className="mb-4">大小不要超过50MB</p>
                   <div className="flex items-center justify-center">
                     <Input
                       type="file"
