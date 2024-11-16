@@ -55,13 +55,14 @@ const EpubReader = () => {
   const searchParams = useSearchParams();
   const fileIdParam = searchParams.get("fileId");
 
-  const [chatSocket, setChatSocket] = useState<WebSocket | null>(null);
+  const [chatSocket, setChatSocket] = useState<WebSocket>();
 
   const { isSignedIn, user } = useUser();
 
   // 区别于summary，这个contentSummary是书籍内容拆分成章节后的总结，用来辅助对话使用
   const [contentSummary, setContentSummary] = useState("");
   
+   let curAnswer = '';
   async function init() {
     const savedUserId = localStorage.getItem("userId");
     if(savedUserId) {
@@ -139,6 +140,37 @@ const EpubReader = () => {
       console.log("chatSocket connected");
     };
 
+    chatSocket.onmessage = event => {
+      const data = JSON.parse(event.data);
+        // data.success == false
+        if(!data.success && data.errorMsg) {
+          toast.error(data.errorMsg);
+          return;
+        }
+        if(data.type === 'finish') {
+          setChatting(false);
+          // 保存聊天使用记录
+          util.saveUsage('chat', userId);
+          // 构建聊天上下文
+          const curChatContext = chatContext;
+          curChatContext.push({
+            role: "user",
+            content: question
+          });
+          curChatContext.push({
+            role: "assistant",
+            content: curAnswer,
+          });
+          setChatContext(curChatContext);
+          curAnswer = '';
+        } else if(data.type === 'data') {
+          // 构建问答区显示内容
+          curAnswer += data.data;
+          chatAnswer[chatAnswer.length - 1].answer = curAnswer;
+          setChatAnswer([...chatAnswer]);
+        }
+    }
+
     chatSocket.onclose = (e) => {
       console.log("chatSocket closed", e);
     }
@@ -204,8 +236,7 @@ const EpubReader = () => {
     // await util.authCheck(userId, 'chat', async () => {
     //   setChecking(false);
     // });
-    const curQuestion = question;
-    if(!curQuestion) {
+    if(!question) {
       return;
     }
     setChatting(true);
@@ -213,12 +244,12 @@ const EpubReader = () => {
     setQuestion('');
     // 问答区显示内容
     chatAnswer.push({
-      "question": curQuestion,
+      "question": question,
       "answer": "正在思考中...",
     });
 
     const chatQuery = {
-      'question': curQuestion,
+      'question': question,
       'title': title,
       'author': author,
       'summary': contentSummary,
@@ -227,42 +258,12 @@ const EpubReader = () => {
       },
     };
     console.log(chatQuery);
-    if(!chatSocket) {
-      toast.error("socket连接服务器失败，请重试");
-      return;
+    if(!chatSocket || chatSocket.readyState !== WebSocket.OPEN) {
+      openChatSocket();
     }
-    chatSocket.send(JSON.stringify(chatQuery));
-    // 本轮问答
-    let curAnswer:string = "";
-    chatSocket.onmessage = event => {
-      const data = JSON.parse(event.data);
-        // data.success == false
-        if(!data.success && data.errorMsg) {
-          toast.error(data.errorMsg);
-          return;
-        }
-        if(data.type === 'finish') {
-          setChatting(false);
-          // 保存聊天使用记录
-          util.saveUsage('chat', userId);
-          // 构建聊天上下文
-          const curChatContext = chatContext;
-          curChatContext.push({
-            role: "user",
-            content: curQuestion
-          });
-          curChatContext.push({
-            role: "assistant",
-            content: curAnswer,
-          });
-          setChatContext(curChatContext);
-          curAnswer = "";
-        } else if(data.type === 'data') {
-          // 构建问答区显示内容
-          curAnswer += data.data;
-          chatAnswer[chatAnswer.length - 1].answer = curAnswer;
-          setChatAnswer([...chatAnswer]);
-        }
+    if(chatSocket?.readyState === WebSocket.OPEN) {
+      // 本轮问答
+      chatSocket.send(JSON.stringify(chatQuery));
     }
   };
 
@@ -323,9 +324,6 @@ const EpubReader = () => {
             return;
           }
 
-          // 建立问答socket
-          openChatSocket();
-
           const convertSocket = new WebSocket(`${socketDomain}/socket/convert?userId=${userId}`);
           convertSocket.onopen = () => {
             console.log("convertSocket connected");
@@ -352,6 +350,8 @@ const EpubReader = () => {
               // 改写地址栏
               window.history.pushState(null, title, window.location.pathname + `?fileId=${data.data}`);
               // 有fileId后就可以创建连接了
+              // 建立问答socket
+              openChatSocket();
               // 建立总结socket
               openSummarySocket(data.data);
             }
