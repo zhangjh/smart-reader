@@ -465,29 +465,27 @@ const EpubReader = () => {
                   
                   <div className="bg-white rounded-lg border border-gray-200 p-4 h-full">
                   {(!summaring && chatAnswer.length == 0) && (
-                    <ScrollArea className="h-[50vh] md:h-[55vh] lg:h-[50vh]">
+                    <ScrollArea className="h-[60vh] md:h-[55vh] lg:h-[50vh]">
                       <div className="space-y-4 prose">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
                       </div>
                     </ScrollArea>
                   )}
                   {(!summaring && chatAnswer.length > 0) && (
-                    <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[35vh]">
+                    <ScrollArea className="h-[30vh] md:h-[30vh] lg:h-[35vh]">
                       <div className="space-y-4 prose">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
                       </div>
                     </ScrollArea>
                   )}
                   </div>
-
-                  
                   </div>
 
                   {/** 展示聊天问答内容 */}
                   { (chatting || chatAnswer.length > 0) && (
                     <div className="flex-grow mb-4 h-1/3">
                       <div className="bg-white rounded-lg border border-gray-200 p-4">
-                        <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[25vh]">
+                        <ScrollArea className="h-[30vh] md:h-[30vh] lg:h-[25vh]">
                           <div className="space-y-4 prose pr-4">
                             <ReactMarkdown 
                               rehypePlugins={[rehypeRaw]}
