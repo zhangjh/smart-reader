@@ -135,8 +135,8 @@ const EpubReader = () => {
       console.log("chatSocket connected");
     };
 
-    chatSocket.onclose = () => {
-      console.log("chatSocket closed");
+    chatSocket.onclose = (e) => {
+      console.log("chatSocket closed", e);
     }
 
     chatSocket.onerror = e => {
