@@ -132,15 +132,15 @@ const EpubReader = () => {
     setChatSocket(chatSocket);
 
     chatSocket.onopen = () => {
-      console.log("chat socket connected");
+      console.log("chatSocket connected");
     };
 
     chatSocket.onclose = () => {
-      console.log("chat socket closed");
+      console.log("chatSocket closed");
     }
 
     chatSocket.onerror = e => {
-      console.error("chat socket error", e);
+      console.error("chatSocket error", e);
     }
   }
 
@@ -319,6 +319,9 @@ const EpubReader = () => {
             return;
           }
 
+          // 建立问答socket
+          openChatSocket();
+
           const convertSocket = new WebSocket(`${socketDomain}/socket/convert?userId=${userId}`);
           convertSocket.onopen = () => {
             console.log("convertSocket connected");
@@ -347,8 +350,6 @@ const EpubReader = () => {
               // 有fileId后就可以创建连接了
               // 建立总结socket
               openSummarySocket(data.data);
-              // 建立问答socket
-              openChatSocket();
             }
             if(data.type === "finish") {
               setConverting(false);
@@ -356,6 +357,9 @@ const EpubReader = () => {
               // 保存文件解析使用记录
               await util.saveUsage('reader', userId);
             }
+          }
+          convertSocket.onclose = () => {
+            console.log("convertSocket closed");
           }
         };
         reader.readAsArrayBuffer(uploadedFile);
