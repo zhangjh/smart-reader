@@ -342,6 +342,8 @@ const EpubReader = () => {
             }
             if(data.type === "fileId") {
               setFileId(data.data);
+              // 改写地址栏
+              window.history.pushState(null, title, window.location.pathname + `?fileId=${data.data}`);
               // 有fileId后就可以创建连接了
               // 建立总结socket
               openSummarySocket(data.data);
