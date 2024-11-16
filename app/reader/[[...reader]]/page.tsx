@@ -201,6 +201,9 @@ const EpubReader = () => {
     //   setChecking(false);
     // });
     const curQuestion = question;
+    if(!curQuestion) {
+      return;
+    }
     setChatting(true);
     // 清空输入框
     setQuestion('');
