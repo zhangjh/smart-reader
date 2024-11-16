@@ -132,6 +132,10 @@ const EpubReader = () => {
     setChatSocket(chatSocket);
 
     chatSocket.onopen = () => {
+      // 发送确认消息，保证连接不会自动断联
+      chatSocket.send(JSON.stringify({
+        'type': 'ping',
+      }));
       console.log("chatSocket connected");
     };
 
