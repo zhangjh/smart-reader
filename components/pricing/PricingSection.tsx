@@ -22,31 +22,12 @@ const PricingSection: React.FC<PricingProps> = ({ onPlanSelect }) => {
   const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
+    const fetchItems = async () => {
+        const fetchedItems = await util.fetchItems();
+        setItems(fetchedItems);
+    };
     if(!items.length) {
-       fetch(`${serviceDomain}/order/getItems`)
-        .then(response => response.json())
-        .then(response => {
-            if(!response.success) {
-                toast.error("获取方案信息失败:" + response.errorMsg);
-                return;
-            }
-            const data = response.data;
-            const newItems: Item[] = [];
-            for (let key in data) {
-              const solution = data[key];
-              if(newItems.indexOf(solution) !== -1) {
-                continue;
-              }
-              newItems.push({
-                key: key,
-                title: solution.name,
-                oriPrice: solution.oriPrice,
-                price: solution.price,
-                featuresArr: solution.description
-              });
-            }
-            setItems(newItems);
-        }); 
+        fetchItems();
     }
   }, []);
 

@@ -11,9 +11,6 @@ import PricingSection from '@/components/pricing/PricingSection';
 import PaymentModal from '@/components/payment/PaymentModal';
 
 
-const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
-const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
-
 interface FeatureCardProps {
   icon: React.ReactNode;
   title: string,
