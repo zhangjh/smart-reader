@@ -134,14 +134,18 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
 
     if (url) {
       loadBook();
-      document.addEventListener('keydown', handleKeyPress);
+      if(renditionRef.current) {
+        renditionRef.current.on('keydown', handleKeyPress);
+      }
       // document.addEventListener('wheel', handleWheel, { passive: false });
     }
 
     return () => {
       if (book) {
         book.destroy();
-        document.removeEventListener('keydown', handleKeyPress);
+        if(renditionRef.current) {
+          renditionRef.current.off('keydown', handleKeyPress);
+        }
         // document.removeEventListener('wheel', handleWheel);
       } 
     };
@@ -217,7 +221,7 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
         </div>
       )}
 
-      {showControls && (
+      {showControls && !isMobileDevice && (
         <>
           <Button 
             onClick={handlePrevPage} 

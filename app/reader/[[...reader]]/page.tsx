@@ -55,13 +55,14 @@ const EpubReader = () => {
   const searchParams = useSearchParams();
   const fileIdParam = searchParams.get("fileId");
 
-  const [chatSocket, setChatSocket] = useState<WebSocket | null>(null);
+  const [chatSocket, setChatSocket] = useState<WebSocket>();
 
   const { isSignedIn, user } = useUser();
 
   // 区别于summary，这个contentSummary是书籍内容拆分成章节后的总结，用来辅助对话使用
   const [contentSummary, setContentSummary] = useState("");
   
+   let curAnswer = '';
   async function init() {
     const savedUserId = localStorage.getItem("userId");
     if(savedUserId) {
@@ -132,15 +133,50 @@ const EpubReader = () => {
     setChatSocket(chatSocket);
 
     chatSocket.onopen = () => {
-      console.log("chat socket connected");
+      // 发送确认消息，保证连接不会自动断联
+      chatSocket.send(JSON.stringify({
+        'type': 'ping',
+      }));
+      console.log("chatSocket connected");
     };
 
-    chatSocket.onclose = () => {
-      console.log("chat socket closed");
+    chatSocket.onmessage = event => {
+      const data = JSON.parse(event.data);
+        // data.success == false
+        if(!data.success && data.errorMsg) {
+          toast.error(data.errorMsg);
+          return;
+        }
+        if(data.type === 'finish') {
+          setChatting(false);
+          // 保存聊天使用记录
+          util.saveUsage('chat', userId);
+          // 构建聊天上下文
+          const curChatContext = chatContext;
+          curChatContext.push({
+            role: "user",
+            content: question
+          });
+          curChatContext.push({
+            role: "assistant",
+            content: curAnswer,
+          });
+          setChatContext(curChatContext);
+          curAnswer = '';
+        } else if(data.type === 'data') {
+          // 构建问答区显示内容
+          curAnswer += data.data;
+          chatAnswer[chatAnswer.length - 1].answer = curAnswer;
+          setChatAnswer([...chatAnswer]);
+        }
+    }
+
+    chatSocket.onclose = (e) => {
+      console.log("chatSocket closed", e);
     }
 
     chatSocket.onerror = e => {
-      console.error("chat socket error", e);
+      console.error("chatSocket error", e);
     }
   }
 
@@ -195,23 +231,25 @@ const EpubReader = () => {
   const handleQuestionSubmit = async (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
-
-    // 权限校验
-    await util.authCheck(userId, 'chat', async () => {
-      setChecking(false);
-    });
-    const curQuestion = question;
+    // setChecking(true);
+    // // 权限校验
+    // await util.authCheck(userId, 'chat', async () => {
+    //   setChecking(false);
+    // });
+    if(!question) {
+      return;
+    }
     setChatting(true);
     // 清空输入框
     setQuestion('');
     // 问答区显示内容
     chatAnswer.push({
-      "question": curQuestion,
+      "question": question,
       "answer": "正在思考中...",
     });
 
     const chatQuery = {
-      'question': curQuestion,
+      'question': question,
       'title': title,
       'author': author,
       'summary': contentSummary,
@@ -220,42 +258,12 @@ const EpubReader = () => {
       },
     };
     console.log(chatQuery);
-    if(!chatSocket) {
-      toast.error("socket连接服务器失败，请重试");
-      return;
+    if(!chatSocket || chatSocket.readyState !== WebSocket.OPEN) {
+      openChatSocket();
     }
-    chatSocket.send(JSON.stringify(chatQuery));
-    // 本轮问答
-    let curAnswer:string = "";
-    chatSocket.onmessage = event => {
-      const data = JSON.parse(event.data);
-        // data.success == false
-        if(!data.success && data.errorMsg) {
-          toast.error(data.errorMsg);
-          return;
-        }
-        if(data.type === 'finish') {
-          setChatting(false);
-          // 保存聊天使用记录
-          util.saveUsage('chat', userId);
-          // 构建聊天上下文
-          const curChatContext = chatContext;
-          curChatContext.push({
-            role: "user",
-            content: curQuestion
-          });
-          curChatContext.push({
-            role: "assistant",
-            content: curAnswer,
-          });
-          setChatContext(curChatContext);
-          curAnswer = "";
-        } else if(data.type === 'data') {
-          // 构建问答区显示内容
-          curAnswer += data.data;
-          chatAnswer[chatAnswer.length - 1].answer = curAnswer;
-          setChatAnswer([...chatAnswer]);
-        }
+    if(chatSocket?.readyState === WebSocket.OPEN) {
+      // 本轮问答
+      chatSocket.send(JSON.stringify(chatQuery));
     }
   };
 
@@ -295,67 +303,71 @@ const EpubReader = () => {
       setChecking(true);
       await util.authCheck(userId, 'reader', async () => {
         setChecking(false);
-      });
-
-      // 调用后端服务进行格式转换，获取转换后的epub文件后再渲染
-      const reader = new FileReader();
-      reader.onload = () => {
-        const fileContent = reader.result as ArrayBuffer;
-        if(!fileContent) {
-          toast.error("文件内容为空");
-          return;
-        }
-
-        // 判断是否需要进行格式转换
-        let format:string | undefined = uploadedFile.type;
-        format = mimeTypeMap[uploadedFile.type as keyof typeof mimeTypeMap];
-        if(!format) {
-          // 获取文件扩展名
-          format = uploadedFile.name.split('.').pop().toLowerCase();
-        }
-        if(!format) {
-          toast.error("文件格式不支持");
-          return;
-        }
-
-        const convertSocket = new WebSocket(`${socketDomain}/socket/convert?userId=${userId}`);
-        convertSocket.onopen = () => {
-          console.log("convertSocket connected");
-          convertSocket.send(JSON.stringify({ 
-            fileData: Array.from(new Uint8Array(fileContent)), 
-            fileExt: format,
-            fileName: uploadedFile.name,
-            fileSize: uploadedFile.size
-           }));
-           setUpLoading(false);
-          setConverting(true);
-        }
-        convertSocket.onmessage = async (event) => {
-          const data = JSON.parse(event.data);
-          if(!data.success && data.errorMsg) {
-            toast.error(data.errorMsg);
+        // 调用后端服务进行格式转换，获取转换后的epub文件后再渲染
+        const reader = new FileReader();
+        reader.onload = () => {
+          const fileContent = reader.result as ArrayBuffer;
+          if(!fileContent) {
+            toast.error("文件内容为空");
             return;
           }
-          if(data.type === "fileUrl") {
-            setEpubUrl(data.data);
+
+          // 判断是否需要进行格式转换
+          let format:string | undefined = uploadedFile.type;
+          format = mimeTypeMap[uploadedFile.type as keyof typeof mimeTypeMap];
+          if(!format) {
+            // 获取文件扩展名
+            format = uploadedFile.name.split('.').pop().toLowerCase();
           }
-          if(data.type === "fileId") {
-            setFileId(data.data);
-            // 有fileId后就可以创建连接了
-            // 建立总结socket
-            openSummarySocket(data.data);
-            // 建立问答socket
-            openChatSocket();
+          if(!format) {
+            toast.error("文件格式不支持");
+            return;
           }
-          if(data.type === "finish") {
-            setConverting(false);
-            setSummaring(true);
-            // 保存文件解析使用记录
-            await util.saveUsage('reader', userId);
+
+          const convertSocket = new WebSocket(`${socketDomain}/socket/convert?userId=${userId}`);
+          convertSocket.onopen = () => {
+            console.log("convertSocket connected");
+            convertSocket.send(JSON.stringify({ 
+              fileData: Array.from(new Uint8Array(fileContent)), 
+              fileExt: format,
+              fileName: uploadedFile.name,
+              fileSize: uploadedFile.size
+            }));
+            setUpLoading(false);
+            setConverting(true);
           }
-        }
-      };
-      reader.readAsArrayBuffer(uploadedFile);
+          convertSocket.onmessage = async (event) => {
+            const data = JSON.parse(event.data);
+            if(!data.success && data.errorMsg) {
+              toast.error(data.errorMsg);
+              return;
+            }
+            if(data.type === "fileUrl") {
+              setEpubUrl(data.data);
+            }
+            if(data.type === "fileId") {
+              setFileId(data.data);
+              // 改写地址栏
+              window.history.pushState(null, title, window.location.pathname + `?fileId=${data.data}`);
+              // 有fileId后就可以创建连接了
+              // 建立问答socket
+              openChatSocket();
+              // 建立总结socket
+              openSummarySocket(data.data);
+            }
+            if(data.type === "finish") {
+              setConverting(false);
+              setSummaring(true);
+              // 保存文件解析使用记录
+              await util.saveUsage('reader', userId);
+            }
+          }
+          convertSocket.onclose = () => {
+            console.log("convertSocket closed");
+          }
+        };
+        reader.readAsArrayBuffer(uploadedFile);
+      });
     }
   };
 
@@ -383,7 +395,7 @@ const EpubReader = () => {
                 <div className="text-center">
                   <h2 className="text-2xl font-bold mb-4">上传您的电子书</h2>
                   <p className="mb-4">支持的格式：docx、pdf、epub、azw3</p>
-                  <p className="mb-4">大小不要超过100MB</p>
+                  <p className="mb-4">大小不要超过50MB</p>
                   <div className="flex items-center justify-center">
                     <Input
                       type="file"
@@ -453,29 +465,27 @@ const EpubReader = () => {
                   
                   <div className="bg-white rounded-lg border border-gray-200 p-4 h-full">
                   {(!summaring && chatAnswer.length == 0) && (
-                    <ScrollArea className="h-[50vh] md:h-[55vh] lg:h-[50vh]">
+                    <ScrollArea className="h-[60vh] md:h-[55vh] lg:h-[50vh]">
                       <div className="space-y-4 prose">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
                       </div>
                     </ScrollArea>
                   )}
                   {(!summaring && chatAnswer.length > 0) && (
-                    <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[35vh]">
+                    <ScrollArea className="h-[30vh] md:h-[30vh] lg:h-[35vh]">
                       <div className="space-y-4 prose">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
                       </div>
                     </ScrollArea>
                   )}
                   </div>
-
-                  
                   </div>
 
                   {/** 展示聊天问答内容 */}
                   { (chatting || chatAnswer.length > 0) && (
                     <div className="flex-grow mb-4 h-1/3">
                       <div className="bg-white rounded-lg border border-gray-200 p-4">
-                        <ScrollArea className="h-[25vh] md:h-[30vh] lg:h-[25vh]">
+                        <ScrollArea className="h-[30vh] md:h-[30vh] lg:h-[25vh]">
                           <div className="space-y-4 prose pr-4">
                             <ReactMarkdown 
                               rehypePlugins={[rehypeRaw]}
