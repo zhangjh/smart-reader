@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PricingCard from './PricingCard';
-import { toast } from 'react-toastify';
 import util from '@/utils/util';
 
-const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
-const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
 interface PricingProps {
   onPlanSelect: (feature: string[], itemType: string) => void;
