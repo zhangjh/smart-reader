@@ -146,7 +146,7 @@ const BookSearch = () => {
           {searchResults && !isSearching && (
             <div className="space-y-4">
               <h2 className="text-2xl font-bold mb-4">搜索结果</h2>
-              {searchResults.books && searchResults.books.map((book) => (
+              {searchResults && searchResults.map((book) => (
                 <div key={book.id} className="border p-4 rounded-lg">
                   <h3 
                     className="text-lg font-semibold cursor-pointer hover:text-blue-600"
