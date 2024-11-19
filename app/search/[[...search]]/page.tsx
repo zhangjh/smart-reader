@@ -79,12 +79,15 @@ const BookSearch = () => {
     }
   };
 
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-    if (searchTerm.trim()) {
+  useEffect(() => {
+    if (searchTerm.trim() && currentPage > 0) {
       setIsSearching(true);
       refetch().then(() => setIsSearching(false));
     }
+  }, [currentPage, refetch]);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
   };
 
   const getDownloadLink = async (bookId: string, bookHash: string) => {
