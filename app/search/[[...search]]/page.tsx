@@ -191,7 +191,7 @@ const BookSearch = () => {
                 <span className="flex items-center px-4">第 {currentPage} 页</span>
                 <Button 
                   onClick={() => setCurrentPage(prev => prev + 1)}
-                  disabled={!searchResults.hasMore || isFetching}
+                  disabled={searchResults && searchResults.length < 10 || isFetching}
                 >
                   下一页
                 </Button>
