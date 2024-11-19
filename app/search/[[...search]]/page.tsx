@@ -79,6 +79,14 @@ const BookSearch = () => {
     }
   };
 
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    if (searchTerm.trim()) {
+      setIsSearching(true);
+      refetch().then(() => setIsSearching(false));
+    }
+  };
+
   const getDownloadLink = async (bookId: string, bookHash: string) => {
     try {
       if(!isSignedIn) {
@@ -183,14 +191,14 @@ const BookSearch = () => {
               {/* 分页控制 */}
               <div className="flex justify-center gap-2 mt-4">
                 <Button 
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1 || isFetching}
                 >
                   上一页
                 </Button>
                 <span className="flex items-center px-4">第 {currentPage} 页</span>
                 <Button 
-                  onClick={() => setCurrentPage(prev => prev + 1)}
+                  onClick={() => handlePageChange(currentPage + 1)}
                   disabled={searchResults && searchResults.length < 10 || isFetching}
                 >
                   下一页
