@@ -209,7 +209,7 @@ const EpubReader = () => {
       } else if(data.type === 'data') {
         setSummaring(false);
         // 更新summary
-        setSummary(prevSummary => prevSummary + data.data); // 使用函数式更新
+        setSummary(prevSummary => (prevSummary || '') + data.data); // 如果prevSummary为null，使用空字符串
       } else if(data.type === 'title') {
         setTitle(data.data);
       } else if(data.type === 'author') {
