@@ -180,14 +180,14 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
 
   return (
     <div 
-      className="min-h-full w-full flex flex-col relative overflow-y-auto"
+      className="h-screen w-full flex flex-col relative"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
     >
-      <div ref={viewerRef} className="flex-grow pb-5 overflow-y-auto">  
+      <div ref={viewerRef} className="flex-grow relative">  
         {loading && (
-          <div className='flex justify-center items-center h-full'>
-            <div>文件内容加载中，请稍等...</div>
+          <div className='absolute inset-0 flex justify-center items-center bg-white'>
+            <div className="text-lg">文件内容加载中，请稍等...</div>
           </div>
         )}
       </div>
