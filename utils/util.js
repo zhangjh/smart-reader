@@ -1,33 +1,7 @@
-import { SignIn } from '@clerk/nextjs';
 import { toast } from 'react-toastify';
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
-
-const featuresArr = {
-    "single": [
-      "单次找书下载(版权风险可能调整)",
-      "电子书阅读器",
-      "单篇文章解析",
-      "AI总结与评分",
-      "单文章不限次智能问答",
-    ],
-    "basic": [
-      "10次找书下载(版权风险可能调整)",
-      "电子书阅读器",
-      "不限次文章解析",
-      "AI总结与评分",
-      "不限次智能问答",
-    ],
-    "senior": [
-      "不限次找书下载(版权风险可能调整)",
-      "电子书阅读器",
-      "不限次文章解析",
-      "AI总结与评分",
-      "不限次智能问答",
-      "不限次文档多语种翻译(告别token焦虑)",
-    ]
-  };
 
   const payModules = [
     {"key": "download", "desc": "电子书下载"}, 
@@ -37,7 +11,6 @@ const featuresArr = {
   ];
 
   const util = {
-    featuresArr,
     payModules,
     // 用户Id，模块，权限校验成功后的回调函数
     async authCheck (userId, module, cb, failCb) {
@@ -242,6 +215,32 @@ const featuresArr = {
           return response.data.id;
         });
       return userId;
+    },
+    async fetchItems() {
+      return fetch(`${serviceDomain}/order/getItems`)
+        .then(response => response.json())
+        .then(response => {
+          if (!response.success) {
+            toast.error("获取方案信息失败:" + response.errorMsg);
+            return []; // 确保返回空数组而不是 undefined
+          }
+          const data = response.data;
+          const newItems = [];
+          for (let key in data) {
+            const solution = data[key];
+            if (newItems.indexOf(solution) !== -1) {
+              continue;
+            }
+            newItems.push({
+              key: key,
+              title: solution.name,
+              oriPrice: solution.oriPrice,
+              price: solution.price,
+              featuresArr: solution.description
+            });
+          }
+          return newItems; // 确保返回 newItems
+        });
     },
     sliceContent (content, maxLength) {
       // 如果不是string 类型，直接返回

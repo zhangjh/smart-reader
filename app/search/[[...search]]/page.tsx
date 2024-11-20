@@ -18,6 +18,7 @@ const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://
 const BookSearch = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const { isSignedIn, user } = useUser();
   const [userId, setUserId] = useState('');
 
@@ -47,9 +48,9 @@ const BookSearch = () => {
     }, [isSignedIn]);
 
   const { data: searchResults, refetch, isFetching } = useQuery({
-    queryKey: ['bookSearch', searchTerm],
+    queryKey: ['bookSearch', searchTerm, currentPage],
     queryFn: async () => {
-      const response = await fetch(serviceDomain + `/books/search?keyword=${searchTerm}&limit=10`);
+      const response = await fetch(serviceDomain + `/books/search?keyword=${searchTerm}&page=${currentPage}&limit=10`);
       console.log(response);
       if (!response.ok) {
         toast.error('查找失败，请稍后再试');
@@ -76,6 +77,17 @@ const BookSearch = () => {
       setIsSearching(true);
       refetch().then(() => setIsSearching(false));
     }
+  };
+
+  useEffect(() => {
+    if (searchTerm.trim() && currentPage > 0) {
+      setIsSearching(true);
+      refetch().then(() => setIsSearching(false));
+    }
+  }, [currentPage, refetch]);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
   };
 
   const getDownloadLink = async (bookId: string, bookHash: string) => {
@@ -145,7 +157,7 @@ const BookSearch = () => {
           {searchResults && !isSearching && (
             <div className="space-y-4">
               <h2 className="text-2xl font-bold mb-4">搜索结果</h2>
-              {searchResults.map((book) => (
+              {searchResults && searchResults.map((book) => (
                 <div key={book.id} className="border p-4 rounded-lg">
                   <h3 
                     className="text-lg font-semibold cursor-pointer hover:text-blue-600"
@@ -178,6 +190,23 @@ const BookSearch = () => {
                   />               
                 </div>
               ))}
+              
+              {/* 分页控制 */}
+              <div className="flex justify-center gap-2 mt-4">
+                <Button 
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1 || isFetching}
+                >
+                  上一页
+                </Button>
+                <span className="flex items-center px-4">第 {currentPage} 页</span>
+                <Button 
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={searchResults && searchResults.length < 10 || isFetching}
+                >
+                  下一页
+                </Button>
+              </div>
             </div>
           )}
         </div>

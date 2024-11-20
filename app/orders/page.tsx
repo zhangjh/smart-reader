@@ -24,6 +24,13 @@ interface Order {
   status: number;
   pay_url: string;
 }
+interface Item {
+  key: string,
+  title: string,
+  oriPrice: number,
+  price: number,
+  featuresArr: string[],
+}
 
 const Orders = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,13 +40,21 @@ const Orders = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
   const [isMobileDevice, setIsMobileDevice] = useState(false); // 添加状态
+  const [items, setItems] = useState<Item[]>([]);
 
   const { isSignedIn, user } = useUser();
 
   useEffect(() => {
     // 仅在客户端执行
     setIsMobileDevice(/Mobi|Android/i.test(navigator.userAgent));
+
+    const fetchItems = async () => {
+      const fetchedItems = await util.fetchItems();
+      setItems(fetchedItems);
+    };
+    fetchItems();
   }, []);
+  
   const fetchOrders = async () => {
     if (!userId) return;  // 添加保护检查
 
@@ -95,19 +110,11 @@ const Orders = () => {
   }, [userId, currentPage, statusFilter]);
 
   const getItemTypeText = (type: string) => {
-    switch (type) {
-      case 'single':
-        return '单次服务';
-      case 'basic':
-        return '基本服务';
-      case 'senior':
-        return '高级服务';
-      default:
-        return '未知类型';
-    }
+    return items.filter(item => item.key === type)[0].title;
   };
   const getItemContent = (type: string) => {
-    return util.featuresArr[type as keyof typeof util.featuresArr]
+    const featuresArr = items.filter(item => item.key === type)[0].featuresArr;
+    return featuresArr
       .toString()
       .split(',')
       .join(',\n');

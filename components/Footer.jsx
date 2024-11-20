@@ -71,7 +71,7 @@ const Footer = () => {
                   </h3>
                   <ul className="mt-4 space-y-4">
                     <li>
-                      <a href="#" className="text-base text-gray-500 hover:text-gray-900">
+                      <a target='_blank' href="https://mp.weixin.qq.com/s?__biz=MzA5NzkxMzc2NA==&mid=2453305518&idx=1&sn=fcf4eac622577196a8e520b36c727495&chksm=87574665b020cf733ec17498ed9ab35e14befb9ebd73b20b7023b6cea94a6fbaf7763473303e#rd" className="text-base text-gray-500 hover:text-gray-900">
                         使用指南
                       </a>
                     </li>
