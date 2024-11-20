@@ -34,7 +34,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ userId, isOpen, onClose, fe
         .then(response => response.json())
         .then(response => {
           if(!response.success) {
-            throw new Error("生成订单二维码失败:" + response.errorMessage);
+            throw new Error(response.errorMessage);
           }
           const codeUrl = response.data.code_url;
           const orderId = response.data.orderId;
@@ -59,7 +59,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ userId, isOpen, onClose, fe
         })
         .catch(error => {
           console.error("Error:", error);
-          toast.error("生成订单失败，请稍后再试");
+          toast.error("生成订单失败，请稍后再试:" + error.message);
         })
         .finally(() => {
           setLoading(false);
