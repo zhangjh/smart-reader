@@ -172,28 +172,19 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
       console.log("swipe right");
       handlePrevPage();
     },
-    onSwipedDown: () => {
-      console.log("swipe down");
-      // 往下滑动一定距离
-      window.scrollTo(0, -500);
-    },
-    onSwipedUp: () => {
-      console.log("swipe up");
-      // 往上滑动一定距离
-      window.scrollTo(0, 500);
-    },
-    delta: 10, // 滑动距离阈值
-    preventDefaultTouchmoveEvent: true,
-    trackMouse: true
+    preventDefaultTouchmoveEvent: false,
+    trackMouse: true,
+    trackTouch: true,
+    delta: 50,  // Increased threshold for better distinction between scroll and swipe
   });
 
   return (
     <div 
-      className="h-full flex flex-col relative"
+      className="min-h-full w-full flex flex-col relative overflow-y-auto"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
     >
-      <div ref={viewerRef} className="flex-grow pb-5">  
+      <div ref={viewerRef} className="flex-grow pb-5 overflow-y-auto">  
         {loading && (
           <div className='flex justify-center items-center h-full'>
             <div>文件内容加载中，请稍等...</div>
@@ -207,8 +198,8 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
           {...handlers}
           className="absolute inset-0 z-10"
           style={{
-            touchAction: 'none',
-            userSelect: 'none',
+            touchAction: 'pan-y', // 允许垂直滚动
+            userSelect: 'text',   // 允许文本选择
             pointerEvents: 'auto',
             background: 'transparent'
           }}
