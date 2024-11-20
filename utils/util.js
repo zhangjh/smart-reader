@@ -37,7 +37,7 @@ const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://
           // 统计订单总次数
           for (const order of orders) {
             // 付费方案按月生效，未用完的会过期
-            const orderTime = new Date(order.createTime); // 解析UTC时间
+            const orderTime = new Date(order.create_time); // 解析UTC时间
             const expireTime = new Date(orderTime.getTime() + 30 * 24 * 60 * 60 * 1000); // 计算过期时间
             if (new Date(curTime) <= expireTime) {
               // 存在有效的订阅，检查资源使用情况
