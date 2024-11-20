@@ -69,7 +69,9 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
       const rendition = book.renderTo(viewerRef.current, {
         width: '100%',
         height: '100%',
-        spread: 'always'
+        spread: 'none',  // 移动端单页显示
+        flow: 'paginated',  // 使用分页模式
+        minSpreadWidth: 1000  // 在小屏幕上强制单页
       });
       renditionRef.current = rendition;
 
@@ -172,19 +174,20 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
       console.log("swipe right");
       handlePrevPage();
     },
-    preventDefaultTouchmoveEvent: false,
+    preventDefaultTouchmoveEvent: true,  // 防止滑动时触发页面滚动
     trackMouse: true,
     trackTouch: true,
     delta: 50,  // Increased threshold for better distinction between scroll and swipe
+    swipeDuration: 500,  // 增加有效滑动的持续时间
   });
 
   return (
     <div 
-      className="h-screen w-full flex flex-col relative"
+      className="h-full w-full flex flex-col relative"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
     >
-      <div ref={viewerRef} className="flex-grow relative">  
+      <div ref={viewerRef} className="flex-grow relative overflow-hidden">  
         {loading && (
           <div className='absolute inset-0 flex justify-center items-center bg-white'>
             <div className="text-lg">文件内容加载中，请稍等...</div>
@@ -198,8 +201,8 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
           {...handlers}
           className="absolute inset-0 z-10"
           style={{
-            touchAction: 'pan-y', // 允许垂直滚动
-            userSelect: 'text',   // 允许文本选择
+            touchAction: 'none',  // 完全控制触摸事件
+            userSelect: 'none',
             pointerEvents: 'auto',
             background: 'transparent'
           }}
