@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { QRCodeSVG } from 'qrcode.react';
 import { toast } from 'react-toastify';
 import { env } from "process";
+import { BusinessError } from '@/utils/BusinessError';
 
 const debugMode = env.DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
@@ -34,12 +35,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ userId, isOpen, onClose, fe
         .then(response => response.json())
         .then(response => {
           if(!response.success) {
-            throw new Error("生成订单二维码失败:" + response.errorMessage);
+            throw new BusinessError(response.errorMsg || "生成订单失败");
           }
           const codeUrl = response.data.code_url;
           const orderId = response.data.orderId;
           if(!codeUrl || !orderId) {
-            throw new Error("生成订单失败");
+            throw new BusinessError("生成订单失败：缺少必要的订单信息");
           }
           setQrContent(codeUrl);
           
@@ -58,8 +59,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ userId, isOpen, onClose, fe
           setTimer(newTimer);
         })
         .catch(error => {
-          console.error("Error:", error);
-          toast.error("生成订单失败，请稍后再试");
+          const errorMessage = error instanceof BusinessError ? error.message : "生成订单失败，请稍后再试";
+          toast.error(errorMessage);
+          setTimeout(() => {
+            onClose(timer);
+          }, 1000);
         })
         .finally(() => {
           setLoading(false);

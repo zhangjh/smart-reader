@@ -48,6 +48,7 @@ const EpubReader = () => {
   const [needUpdate, setNeedUpdate] = useState(false);
   const [summaryProgress, setSummaryProgesss] = useState<number>(0.0);
   const [checking, setChecking] = useState(false);
+  const [isNewUpload, setIsNewUpload] = useState(false);
 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -91,7 +92,7 @@ const EpubReader = () => {
   }, [isSignedIn]);
  
   useEffect(() => {
-    if (fileIdParam && userId) {
+    if (fileIdParam && userId && !isNewUpload) {
       setFileId(fileIdParam);
       // 建立socket
       openChatSocket();
@@ -208,8 +209,7 @@ const EpubReader = () => {
         setNeedUpdate(true);
       } else if(data.type === 'data') {
         setSummaring(false);
-        // 更新summary
-        setSummary(prevSummary => prevSummary + data.data); // 使用函数式更新
+        setSummary(prevSummary => (prevSummary || '') + data.data);
       } else if(data.type === 'title') {
         setTitle(data.data);
       } else if(data.type === 'author') {
@@ -299,6 +299,7 @@ const EpubReader = () => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
       setUpLoading(true);
+      setIsNewUpload(true);  // 标记为新上传
       // 权限校验
       setChecking(true);
       await util.authCheck(userId, 'reader', async () => {

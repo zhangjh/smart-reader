@@ -32,12 +32,14 @@ const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://
         // 查询到付费订阅，统计剩余次数
         if (data.data.results && data.data.results.length > 0) {
           const orders = data.data.results;
-          const curTime = new Date().getTime();
+          const curTime = new Date().toISOString(); // 获取当前时间的UTC格式
         
           // 统计订单总次数
           for (const order of orders) {
             // 付费方案按月生效，未用完的会过期
-            if (curTime <= order.createTime + 30 * 24 * 60 * 60 * 1000) {
+            const orderTime = new Date(order.create_time); // 解析UTC时间
+            const expireTime = new Date(orderTime.getTime() + 30 * 24 * 60 * 60 * 1000); // 计算过期时间
+            if (new Date(curTime) <= expireTime) {
               // 存在有效的订阅，检查资源使用情况
               const itemType = order.item_type;
               switch(itemType) {
