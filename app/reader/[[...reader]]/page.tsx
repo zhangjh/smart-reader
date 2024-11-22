@@ -231,12 +231,12 @@ const EpubReader = () => {
   const handleQuestionSubmit = async (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
-    // 校验问答权限不设置checking，checking会渲染“校验中”文案，体验不好
+    // 各个方案问答都是不限次的，不需要单独校验权限了
     // setChecking(true);
     // 权限校验
-    await util.authCheck(userId, 'chat', async () => {
+    // await util.authCheck(userId, 'chat', async () => {
       // setChecking(false);
-    });
+    // });
     if(!question) {
       return;
     }
