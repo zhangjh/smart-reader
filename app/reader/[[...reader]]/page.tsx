@@ -231,11 +231,11 @@ const EpubReader = () => {
   const handleQuestionSubmit = async (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
-    // setChecking(true);
-    // // 权限校验
-    // await util.authCheck(userId, 'chat', async () => {
-    //   setChecking(false);
-    // });
+    setChecking(true);
+    // 权限校验
+    await util.authCheck(userId, 'chat', async () => {
+      setChecking(false);
+    });
     if(!question) {
       return;
     }
@@ -258,12 +258,18 @@ const EpubReader = () => {
       },
     };
     console.log(chatQuery);
-    if(!chatSocket || chatSocket.readyState !== WebSocket.OPEN) {
-      openChatSocket();
+    
+    // 如果WebSocket未连接或已关闭，先建立连接
+    if (!chatSocket || chatSocket.readyState !== WebSocket.OPEN) {
+      await openChatSocket();
     }
-    if(chatSocket?.readyState === WebSocket.OPEN) {
+
+    // 确保连接成功后发送消息
+    if (chatSocket?.readyState === WebSocket.OPEN) {
       // 本轮问答
       chatSocket.send(JSON.stringify(chatQuery));
+    } else {
+      toast.error("WebSocket连接未就绪，请刷新页面重试");
     }
   };
 
