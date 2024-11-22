@@ -41,7 +41,7 @@ const Sidebar = ({ children }) => {
       <Link
         href="/translation"
         className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-          isActive('/translate')
+          isActive('/translation')
             ? 'bg-blue-50 text-blue-600'
             : 'text-gray-600 hover:bg-gray-50'
         }`}
