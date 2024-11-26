@@ -390,7 +390,7 @@ const EpubReader = () => {
                 <h2 className="text-2xl font-bold mb-4">权限校验中，请稍等...</h2>
                 <div className="flex justify-center">
                   <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-                </div>　　 　 　
+                </div>
               </div>
             </div>
           )}
@@ -428,7 +428,7 @@ const EpubReader = () => {
                   <h2 className="text-2xl font-bold mb-4">正在处理您的电子书</h2>
                   <div className="flex justify-center">
                     <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-                  </div>　　 　 　
+                  </div>
                 </div>
               </div>
             )}
@@ -439,7 +439,7 @@ const EpubReader = () => {
                   <h2 className="text-2xl font-bold mb-4">正在转换电子书格式</h2>
                   <div className="flex justify-center">
                     <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-                  </div>　　 　 　
+                  </div>
                 </div>
               </div>
             )}

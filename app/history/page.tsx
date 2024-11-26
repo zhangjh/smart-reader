@@ -178,25 +178,25 @@ const ReadingHistory = () => {
                         <div className="space-y-4 mb-6">
                             {readingHistory.map((history) => (
                                 <Card key={history.id} className="p-4">
-                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                        <div>
-                                            <h3 className="font-medium">开始阅读时间</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <div className="min-w-[150px]">
+                                            <h3 className="font-medium mb-1">开始阅读时间</h3>
                                             <p className="text-sm text-gray-500">{handleDate(history.create_time)}</p>
                                         </div>
-                                        <div>
-                                            <h3 className="font-medium">最近阅读时间</h3>
+                                        <div className="min-w-[150px]">
+                                            <h3 className="font-medium mb-1">最近阅读时间</h3>
                                             <p className="text-sm text-gray-500">{handleDate(history.modify_time)}</p>
                                         </div>
-                                        <div>
-                                            <p className="font-medium">书籍</p>
-                                            <p className="text-sm text-gray-500">
-                                                {util.sliceContent(history.title, 10)}
+                                        <div className="min-w-[120px]">
+                                            <p className="font-medium mb-1">书籍信息</p>
+                                            <p className="text-sm text-gray-500 break-all md:truncate md:break-normal" title={history.title}>
+                                                {history.title}
                                             </p>
-                                            <p className="text-sm text-gray-500">
-                                                {util.sliceContent(history.author, 10)}
+                                            <p className="text-sm text-gray-500 break-all md:truncate md:break-normal" title={history.author}>
+                                                {history.author}
                                             </p>
                                         </div>
-                                        <div className="space-y-1 w-full md:w-48">
+                                        <div className="space-y-1">
                                             <div className="flex justify-between text-sm">
                                                 <span>阅读进度</span>
                                                 <span>{history.progress}%</span>
@@ -204,22 +204,22 @@ const ReadingHistory = () => {
                                             <Progress value={history.progress} className="h-2" />
                                         </div>
                                     </div>
-                                    <div className="flex justify-end mt-4">
+                                    <div className="flex justify-end mt-4 space-x-2">
                                         <Button 
                                             onClick={() => window.location.href = `/reader?fileId=${history.file_id}`}
-                                            className="mr-2 bg-green-500 hover:bg-green-600 text-white"
+                                            className="bg-green-500 hover:bg-green-600 text-white"
                                         >
                                             继续阅读
                                         </Button>
                                         <Button 
                                             onClick={() => getFile(history.file_id)}
-                                            className="mr-2 bg-blue-500 hover:bg-blue-600 text-white"
+                                            className="bg-blue-500 hover:bg-blue-600 text-white"
                                         >
                                             下载
                                         </Button>
                                         <Button 
                                             onClick={() => deleteHistory(history.file_id)}
-                                            className="mr-2 bg-red-500 hover:bg-red-600 text-white"
+                                            className="bg-red-500 hover:bg-red-600 text-white"
                                         >
                                             删除
                                         </Button>
