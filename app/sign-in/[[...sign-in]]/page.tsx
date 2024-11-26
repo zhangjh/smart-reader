@@ -12,7 +12,7 @@ const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://
 export default function Page() {
   const { user, isSignedIn } = useUser();
 
-  const redirect = useSearchParams().get("redirect");
+  const redirect = useSearchParams()?.get("redirect");
 
   useEffect(() => {
     if(isSignedIn) {

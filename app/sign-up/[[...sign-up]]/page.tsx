@@ -11,7 +11,7 @@ export default function Page() {
   const { isLoaded, signUp } = useSignUp();
   const { isSignedIn, user } = useUser();
 
-  const redirect = useSearchParams().get("redirect");
+  const redirect = useSearchParams()?.get("redirect");
 
   useEffect(() => {
     if(isLoaded && signUp && isSignedIn) {
