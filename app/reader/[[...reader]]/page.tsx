@@ -54,7 +54,7 @@ const EpubReader = () => {
   const [author, setAuthor] = useState("");
 
   const searchParams = useSearchParams();
-  const fileIdParam = searchParams.get("fileId");
+  const fileIdParam = searchParams?.get("fileId");
 
   const [chatSocket, setChatSocket] = useState<WebSocket>();
 
