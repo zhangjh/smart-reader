@@ -198,35 +198,39 @@ const Orders = () => {
             <div className="space-y-4 mb-6">
               {orders.map((order) => (
                 <Card key={order.id} className="p-4">
-                  <div className="flex flex-col md:flex-row justify-between items-start">
-                  <div className="mb-4 md:mb-0">
-                      <h3 className="font-medium">订单号</h3>
-                      <p className="text-sm text-gray-500">{order.id}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="min-w-[120px]">
+                      <h3 className="font-medium mb-1">订单号</h3>
+                      <p className="text-sm text-gray-500 break-all md:break-normal">
+                        {order.id}
+                      </p>
                     </div>
-                    <div className="mb-4 md:mb-0">
-                      <h3 className="font-medium">{getOrderTypeText(order.order_type)}</h3>
-                      <p className="text-sm text-gray-500">{handleDate(order.create_time)}</p>
+                    <div className="min-w-[120px]">
+                      <h3 className="font-medium mb-1">{getOrderTypeText(order.order_type)}</h3>
+                      <p className="text-sm text-gray-500">
+                        {handleDate(order.create_time)}
+                      </p>
                     </div>
-                    <div className="mb-4 md:mb-0 max-w-xs"> {/* 限制列的最大宽度 */}
-                      <h3 className="font-medium">{getItemTypeText(order.item_type)}</h3>
-                      <p className="text-sm text-gray-500 whitespace-pre-wrap">{getItemContent(order.item_type)}</p>
+                    <div className="min-w-[120px]">
+                      <h3 className="font-medium mb-1">{getItemTypeText(order.item_type)}</h3>
+                      <p className="text-sm text-gray-500 whitespace-pre-wrap break-all md:break-normal">
+                        {getItemContent(order.item_type)}
+                      </p>
                     </div>
-                    <div className="mb-4 md:mb-0">
-                      <p className="font-medium">{handlePrice(order.order_price)}</p>
-                      <p className="text-sm text-gray-500">{getStatusText(order.status)}</p>
-                    </div>
-                    { isMobileDevice && (
-                      <div className="flex flex-col mt-4 md:mt-0">
-                      {order.status === 0 && order.pay_url && (
+                    <div className="min-w-[120px]">
+                      <p className="font-medium mb-1">{handlePrice(order.order_price)}</p>
+                      <p className="text-sm text-gray-500">
+                        {getStatusText(order.status)}
+                      </p>
+                      {isMobileDevice && order.status === 0 && order.pay_url && (
                         <Button 
                           onClick={() => copyToClipboard(order.pay_url)}
-                          className="bg-green-500 hover:bg-green-600 text-white"
+                          className="bg-green-500 hover:bg-green-600 text-white mt-2 w-full"
                         >
                           复制去微信支付
                         </Button>
                       )}
-                      </div>
-                    )}
+                    </div>
                   </div>
                 </Card>
               ))}
