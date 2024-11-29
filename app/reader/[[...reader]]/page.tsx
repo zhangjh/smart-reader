@@ -40,7 +40,7 @@ const EpubReader = () => {
   const [summaring, setSummaring] = useState(false);
   const [chatting, setChatting] = useState(false);
   const [chatContext, setChatContext] = useState<{ role: string; content: string; }[]>([]);
-  const [chatAnswer, setChatAnswer] = useState<{ question: string; answer: string; }[]>([]); // 指定类型为数组
+  const [chatAnswer, setChatAnswer] = useState<{ question: string; answer: string; }[]>([]); 
   const [epubUrl, setEpubUrl] = useState(null);
   const [fileId, setFileId] = useState('');
   const [userId, setUserId] = useState('');
@@ -167,8 +167,14 @@ const EpubReader = () => {
         } else if(data.type === 'data') {
           // 构建问答区显示内容
           curAnswer += data.data;
-          chatAnswer[chatAnswer.length - 1].answer = curAnswer;
-          setChatAnswer([...chatAnswer]);
+          setChatAnswer(prev => {
+            const newAnswers = [...prev];
+            newAnswers[newAnswers.length - 1] = {
+              ...newAnswers[newAnswers.length - 1],
+              answer: curAnswer
+            };
+            return newAnswers;
+          });
         }
     }
 
@@ -231,12 +237,6 @@ const EpubReader = () => {
   const handleQuestionSubmit = async (e) => {
     e.preventDefault();
     console.log('Submitted question:', question);
-    // 各个方案问答都是不限次的，不需要单独校验权限了
-    // setChecking(true);
-    // 权限校验
-    // await util.authCheck(userId, 'chat', async () => {
-      // setChecking(false);
-    // });
     if(!question) {
       return;
     }
@@ -244,10 +244,10 @@ const EpubReader = () => {
     // 清空输入框
     setQuestion('');
     // 问答区显示内容
-    chatAnswer.push({
+    setChatAnswer(prev => [...prev, {
       "question": question,
       "answer": "正在思考中...",
-    });
+    }]);
 
     const chatQuery = {
       'question': question,
