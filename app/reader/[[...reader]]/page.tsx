@@ -305,13 +305,13 @@ const EpubReader = () => {
   const handleFileUpload = async (e) => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
-      setUpLoading(true);
-      setIsNewUpload(true);  // 标记为新上传
       // 文件超大了
-      if(uploadedFile.size > 50 * 1024 * 104) {
-        toast.error("文件大小超过50M");
+      if(uploadedFile.size > 20 * 1024 * 104) {
+        toast.error("文件大小超过20M");
         return;
       }
+      setUpLoading(true);
+      setIsNewUpload(true);  // 标记为新上传
       // 权限校验
       setChecking(true);
       await util.authCheck(userId, 'reader', async () => {
@@ -408,7 +408,7 @@ const EpubReader = () => {
                 <div className="text-center">
                   <h2 className="text-2xl font-bold mb-4">上传您的电子书</h2>
                   <p className="mb-4">支持的格式：docx、pdf、epub、azw3</p>
-                  <p className="mb-4">大小不要超过50MB</p>
+                  <p className="mb-4">大小不要超过20MB</p>
                   <div className="flex items-center justify-center">
                     <Input
                       type="file"
