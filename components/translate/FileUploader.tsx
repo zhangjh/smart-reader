@@ -88,7 +88,7 @@ const FileUploader = ({ onFileProcessed, serviceDomain, userId }: FileUploaderPr
         <div className="flex items-center justify-center">
           <Input
             type="file"
-             accept=".docx,.pdf,.epub,.azw3"
+            accept=".docx,.pdf,.epub,.azw3"
             onChange={handleFileUpload}
             className="hidden"
             id="file-upload"

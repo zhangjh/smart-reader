@@ -307,6 +307,11 @@ const EpubReader = () => {
     if (uploadedFile) {
       setUpLoading(true);
       setIsNewUpload(true);  // 标记为新上传
+      // 文件超大了
+      if(uploadedFile.size > 50 * 1024 * 104) {
+        toast.error("文件大小超过50M");
+        return;
+      }
       // 权限校验
       setChecking(true);
       await util.authCheck(userId, 'reader', async () => {
