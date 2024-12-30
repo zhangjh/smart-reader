@@ -125,6 +125,7 @@ const EpubReader = () => {
     }
   }, [fileIdParam, userId]);
 
+
   const openChatSocket = async function() {
     const chatSocket = new WebSocket(`${socketDomain}/socket/chat?userId=${userId}`);
     if(!chatSocket) {
@@ -133,11 +134,16 @@ const EpubReader = () => {
     }
     setChatSocket(chatSocket);
 
+    // 添加心跳定时器
+    const pingInterval = setInterval(() => {
+      if (chatSocket.readyState === WebSocket.OPEN) {
+        chatSocket.send(JSON.stringify({
+          'type': 'ping',
+        }));
+      }
+    }, 30000); // 每30秒发送一次ping
+
     chatSocket.onopen = () => {
-      // 发送确认消息，保证连接不会自动断联
-      chatSocket.send(JSON.stringify({
-        'type': 'ping',
-      }));
       console.log("chatSocket connected");
     };
 
@@ -180,10 +186,12 @@ const EpubReader = () => {
 
     chatSocket.onclose = (e) => {
       console.log("chatSocket closed", e);
+      clearInterval(pingInterval); // 清理定时器
     }
 
     chatSocket.onerror = e => {
       console.error("chatSocket error", e);
+      clearInterval(pingInterval); // 清理定时器
     }
   }
 
@@ -213,6 +221,8 @@ const EpubReader = () => {
       if(data.type === 'finish') {          
         // 更新解析记录
         setNeedUpdate(true);
+        // 任务完成后主动释放
+        socket.close();
       } else if(data.type === 'data') {
         setSummaring(false);
         setSummary(prevSummary => (prevSummary || '') + data.data);
@@ -373,6 +383,8 @@ const EpubReader = () => {
               setSummaring(true);
               // 保存文件解析使用记录
               await util.saveUsage('reader', userId);
+              // 任务完成后主动是释放
+              convertSocket.close();
             }
           }
           convertSocket.onclose = () => {
