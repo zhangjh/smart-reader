@@ -316,8 +316,11 @@ const EpubReader = () => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
       // 文件超大了
-      if(uploadedFile.size > 20 * 1024 * 104) {
+      if(uploadedFile.size > 20 * 1024 * 1024) {
         toast.error("文件大小超过20M");
+        // 确保状态被重置
+        setUpLoading(false);
+        setChecking(false);
         return;
       }
       setUpLoading(true);
@@ -332,6 +335,7 @@ const EpubReader = () => {
           const fileContent = reader.result as ArrayBuffer;
           if(!fileContent) {
             toast.error("文件内容为空");
+            setUpLoading(false); // 确保状态被重置
             return;
           }
 
@@ -344,6 +348,7 @@ const EpubReader = () => {
           }
           if(!format) {
             toast.error("文件格式不支持");
+            setUpLoading(false); // 确保状态被重置
             return;
           }
 
