@@ -8,13 +8,14 @@ import './reader.css';
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
-const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = false }) => {
+const EpubViewerComponent = ({ url, fileId, recordedProgress, ignoreProgress = false }) => {
   const bookKey = fileId;
 
   const viewerRef = useRef(null);
   const renditionRef = useRef(null);
   const [showControls, setShowControls] = useState(false);
-  const [progress, setProgress] = useState(recoredProgress ? recoredProgress : 0.0);
+  const [progress, setProgress] = useState(recordedProgress ? recordedProgress : 0.0);
+  const [cfi, setCfi] = useState('');
   const [loading, setLoading] = useState(true);
 
   const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
@@ -76,15 +77,16 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
       });
       renditionRef.current = rendition;
 
+      // 兼容保留本地storage
       const savedProgress = window.localStorage.getItem(bookKey);
       console.log("savedLocation: " + savedProgress);
       if(savedProgress) {
         const savedProgressJO = JSON.parse(savedProgress);
         setProgress(savedProgressJO.progressPercentage);
-        await rendition.display(savedProgressJO.cfi);
-      } else {
-        await rendition.display();
+        setCfi(savedProgressJO.cfi);
       }
+      await rendition.display(cfi);
+
       await book.ready;
       setLoading(false);
 
@@ -111,7 +113,7 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
             console.log("当前阅读进度:", progress);
             // 这里可以保存进度到localStorage或发送到服务器
             // storageJO.progress = progress;
-            localStorage.setItem(bookKey, JSON.stringify(progress));
+            // localStorage.setItem(bookKey, JSON.stringify(progress));
             updateRecord(progress.progressPercentage, progress.cfi);
         });
       });
@@ -127,6 +129,7 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
           setProgress(progress);
           // 获取CFI位置标识符
           const cfi = currentLocation.start.cfi;
+          setCfi(cfi);
           // 返回进度信息
           resolve({
               progressPercentage: progress,

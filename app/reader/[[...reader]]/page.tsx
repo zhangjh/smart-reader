@@ -471,7 +471,7 @@ const EpubReader = () => {
                 {/* 左侧：Epub内容 */}
                 <div className="w-full lg:w-1/2 p-4 lg:border-r lg:border-gray-200">
                   <div className="bg-white rounded-lg border border-gray-200 p-4 h-[82vh] lg:h-full">
-                    <EpubViewerComponent url={epubUrl} fileId={fileId} recoredProgress={progress} />
+                    <EpubViewerComponent url={epubUrl} fileId={fileId} recordedProgress={progress} />
                   </div>
                 </div>
 
