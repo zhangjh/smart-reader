@@ -42,7 +42,7 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
     //   }
     // };
 
-    const updateRecord = (progress) => {
+    const updateRecord = (progress, cfi) => {
       const userId = localStorage.getItem('userId');
       if(!userId) {
         return;
@@ -55,7 +55,8 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
         body: JSON.stringify({
           'fileId': fileId,
           'userId': userId,
-          'progress': progress
+          'progress': progress,
+          'cfi': cfi,
         }),
       });
     };
@@ -111,7 +112,7 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
             // 这里可以保存进度到localStorage或发送到服务器
             // storageJO.progress = progress;
             localStorage.setItem(bookKey, JSON.stringify(progress));
-            updateRecord(progress.progressPercentage);
+            updateRecord(progress.progressPercentage, progress.cfi);
         });
       });
     };
