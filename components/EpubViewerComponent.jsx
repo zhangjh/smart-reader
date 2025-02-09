@@ -84,7 +84,7 @@ const EpubViewerComponent = ({ url, fileId, recordedProgress, ignoreProgress = f
         setProgress(savedProgressJO.progressPercentage);
       }
       
-      await rendition.display(progress);
+      await rendition.display(book.locations.cfiFromPercentage(progress));
 
       await book.ready;
       setLoading(false);
