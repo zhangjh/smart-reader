@@ -8,13 +8,14 @@ import './reader.css';
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
-const EpubViewerComponent = ({ url, fileId, recordedProgress, ignoreProgress = false }) => {
+const EpubViewerComponent = ({ url, fileId, recordedProgress, recordedCfi, ignoreProgress = false }) => {
   const bookKey = fileId;
 
   const viewerRef = useRef(null);
   const renditionRef = useRef(null);
   const [showControls, setShowControls] = useState(false);
   const [progress, setProgress] = useState(recordedProgress ? recordedProgress : 0.0);
+  const [cfi, setCfi] = useState(recordedCfi ? recordedCfi : "");
   const [loading, setLoading] = useState(true);
 
   const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
@@ -79,12 +80,16 @@ const EpubViewerComponent = ({ url, fileId, recordedProgress, ignoreProgress = f
       // 兼容保留本地storage，远程cfi优先
       const savedProgress = window.localStorage.getItem(bookKey);
       console.log("savedLocation: " + savedProgress);
-      if(!progress && savedProgress) {
+      if(!cfi && savedProgress) {
         const savedProgressJO = JSON.parse(savedProgress);
         setProgress(savedProgressJO.progressPercentage);
+        setCfi(savedProgressJO.cfi);
       }
-      
-      await rendition.display(book.locations.cfiFromPercentage(progress));
+      if(cfi) {
+        await rendition.display(cfi);
+      } else {
+        await rendition.display();
+      }
 
       await book.ready;
       setLoading(false);

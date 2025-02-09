@@ -45,6 +45,8 @@ const EpubReader = () => {
   const [fileId, setFileId] = useState('');
   const [userId, setUserId] = useState('');
   const [progress, setProgress] = useState(0);
+  const [cfi, setCfi] = useState('');
+  const [isBookReady, setIsBookReady] = useState(false);
   const [needUpdate, setNeedUpdate] = useState(false);
   const [summaryProgress, setSummaryProgesss] = useState<number>(0.0);
   const [checking, setChecking] = useState(false);
@@ -121,6 +123,8 @@ const EpubReader = () => {
           setContentSummary(response.data.contentSummary);
           setSummary(response.data.summary);
           setProgress(response.data.progress);
+          setCfi(response.data.cfi);
+          setIsBookReady(true);
         });
     }
   }, [fileIdParam, userId]);
@@ -466,12 +470,17 @@ const EpubReader = () => {
               </div>
             )}
           
-            {epubUrl && (
+            {epubUrl && isBookReady && (
               <>
                 {/* 左侧：Epub内容 */}
                 <div className="w-full lg:w-1/2 p-4 lg:border-r lg:border-gray-200">
                   <div className="bg-white rounded-lg border border-gray-200 p-4 h-[82vh] lg:h-full">
-                    <EpubViewerComponent url={epubUrl} fileId={fileId} recordedProgress={progress} />
+                    <EpubViewerComponent 
+                      url={epubUrl} 
+                      fileId={fileId} 
+                      recordedProgress={progress} 
+                      recordedCfi={cfi}
+                    />
                   </div>
                 </div>
 
