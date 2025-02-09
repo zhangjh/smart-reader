@@ -77,10 +77,10 @@ const EpubViewerComponent = ({ url, fileId, recordedProgress, ignoreProgress = f
       });
       renditionRef.current = rendition;
 
-      // 兼容保留本地storage
+      // 兼容保留本地storage，远程cfi优先
       const savedProgress = window.localStorage.getItem(bookKey);
       console.log("savedLocation: " + savedProgress);
-      if(savedProgress) {
+      if(!cfi && savedProgress) {
         const savedProgressJO = JSON.parse(savedProgress);
         setProgress(savedProgressJO.progressPercentage);
         setCfi(savedProgressJO.cfi);
