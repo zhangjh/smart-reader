@@ -45,6 +45,8 @@ const EpubReader = () => {
   const [fileId, setFileId] = useState('');
   const [userId, setUserId] = useState('');
   const [progress, setProgress] = useState(0);
+  const [cfi, setCfi] = useState('');
+  const [isBookReady, setIsBookReady] = useState(false);
   const [needUpdate, setNeedUpdate] = useState(false);
   const [summaryProgress, setSummaryProgesss] = useState<number>(0.0);
   const [checking, setChecking] = useState(false);
@@ -121,6 +123,8 @@ const EpubReader = () => {
           setContentSummary(response.data.contentSummary);
           setSummary(response.data.summary);
           setProgress(response.data.progress);
+          setCfi(response.data.cfi);
+          setIsBookReady(true);
         });
     }
   }, [fileIdParam, userId]);
@@ -321,8 +325,11 @@ const EpubReader = () => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
       // 文件超大了
-      if(uploadedFile.size > 20 * 1024 * 104) {
+      if(uploadedFile.size > 20 * 1024 * 1024) {
         toast.error("文件大小超过20M");
+        // 确保状态被重置
+        setUpLoading(false);
+        setChecking(false);
         return;
       }
       setUpLoading(true);
@@ -337,6 +344,7 @@ const EpubReader = () => {
           const fileContent = reader.result as ArrayBuffer;
           if(!fileContent) {
             toast.error("文件内容为空");
+            setUpLoading(false); // 确保状态被重置
             return;
           }
 
@@ -349,6 +357,7 @@ const EpubReader = () => {
           }
           if(!format) {
             toast.error("文件格式不支持");
+            setUpLoading(false); // 确保状态被重置
             return;
           }
 
@@ -466,12 +475,17 @@ const EpubReader = () => {
               </div>
             )}
           
-            {epubUrl && (
+            {epubUrl && isBookReady && (
               <>
                 {/* 左侧：Epub内容 */}
                 <div className="w-full lg:w-1/2 p-4 lg:border-r lg:border-gray-200">
                   <div className="bg-white rounded-lg border border-gray-200 p-4 h-[82vh] lg:h-full">
-                    <EpubViewerComponent url={epubUrl} fileId={fileId} recoredProgress={progress} />
+                    <EpubViewerComponent 
+                      url={epubUrl} 
+                      fileId={fileId} 
+                      recordedProgress={progress} 
+                      recordedCfi={cfi}
+                    />
                   </div>
                 </div>
 

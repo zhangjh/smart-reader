@@ -8,13 +8,14 @@ import './reader.css';
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_MODE;
 const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://tx.zhangjh.cn";
 
-const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = false }) => {
+const EpubViewerComponent = ({ url, fileId, recordedProgress, recordedCfi, ignoreProgress = false }) => {
   const bookKey = fileId;
 
   const viewerRef = useRef(null);
   const renditionRef = useRef(null);
   const [showControls, setShowControls] = useState(false);
-  const [progress, setProgress] = useState(recoredProgress ? recoredProgress : 0.0);
+  const [progress, setProgress] = useState(recordedProgress ? recordedProgress : 0.0);
+  const [cfi, setCfi] = useState(recordedCfi ? recordedCfi : "");
   const [loading, setLoading] = useState(true);
 
   const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
@@ -42,7 +43,7 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
     //   }
     // };
 
-    const updateRecord = (progress) => {
+    const updateRecord = (progress, cfi) => {
       const userId = localStorage.getItem('userId');
       if(!userId) {
         return;
@@ -55,7 +56,8 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
         body: JSON.stringify({
           'fileId': fileId,
           'userId': userId,
-          'progress': progress
+          'progress': progress,
+          'cfi': cfi,
         }),
       });
     };
@@ -75,15 +77,20 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
       });
       renditionRef.current = rendition;
 
+      // 兼容保留本地storage，远程cfi优先
       const savedProgress = window.localStorage.getItem(bookKey);
       console.log("savedLocation: " + savedProgress);
-      if(savedProgress) {
+      if(!cfi && savedProgress) {
         const savedProgressJO = JSON.parse(savedProgress);
         setProgress(savedProgressJO.progressPercentage);
-        await rendition.display(savedProgressJO.cfi);
+        setCfi(savedProgressJO.cfi);
+      }
+      if(cfi) {
+        await rendition.display(cfi);
       } else {
         await rendition.display();
       }
+
       await book.ready;
       setLoading(false);
 
@@ -110,8 +117,8 @@ const EpubViewerComponent = ({ url, fileId, recoredProgress, ignoreProgress = fa
             console.log("当前阅读进度:", progress);
             // 这里可以保存进度到localStorage或发送到服务器
             // storageJO.progress = progress;
-            localStorage.setItem(bookKey, JSON.stringify(progress));
-            updateRecord(progress.progressPercentage);
+            // localStorage.setItem(bookKey, JSON.stringify(progress));
+            updateRecord(progress.progressPercentage, progress.cfi);
         });
       });
     };
