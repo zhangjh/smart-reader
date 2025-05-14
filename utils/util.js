@@ -22,7 +22,7 @@ const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://
       };
       try {
         // 校验权限
-        const response = await fetch(`${serviceDomain}/order/list?status=1&userId=${userId}&page=1&pageSize=100`);
+        const response = await fetch(`${serviceDomain}/order/list?status=1&userId=${userId}&pageIndex=1&pageSize=100`);
         const data = await response.json();
     
         if (!data.success) {
