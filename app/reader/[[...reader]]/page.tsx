@@ -131,10 +131,15 @@ const EpubReader = () => {
 
 
   const openChatSocket = async function() {
-    const chatSocket = new WebSocket(`${socketDomain}/socket/chat?userId=${userId}`);
+    let chatSocket = new WebSocket(`${socketDomain}/socket/chat?userId=${userId}`);
     if(!chatSocket) {
-      toast.error("chatSocket连接服务器失败，请重试");
-      return;
+      console.error("chatSocket连接服务器失败，请重试");
+      // 重连
+      chatSocket = new WebSocket(`${socketDomain}/socket/chat?userId=${userId}`);
+      if(!chatSocket) {
+        toast.error("chatSocket连接服务器失败，请重试");
+        return;
+      }
     }
     setChatSocket(chatSocket);
 
