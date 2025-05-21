@@ -183,23 +183,29 @@ const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://
       email
      */
     async register(saveUser) {
-      fetch(`${serviceDomain}/user/register`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(saveUser)
-      }).then(response => response.json())
-      .then(res => {
+      try {
+        const response = await fetch(`${serviceDomain}/user/register`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(saveUser)
+        });
+        const res = await response.json();
         if(!res.success) {
           console.log(res.errorMsg);
           toast.error("保存用户信息出错:" + res.errorMsg);
+          return null;
         } else {
           // 写本地缓存
           const user = res.data;
           window.localStorage.setItem("userId", user.id);
           window.localStorage.setItem("extId", saveUser.extId);
-          return user.id;
+          return res;
         }
-      });
+      } catch(error) {
+        console.error("注册失败:", error);
+        toast.error("注册失败，请稍后重试");
+        return null;
+      }
     },
     async getUserByExtId({extId, extType, avatar, email, userName}) {
       // 查询内部userId

@@ -31,9 +31,13 @@ export default function Page() {
         .then(async response => {
           if(!response.success) {
             // 三方登录的不走注册，需要在这里注册一下
-            await util.register({
+            const registerResponse = await util.register({
               extType, extId: id, avatar, email, userName
             });
+            if(registerResponse && registerResponse.data) {
+              localStorage.setItem("extId", id);
+              localStorage.setItem("userId", registerResponse.data.id);
+            }
             return;
           }
           localStorage.setItem("extId", id);
