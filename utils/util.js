@@ -148,31 +148,44 @@ const serviceDomain = debugMode === "true" ? "http://localhost:3001" : "https://
         });
     },
     // 只在首次注册时调用保存用户, user: clerk useUser
-    async signUpSaveUser (user) {
+    async signUpSaveUser(user) {
       try {
-        console.log(user);
-        const userId = user.id;
+        const id = user.id;
         const userName = user.username;
-        const email = user.emailAddresses[0].emailAddress;
         const avatar = user.imageUrl;
+        const email = user.emailAddresses[0].emailAddress;
         // 如果有邮箱认为是邮箱登录，否则只记录clerk
         let extType = "clerk";
         if(email) {
           extType = "email";
         }
-        // 判断是否已经保存过
-        const savedExtId = localStorage.getItem("extId");
-        const savedUserId = localStorage.getItem("userId");
-        if(savedExtId && savedExtId === user.id && savedUserId) {
+        const response = await fetch(`${serviceDomain}/user/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            extType,
+            extId: id,
+            avatar,
+            email,
+            userName
+          })
+        });
+        
+        const result = await response.json();
+        if (!result.success) {
+          console.error('注册失败:', result.errorMsg);
           return;
         }
-        localStorage.removeItem("extId");
-        localStorage.removeItem("userId");
-        await this.register({
-          extType, extId: userId, avatar, userName, email
-        });
+        
+        // 确保在注册成功后立即设置localStorage
+        localStorage.setItem("extId", id);
+        localStorage.setItem("userId", result.data.id);
+        
+        return result;
       } catch (error) {
-        console.error("用户保存出错:", error);
+        console.error('注册过程出错:', error);
       }
     },
     /**
