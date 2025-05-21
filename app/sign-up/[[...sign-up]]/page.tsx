@@ -15,7 +15,7 @@ export default function Page() {
     async function handleSignUp() {
       if(isLoaded && signUp && isSignedIn && user) {
         try {
-          const result = await util.signUpSaveUser(user);
+          await util.signUpSaveUser(user);
           // 验证localStorage是否正确设置
           const storedUserId = localStorage.getItem("userId");
           const storedExtId = localStorage.getItem("extId");
