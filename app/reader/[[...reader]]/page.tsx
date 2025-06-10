@@ -334,6 +334,7 @@ const EpubReader = () => {
       }
       setUpLoading(true);
       setIsNewUpload(true);  // 标记为新上传
+      setIsBookReady(false);
       // 权限校验
       setChecking(true);
       await util.authCheck(userId, 'reader', async () => {
@@ -362,6 +363,7 @@ const EpubReader = () => {
           }
 
           const convertSocket = new WebSocket(`${socketDomain}/socket/convert?userId=${userId}`);
+
           convertSocket.onopen = () => {
             console.log("convertSocket connected");
             convertSocket.send(JSON.stringify({ 
@@ -391,6 +393,7 @@ const EpubReader = () => {
               openChatSocket();
               // 建立总结socket
               openSummarySocket(data.data);
+              setIsBookReady(true);
             }
             if(data.type === "finish") {
               setConverting(false);
@@ -401,6 +404,7 @@ const EpubReader = () => {
               convertSocket.close();
             }
           }
+
           convertSocket.onclose = () => {
             console.log("convertSocket closed");
           }
