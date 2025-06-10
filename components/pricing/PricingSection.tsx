@@ -46,7 +46,7 @@ const PricingSection: React.FC<PricingProps> = ({ onPlanSelect }) => {
                 originalPrice={' ¥ ' + item.oriPrice / 100}
                 features={item.featuresArr}
                 isPopular={'basic' === item.key}
-                isDiscount={true}
+                isDiscount={item.price < item.oriPrice}
                 onClick={() => onPlanSelect(item.featuresArr, item.key)}
                 />
             ))}
