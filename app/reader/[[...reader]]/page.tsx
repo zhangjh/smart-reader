@@ -131,11 +131,11 @@ const EpubReader = () => {
 
 
   const openChatSocket = async function() {
-    let chatSocket = new WebSocket(`${socketDomain}/socket/chat?userId=${userId}`);
+    let chatSocket = new WebSocket(`${socketDomain}/socket/chat?userId=${userId}&aiProvider=zhipu`);
     if(!chatSocket) {
       console.error("chatSocket连接服务器失败，请重试");
       // 重连
-      chatSocket = new WebSocket(`${socketDomain}/socket/chat?userId=${userId}`);
+      chatSocket = new WebSocket(`${socketDomain}/socket/chat?userId=${userId}&aiProvider=zhipu`);
       if(!chatSocket) {
         toast.error("chatSocket连接服务器失败，请重试");
         return;
@@ -205,7 +205,7 @@ const EpubReader = () => {
   }
 
   const openSummarySocket = async function(fileId:string) {
-    const socket = new WebSocket(`${socketDomain}/socket/summary?userId=${userId}`);
+    const socket = new WebSocket(`${socketDomain}/socket/summary?userId=${userId}&aiProvider=zhipu`);
 
     socket.onopen = () => {
       console.log('summaryWebsocket connected');
