@@ -80,6 +80,50 @@ export default function Home() {
             </div>
           </section>
 
+          {/* Android App Section */}
+          <section className="py-16 bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <h2 className="text-3xl font-bold mb-4 text-gray-900">体验更佳的智阅安卓APP</h2>
+                <p className="text-xl mb-6 text-gray-600">
+                  安卓应用功能更丰富，体验更流畅，比web阅读更沉浸
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto mb-8">
+                  <div className="flex items-center text-gray-700">
+                    <span className="mr-2">📱</span>
+                    <span>原生体验，性能更优</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <span className="mr-2">🚀</span>
+                    <span>功能更全面，操作更便捷</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <span className="mr-2">📚</span>
+                    <span>沉浸式阅读体验</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <span className="mr-2">🌍</span>
+                    <span>支持多语言界面</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <span className="mr-2">🔄</span>
+                    <span>无需下载，阅读体验闭环</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <span className="mr-2">🧠</span>
+                    <span>支持脑图，专注电子书阅读</span>
+                  </div>
+                </div>
+                <Button 
+                  size="lg" 
+                  onClick={() => window.open('https://play.google.com/store/apps/details?id=cn.zhangjh.zhiyue', '_blank')}
+                >
+                  前往Google Play下载
+                </Button>
+              </div>
+            </div>
+          </section>
+
           {/* Features Section */}
           <section className="py-20 bg-gray-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
