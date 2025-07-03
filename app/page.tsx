@@ -57,8 +57,34 @@ export default function Home() {
     }
   }
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "智阅",
+    "description": "智阅：结合电子书阅读、AI总结、个人知识库和智能问答，提升您的阅读和学习体验。",
+    "url": "https://iread.chat",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "CNY"
+    },
+    "featureList": [
+      "电子书阅读器",
+      "AI总结与评分",
+      "个人知识库",
+      "智能问答",
+      "文档多语种翻译"
+    ]
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <div className="min-h-screen flex flex-col">
         <NavBar />
         <main className="flex-grow">
