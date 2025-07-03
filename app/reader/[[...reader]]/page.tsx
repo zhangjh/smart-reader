@@ -418,6 +418,7 @@ const EpubReader = () => {
     <SignedIn>
       <div className="min-h-screen flex flex-col bg-white">
         <NavBar />
+        <h1 className="sr-only">智阅电子书阅读器 - AI智能阅读助手</h1>
         <div className="flex-grow flex flex-col lg:flex-row">
           {checking && (
             <div className="w-full flex items-center justify-center p-4 h-screen">
