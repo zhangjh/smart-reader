@@ -18,7 +18,7 @@ const Footer = () => {
                 提升您的阅读体验，让学习更加高效。
               </p>
               <div className="flex space-x-6">
-                <a className="text-gray-400 hover:text-gray-500" 
+                <a className="text-gray-400 hover:text-gray-500"
                   onClick={() => {
                     setShowWx(true);
                     toast.info("点击二维码关闭");
@@ -37,30 +37,30 @@ const Footer = () => {
               </div>
             </div>
             <div className="mt-12 xl:mt-0 xl:col-span-2">
-              <div className="grid grid-cols-2 gap-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 <div>
                   <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
                     解决方案
                   </h3>
                   <ul className="mt-4 space-y-4">
                     <li>
-                      <a href="#" className="text-base text-gray-500 hover:text-gray-900">
+                      <a href="/reader" className="text-base text-gray-500 hover:text-gray-900">
                         电子书阅读
                       </a>
                     </li>
                     <li>
-                      <a href="#" className="text-base text-gray-500 hover:text-gray-900">
-                        AI总结
+                      <a href="/search" className="text-base text-gray-500 hover:text-gray-900">
+                        电子书搜索
                       </a>
                     </li>
                     <li>
-                      <a href="#" className="text-base text-gray-500 hover:text-gray-900">
-                        个人知识库
+                      <a href="/translation" className="text-base text-gray-500 hover:text-gray-900">
+                        文档翻译
                       </a>
                     </li>
                     <li>
-                      <a href="#" className="text-base text-gray-500 hover:text-gray-900">
-                        智能问答
+                      <a href="/history" className="text-base text-gray-500 hover:text-gray-900">
+                        阅读历史
                       </a>
                     </li>
                   </ul>
@@ -87,6 +87,40 @@ const Footer = () => {
                     </li>
                   </ul>
                 </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
+                    神笔系列
+                  </h3>
+                  <ul className="mt-4 space-y-4">
+                    <li>
+                      <a target='_blank' href="https://shenbi.tech" className="text-base text-gray-500 hover:text-gray-900">
+                        神笔作文
+                      </a>
+                    </li>
+                    <li>
+                      <a target='_blank' href="https://job.shenbi.tech" className="text-base text-gray-500 hover:text-gray-900">
+                        神笔求职帮
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
+                    智慧系列
+                  </h3>
+                  <ul className="mt-4 space-y-4">
+                    <li>
+                      <a target='_blank' href="https://ss.zhangjh.cn" className="text-base text-gray-500 hover:text-gray-900">
+                        惠搜
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/" className="text-base text-gray-500 hover:text-gray-900">
+                        智阅
+                      </a>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
@@ -98,21 +132,21 @@ const Footer = () => {
         </div>
       </footer>
 
-      { showWx && (
+      {showWx && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="relative">
-            <img 
-              src="/imgs/wechat.jpg" 
-              alt="微信二维码" 
+            <img
+              src="/imgs/wechat.jpg"
+              alt="微信二维码"
               width={200}
               className="object-contain"
-              onClick={() =>setShowWx(false)}
+              onClick={() => setShowWx(false)}
             />
           </div>
         </div>
       )}
     </>
-   
+
   );
 };
 
