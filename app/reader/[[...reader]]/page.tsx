@@ -417,6 +417,26 @@ const EpubReader = () => {
   return (
     <SignedIn>
       <div className="min-h-screen flex flex-col bg-white">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "智阅电子书阅读器",
+              "description": "智能电子书阅读器，支持多种格式，提供AI总结和问答功能",
+              "url": "https://iread.chat/reader",
+              "applicationCategory": "EducationalApplication",
+              "operatingSystem": "Web Browser",
+              "featureList": [
+                "支持EPUB、PDF、DOCX、AZW3格式",
+                "AI智能总结",
+                "智能问答",
+                "阅读进度同步"
+              ]
+            })
+          }}
+        />
         <NavBar />
         <h1 className="sr-only">智阅电子书阅读器 - AI智能阅读助手</h1>
         <div className="flex-grow flex flex-col lg:flex-row">

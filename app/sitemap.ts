@@ -1,40 +1,55 @@
 import { MetadataRoute } from 'next'
  
 export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = 'https://iread.chat'
+  const currentDate = new Date()
+  
   return [
     {
-      url: 'https://iread.chat',
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 1,
+      url: baseUrl,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 1.0,
     },
     {
-      url: 'https://iread.chat/reader',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
+      url: `${baseUrl}/reader`,
+      lastModified: currentDate,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/search`,
+      lastModified: currentDate,
+      changeFrequency: 'daily',
       priority: 0.8,
     },
     {
-      url: 'https://iread.chat/search',
-      lastModified: new Date(),
+      url: `${baseUrl}/translation`,
+      lastModified: currentDate,
       changeFrequency: 'weekly',
       priority: 0.7,
     },
     {
-      url: 'https://iread.chat/translation',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
+      url: `${baseUrl}/history`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
       priority: 0.6,
     },
     {
-      url: 'https://iread.chat/history',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
+      url: `${baseUrl}/orders`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
-      url: 'https://iread.chat/orders',
-      lastModified: new Date(),
+      url: `${baseUrl}/sign-in`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+    {
+      url: `${baseUrl}/sign-up`,
+      lastModified: currentDate,
       changeFrequency: 'monthly',
       priority: 0.4,
     },

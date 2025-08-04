@@ -128,6 +128,23 @@ const BookSearch = () => {
 
   return (
     <>  
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "智阅电子书搜索",
+            "description": "海量电子书资源搜索下载平台",
+            "url": "https://iread.chat/search",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://iread.chat/search?keyword={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          })
+        }}
+      />
       <div className="min-h-screen flex flex-col">
       <NavBar />
       <main className="flex items-center justify-center flex-grow container mx-auto px-4 py-8">

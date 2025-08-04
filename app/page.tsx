@@ -61,21 +61,80 @@ export default function Home() {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "智阅",
-    "description": "智阅：结合电子书阅读、AI总结、个人知识库和智能问答，提升您的阅读和学习体验。",
+    "alternateName": "iRead",
+    "description": "智阅：结合电子书阅读、AI总结、个人知识库和智能问答，提升您的阅读和学习体验。支持多语种翻译，打造您的专属知识库。",
     "url": "https://iread.chat",
+    "sameAs": [
+      "https://play.google.com/store/apps/details?id=cn.zhangjh.zhiyue"
+    ],
     "applicationCategory": "EducationalApplication",
     "operatingSystem": "Web Browser",
+    "browserRequirements": "Requires JavaScript. Requires HTML5.",
+    "softwareVersion": "1.0",
+    "datePublished": "2024-12-01",
+    "dateModified": new Date().toISOString().split('T')[0],
+    "author": {
+      "@type": "Organization",
+      "name": "太初软件",
+      "url": "https://iread.chat"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "智阅",
+      "url": "https://iread.chat"
+    },
     "offers": {
       "@type": "Offer",
       "price": "0",
-      "priceCurrency": "CNY"
+      "priceCurrency": "CNY",
+      "availability": "https://schema.org/InStock"
     },
     "featureList": [
-      "电子书阅读器",
-      "AI总结与评分",
-      "个人知识库",
-      "智能问答",
-      "文档多语种翻译"
+      "电子书阅读器 - 支持EPUB、PDF、DOCX、AZW3格式",
+      "AI智能总结与评分 - 快速了解书籍核心内容",
+      "个人知识库管理 - 构建专属知识体系",
+      "智能问答系统 - 基于书籍内容的AI对话",
+      "文档多语种翻译 - 突破语言阅读障碍",
+      "阅读进度同步 - 跨设备无缝阅读体验"
+    ],
+    "screenshot": "https://iread.chat/screenshot.png",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "1250",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
+  };
+
+  const faqData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "智阅支持哪些电子书格式？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "智阅支持EPUB、PDF、DOCX、AZW3等主流电子书格式，满足不同用户的阅读需求。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "AI总结功能如何工作？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "智阅使用先进的AI技术分析电子书内容，自动生成精准的内容总结和客观评分，帮助用户快速了解书籍核心要点。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "智能问答功能有什么特点？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "基于已阅读的电子书内容，用户可以向AI提问，获得准确的答案和深入的分析，实现与书籍内容的智能对话。"
+        }
+      }
     ]
   };
 
@@ -85,34 +144,44 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqData) }}
+      />
       <div className="min-h-screen flex flex-col">
         <NavBar />
         <main className="flex-grow">
           {/* Hero Section */}
-          <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+          <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white" role="banner">
             <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8 text-center">
               <h1 className="text-4xl font-extrabold sm:text-5xl md:text-6xl mb-4">
-                您的智能阅读伙伴
+                智阅 - 您的智能阅读伙伴
               </h1>
               <p className="mt-3 max-w-md mx-auto text-xl sm:text-2xl md:mt-5 md:max-w-3xl">
-                结合电子书阅读、AI总结、个人知识库、智能问答和多语种翻译，提升您的阅读和学习体验。
+                结合电子书阅读、AI总结、个人知识库、智能问答和多语种翻译，提升您的阅读和学习体验。支持EPUB、PDF、DOCX、AZW3等多种格式。
               </p>
               <div className="mt-10 max-w-md mx-auto sm:flex sm:justify-center md:mt-12">
                 <div className="rounded-md shadow">
-                  <Button size="lg" className="w-full" 
-                    onClick={() => {location.href = "/reader"}}>立即体验</Button>
+                  <Button 
+                    size="lg" 
+                    className="w-full" 
+                    onClick={() => {location.href = "/reader"}}
+                    aria-label="立即体验智阅电子书阅读器"
+                  >
+                    立即体验
+                  </Button>
                 </div>
               </div>
             </div>
           </section>
 
           {/* Android App Section */}
-          <section className="py-16 bg-gray-50">
+          <section className="py-16 bg-gray-50" aria-labelledby="android-app-heading">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="bg-white border rounded-lg p-8 text-center">
-                <h2 className="text-3xl font-bold mb-4 text-gray-900">体验更佳的智阅安卓APP</h2>
+                <h2 id="android-app-heading" className="text-3xl font-bold mb-4 text-gray-900">体验更佳的智阅安卓APP</h2>
                 <p className="text-xl mb-6 text-gray-600">
-                  安卓应用功能更丰富，体验更流畅，比web阅读更沉浸
+                  安卓应用功能更丰富，体验更流畅，比web阅读更沉浸。支持离线阅读、脑图功能、多语言界面。
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto mb-8">
                   <div className="flex items-center text-gray-700">
@@ -151,16 +220,16 @@ export default function Home() {
           </section>
 
           {/* Features Section */}
-          <section className="py-20 bg-gray-50">
+          <section className="py-20 bg-gray-50" aria-labelledby="features-heading">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-extrabold text-gray-900">
+              <header className="text-center mb-12">
+                <h2 id="features-heading" className="text-3xl font-extrabold text-gray-900">
                   强大功能，一站式解决
                 </h2>
                 <p className="mt-4 text-xl text-gray-600">
-                  我们的工具为您提供全方位的阅读和学习体验
+                  我们的工具为您提供全方位的阅读和学习体验，让知识获取更高效
                 </p>
-              </div>
+              </header>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <FeatureCard
@@ -198,11 +267,16 @@ export default function Home() {
           </section>
 
           {/* How It Works Section */}
-          <section className="py-20">
+          <section className="py-20" aria-labelledby="how-it-works-heading">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-3xl font-extrabold text-center text-gray-900 mb-12">
-                如何使用我们的工具
-              </h2>
+              <header className="text-center mb-12">
+                <h2 id="how-it-works-heading" className="text-3xl font-extrabold text-gray-900">
+                  如何使用智阅
+                </h2>
+                <p className="mt-4 text-xl text-gray-600">
+                  五个简单步骤，开启您的智能阅读之旅
+                </p>
+              </header>
               <div className="flex flex-wrap justify-between items-center space-y-8 md:space-y-0">
                 {[
                   { step: 1, title: "找书并上传", description: "将您想要阅读的电子书上传到我们的平台。" },

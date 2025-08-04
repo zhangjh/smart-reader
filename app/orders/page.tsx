@@ -172,6 +172,24 @@ const Orders = () => {
   };
 
   return (
+    <>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "订单管理",
+          "description": "智阅服务订单管理和支付记录查询",
+          "url": "https://iread.chat/orders",
+          "isPartOf": {
+            "@type": "WebSite",
+            "name": "智阅",
+            "url": "https://iread.chat"
+          }
+        })
+      }}
+    />
     <Sidebar>
       <div className="p-4 md:p-6">
         <div className="max-w-4xl mx-auto">
@@ -275,6 +293,7 @@ const Orders = () => {
         </div>
       </div>
     </Sidebar>
+    </>
   );
 };
 

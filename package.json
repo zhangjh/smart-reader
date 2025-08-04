@@ -1,12 +1,14 @@
 {
-  "name": "my-app",
+  "name": "smart-reader",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seo:check": "node scripts/seo-check.js",
+    "seo:analyze": "npm run build && npm run seo:check"
   },
   "dependencies": {
     "next": "14.2.11",

@@ -57,6 +57,26 @@ const TranslatePage = () => {
 
   return (
     <SignedIn>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "智阅文档翻译工具",
+              "description": "专业的多语种文档翻译服务",
+              "url": "https://iread.chat/translation",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "featureList": [
+                "支持PDF、DOCX、EPUB格式",
+                "多语种智能翻译",
+                "保持原文档格式",
+                "AI驱动翻译技术"
+              ]
+            })
+          }}
+        />
         <div className="min-h-screen flex flex-col bg-white">
         <NavBar />
         <div className="flex-grow flex flex-col lg:flex-row">
